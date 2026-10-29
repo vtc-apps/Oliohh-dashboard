@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli Ohh | Command Center</title>
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-red: #FF3B30;
+            --ios-green: #34C759;
+            --ios-orange: #FF9500;
+            --ios-purple: #AF52DE;
+            --glass-bg: rgba(30, 30, 35, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 10% 10%, #1a1a2e 0%, #000 50%),
+                        radial-gradient(circle at 90% 90%, #0d1b2a 0%, #000 50%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 600px;
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px; /* Space out content below the fixed home button */
+            margin-bottom: 30px;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px;
+            border-radius: 12px;
+            color: var(--ios-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+
+        /* --- Folders --- */
+        .stack { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 15px; }
+
+        .glass-folder {
+            background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%);
+            border: 1px solid var(--glass-border); border-radius: 24px; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .folder-trigger { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .folder-title { display: flex; align-items: center; gap: 12px; }
+        .folder-icon {
+            width: 32px; height: 32px; background: rgba(255, 255, 255, 0.05); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-weight: 800;
+        }
+
+        .folder-content {
+            max-height: 0; opacity: 0; overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease; background: rgba(0,0,0,0.2);
+        }
+
+        .glass-folder.active { border-color: rgba(255,255,255,0.3); }
+        .glass-folder.active .folder-content { max-height: 2000px; opacity: 1; }
+        .glass-folder.active .chevron { transform: rotate(180deg); }
+
+        .chevron { transition: 0.4s; opacity: 0.5; }
+
+        /* --- Task Box --- */
+        .task-box { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .task-meta { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .task-num { color: #8E8E93; font-size: 11px; font-weight: 700; }
+        .task-lead { color: var(--ios-blue); font-size: 11px; font-weight: 700; }
+        .task-desc { font-size: 14px; color: #E5E5E7; line-height: 1.4; margin-bottom: 6px; }
+        .task-deadline { font-size: 12px; font-weight: 600; color: var(--ios-red); }
+        .deadline-green { color: var(--ios-green); }
+        .none { color: #636366; font-weight: 400; }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <a href="home.html" class="home-btn">&larr; Home</a>
+
+    <header>
+        <h1>Command Center</h1>
+    </header>
+
+    <div class="stack">
+        
+        <!-- CARD 1: PRIORITY TASKS -->
+        <div class="glass-folder" onclick="this.classList.toggle('active')">
+            <div class="folder-trigger">
+                <div class="folder-title">
+                    <div class="folder-icon" style="color:var(--ios-red)">P</div>
+                    <h2>PRIORITY TASKS</h2>
+                </div>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="folder-content">
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">PRIORITY 1</span><span class="task-lead">Surendra</span></div>
+                    <p class="task-desc">Build WhatsApp Community of 500 store owners</p>
+                    <span class="task-deadline deadline-green">Status: Done</span>
+                </div>
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">PRIORITY 2</span><span class="task-lead">Surendra</span></div>
+                    <p class="task-desc">Cleaning of DRCP and adding self-service stores</p>
+                    <span class="task-deadline deadline-green">Status: Done</span>
+                </div>
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">PRIORITY 3</span><span class="task-lead">Deepak Thakkar</span></div>
+                    <p class="task-desc">Closure of quick-com Subd Settlement</p>
+                    <span class="task-deadline deadline-green">Status: Done</span>
+                </div>
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">PRIORITY 5</span><span class="task-lead">Ajit</span></div>
+                    <p class="task-desc">Activation of Chandigarh and Gujarat for marketing initiatives</p>
+                    <span class="task-deadline deadline-green">Status: Done</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CARD 2: SAMPLING -->
+        <div class="glass-folder" onclick="this.classList.toggle('active')">
+            <div class="folder-trigger">
+                <div class="folder-title">
+                    <div class="folder-icon" style="color:var(--ios-orange)">S</div>
+                    <h2>SAMPLING</h2>
+                </div>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="folder-content">
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 01</span><span class="task-lead">Vishal Chopra</span></div><p class="task-desc">Design a branded glass bowl for customer promotional offers</p><span class="task-deadline">Status: Pending</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 02</span><span class="task-lead">Vishal Chopra</span></div><p class="task-desc">Procure and modify one E-rickshaw with Oli Ohh branding</p><span class="task-deadline">Status: Pending</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 03</span><span class="task-lead">Vishal Chopra</span></div><p class="task-desc">E-rickshaw deployed for wet sampling</p><span class="task-deadline">Status: Pending</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 04</span><span class="task-lead">Surendra Singh</span></div><p class="task-desc">Initiate wet sampling via bike/auto until deployment</p><span class="task-deadline">Status: Pending</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 08</span><span class="task-lead">Marketing</span></div><p class="task-desc">Society-level sampling to drive Q-com platform orders</p><span class="task-deadline">Status: Pending</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 09</span><span class="task-lead">Surendra Singh</span></div><p class="task-desc">Begin wet sampling activities outside stores</p><span class="task-deadline deadline-green">Status: Done</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 13</span><span class="task-lead">Anil</span></div><p class="task-desc">Hire 2 employees for wet sampling</p><span class="task-deadline deadline-green">Status: Done</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 14</span><span class="task-lead">Anil</span></div><p class="task-desc">Hire another 2 employees for wet sampling</p><span class="task-deadline">15th May 2026</span></div>
+                <div class="task-box"><div class="task-meta"><span class="task-num">TASK 15</span><span class="task-lead">Anil</span></div><p class="task-desc">Hire remaining 2 employees for wet sampling</p><span class="task-deadline">25th May 2026</span></div>
+            </div>
+        </div>
+
+        <!-- CARD 3: ASSIGNED TASKS -->
+        <div class="glass-folder" onclick="this.classList.toggle('active')">
+            <div class="folder-trigger">
+                <div class="folder-title">
+                    <div class="folder-icon" style="color:var(--ios-green)">A</div>
+                    <h2>ASSIGNED TASKS</h2>
+                </div>
+                <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="folder-content">
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">ASSIGNED 01</span><span class="task-lead">Vishal</span></div>
+                    <p class="task-desc">Prepare packing of oli ohh for 12 & 36 pc</p>
+                    <span class="task-deadline deadline-green">Deadline: 06th May 2026</span>
+                </div>
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">ASSIGNED 02</span><span class="task-lead">Deepak Sir / Surender Sir</span></div>
+                    <p class="task-desc">Review and tracking with drumbeats dates</p>
+                    <span class="task-deadline deadline-green">Status: Done</span>
+                </div>
+                <div class="task-box">
+                    <div class="task-meta"><span class="task-num">ASSIGNED 03</span><span class="task-lead">Akshay Sir</span></div>
+                    <p class="task-desc">Next three months outreach plan for Mr. Akshay</p>
+                    <span class="task-deadline deadline-green">Status: Done</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

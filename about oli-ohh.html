@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli-Ohh - Product Intelligence 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --oli-red: #e74c3c; --dark: #1a1a1a; --glass: rgba(255, 255, 255, 0.8); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background-color: #ffffff; 
+            color: var(--dark); 
+            padding: 40px 80px; 
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- BACKGROUND LOGO --- */
+        .bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .centered-moving-logo {
+            width: 600px; 
+            opacity: 0.08; 
+            animation: breatheAction 10s ease-in-out infinite;
+        }
+
+        @keyframes breatheAction {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--oli-red);
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            transition: 0.3s;
+        }
+        .back-link:hover { opacity: 0.7; transform: translateX(-5px); }
+
+        /* --- HEADER --- */
+        header {
+            max-width: 1400px;
+            margin: 0 auto 80px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 60px;
+        }
+        .header-text { 
+            flex: 1; 
+            border-left: 6px solid var(--oli-red);
+            padding-left: 30px;
+        }
+        header h1 { font-size: 60px; font-weight: 800; letter-spacing: -3px; line-height: 1.1; }
+        header p { color: var(--oli-red); font-weight: 600; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 12px; }
+
+        .video-container {
+            width: 500px;
+            aspect-ratio: 16 / 9;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            background: #000;
+            animation: fadeInRight 1s ease-out;
+        }
+        .video-container video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- SPEC GRID --- */
+        .spec-container {
+            max-width: 1400px;
+            margin: 0 auto 100px auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 120px;
+        }
+        .spec-group { margin-bottom: 60px; }
+        .group-label {
+            font-size: 13px; font-weight: 800; color: var(--oli-red);
+            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; display: block;
+        }
+        .big-stat { font-size: 64px; font-weight: 800; line-height: 1; margin-bottom: 15px; }
+        .big-stat span { font-size: 24px; color: var(--oli-red); vertical-align: top; margin-left: 5px; }
+        .data-row {
+            display: flex; justify-content: space-between;
+            padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.08); font-size: 20px;
+        }
+        .data-row .label { color: #666; font-weight: 400; }
+        .data-row .value { font-weight: 700; }
+        .fiber-highlight { color: var(--oli-red); animation: pulseFade 2s infinite; }
+        .usp-list { display: flex; gap: 40px; margin-top: 25px; }
+        .usp-item { font-weight: 800; font-size: 18px; border-bottom: 4px solid var(--oli-red); padding-bottom: 5px; }
+
+        /* --- COMPARISON PANEL (NEW) --- */
+        .comparison-section {
+            max-width: 1400px;
+            margin: 120px auto 60px auto;
+            background: #fdfdfd;
+            border-radius: 40px;
+            padding: 80px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
+        }
+        .comparison-title { text-align: center; margin-bottom: 60px; }
+        .comparison-title h2 { font-size: 42px; font-weight: 800; letter-spacing: -2px; }
+        .comparison-title p { color: var(--oli-red); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            position: relative;
+        }
+        .vs-badge {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: #000; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-weight: 800; z-index: 5; font-size: 14px;
+        }
+        .comp-card {
+            background: #fff; padding: 50px; border-radius: 30px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.4s ease;
+        }
+        .comp-card.premium {
+            border: 2px solid var(--oli-red);
+            background: #fffafa;
+            transform: scale(1.02);
+        }
+        .card-brand { font-weight: 800; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; display: block; }
+        .comp-price { font-size: 32px; font-weight: 800; margin: 10px 0; }
+        .comp-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .comp-row span:first-child { color: #888; }
+        .comp-row span:last-child { font-weight: 700; }
+
+        .parity-label {
+            background: #000; color: #fff; padding: 5px 15px; border-radius: 5px;
+            font-size: 11px; font-weight: 800; display: inline-block; margin-top: 10px;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulseFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Mobile */
+        @media (max-width: 1100px) {
+            body { padding: 40px; }
+            .spec-container { gap: 60px; }
+            .comparison-section { padding: 40px; }
+        }
+        @media (max-width: 900px) {
+            header { flex-direction: column; align-items: flex-start; }
+            .video-container { width: 100%; }
+            .spec-container { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .vs-badge { display: none; }
+        }
+    </style>
+</head>
+<body onload="animateStats()">
+
+    <div class="bg-canvas">
+        <img src="logo.png" class="centered-moving-logo" alt="Oli-Ohh Logo">
+    </div>
+
+    <a href="javascript:history.back()" class="back-link">← BACK</a>
+
+    <header>
+        <div class="header-text">
+            <p>Product Intelligence 2026</p>
+            <h1>Oli-Ohh Pasta Kit</h1>
+            <h2 style="font-size: 32px; font-weight: 300; margin-top: 15px;">MRP ₹ 89.00</h2>
+        </div>
+        <div class="video-container">
+            <video autoplay muted loop playsinline>
+                <source src="oli ohh draft 1.mp4" type="video/mp4">
+            </video>
+        </div>
+    </header>
+
+    <div class="spec-container">
+        <div class="column">
+            <div class="spec-group">
+                <span class="group-label">Core Content</span>
+                <div class="big-stat"><span class="count" data-target="192">0</span><span>g</span></div>
+                <div class="data-row"><span class="label">Signature Sauce</span><span class="value">120g</span></div>
+                <div class="data-row"><span class="label">Suji Semolina Pasta</span><span class="value">70g</span></div>
+                <div class="data-row"><span class="label">Spice Blend</span><span class="value">2g</span></div>
+            </div>
+            <div class="spec-group">
+                <span class="group-label">Commitment</span>
+                <div class="usp-list">
+                    <div class="usp-item">NO MAIDA</div>
+                    <div class="usp-item">NO PALM OIL</div>
+                    <div class="usp-item">NOT FRIED</div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="spec-group">
+                <span class="group-label">Nutrition Values</span>
+                <div class="data-row"><span class="label">Energy</span><span class="value">412.60 Kcal</span></div>
+                <div class="data-row"><span class="label">Protein</span><span class="value">8.70g</span></div>
+                <div class="data-row"><span class="label">Sodium</span><span class="value">1209.80mg</span></div>
+                <div class="data-row" style="border-bottom-color: var(--oli-red);">
+                    <span class="label" style="opacity:1; font-weight:800; color:var(--oli-red);">Dietary Fiber</span>
+                    <span class="value fiber-highlight">11.55g (38.5% RDA)</span>
+                </div>
+            </div>
+            <div class="spec-group">
+                <span class="group-label">Supply Chain</span>
+                <div class="data-row"><span class="label">Origin</span><span class="value">Greater Noida, UP</span></div>
+                <div class="data-row"><span class="label">Partner Ops</span><span class="value">Kamani Foods</span></div>
+                <div class="data-row"><span class="label">Allergen Info</span><span class="value">Wheat & Soy</span></div>
+            </div>
+        </div>
+    </div>
+
+    <section class="comparison-section">
+        <div class="comparison-title">
+            <p>Comparative Intelligence</p>
+            <h2>The Parity Analysis</h2>
+        </div>
+
+        <div class="comparison-grid">
+            <div class="vs-badge">VS</div>
+            
+            <div class="comp-card">
+                <span class="card-brand" style="color: #888;">Market Leader</span>
+                <h3>Instant Pasta Pack</h3>
+                <div class="comp-price">₹ 35.00</div>
+                <div class="comp-row"><span>Net Content</span><span>70g</span></div>
+                <div class="comp-row"><span>Unit Price</span><span>₹ 0.50 / g</span></div>
+                <div class="comp-row"><span>Fiber</span><span>Low (Maida)</span></div>
+                <div class="comp-row"><span>Fat</span><span>Refined Palm Oil</span></div>
+            </div>
+
+            <div class="comp-card premium">
+                <span class="card-brand" style="color: var(--oli-red);">Oli-Ohh Intelligent Kit</span>
+                <h3>Premium Pasta Kit</h3>
+                <div class="comp-price">₹ 89.00</div>
+                <div class="parity-label">PRICE PARITY ACHIEVED</div>
+                <div class="comp-row"><span>Net Content</span><span>192g</span></div>
+                <div class="comp-row"><span>Unit Price</span><span style="color: var(--oli-red);">₹ 0.46 / g</span></div>
+                <div class="comp-row"><span>Fiber</span><span>11.55g (High)</span></div>
+                <div class="comp-row"><span>Fat</span><span>Zero Palm Oil</span></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; color: #888; font-size: 14px; max-width: 700px; margin-left: auto; margin-right: auto;">
+            Research indicates that while Oli-Ohh occupies a premium price bracket, the <b>gram-to-gram</b> cost is lower than market leaders, providing 274% more volume per kit.
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; opacity: 0.4; font-size: 12px; letter-spacing: 2px;">
+        OLI-OHH PRODUCT INTELLIGENCE © 2026
+    </footer>
+
+    <script>
+        function animateStats() {
+            const counters = document.querySelectorAll('.count');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                let count = 0;
+                const inc = target / 50;
+                const timer = setInterval(() => {
+                    count += inc;
+                    if (count >= target) {
+                        counter.innerText = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.innerText = Math.ceil(count);
+                    }
+                }, 25);
+            });
+        }
+    </script>
+</body>
+</html>

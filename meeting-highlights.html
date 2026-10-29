@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Highlights | Oli-Ohh Strategy</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --ios-cyan: #00ffd5;
+            --ios-blue: #0077ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
+        
+        body { 
+            background: radial-gradient(at 0% 0%, rgba(15, 32, 39, 1) 0, transparent 50%), 
+                        radial-gradient(at 100% 0%, rgba(44, 83, 100, 1) 0, transparent 50%), 
+                        #0b0e11; 
+            color: white; 
+            min-height: 100vh; 
+            padding-bottom: 60px; 
+            line-height: 1.6; 
+        }
+
+        header { padding: 40px; text-align: center; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); position: relative; }
+        .back-btn { position: absolute; left: 20px; top: 45px; color: var(--ios-cyan); text-decoration: none; font-weight: bold; border: 1px solid var(--ios-cyan); padding: 8px 20px; border-radius: 20px; transition: 0.3s; font-size: 12px; text-transform: uppercase; }
+        .back-btn:hover { background: var(--ios-cyan); color: #000; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
+        .section-title { margin: 45px 0 20px 0; font-size: 24px; border-left: 6px solid var(--ios-cyan); padding-left: 15px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ios-cyan); }
+
+        /* TRACKER GRID - Updated for smaller, uniform cards */
+        .tracker-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 320px)); 
+            gap: 30px; 
+            margin-top: 40px;
+            justify-content: center;
+        }
+
+        /* GLASS CARD STYLE */
+        .glass-card { 
+            background: var(--glass); 
+            backdrop-filter: blur(25px); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 30px; 
+            padding: 30px; 
+            transition: 0.4s;
+            cursor: pointer;
+            text-align: center;
+        }
+        .glass-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.12); border-color: var(--ios-cyan); }
+        .glass-card h2 { font-size: 1.3rem; color: var(--ios-cyan); margin-bottom: 10px; justify-content: center; display: flex; align-items: center; gap: 10px; }
+
+        /* POPUP OVERLAY */
+        .overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 2000; 
+            justify-content: center; align-items: center; 
+        }
+        .modal { 
+            background: #161b22; border: 1px solid var(--glass-border); border-radius: 35px; 
+            padding: 40px; width: 90%; max-width: 500px; text-align: center; 
+        }
+        .modal-list { text-align: left; margin: 25px 0; list-style: none; }
+        .modal-list li { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 15px; color: var(--ios-cyan); }
+
+        /* STRATEGY CARDS */
+        .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
+        .strategy-card { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 25px; border: 1px solid var(--glass-border); }
+        .strategy-card h3 { color: var(--ios-cyan); margin-bottom: 15px; font-size: 18px; }
+        .strategy-card ul { list-style: none; }
+        .strategy-card li { margin-bottom: 12px; font-size: 14px; position: relative; padding-left: 20px; color: #ccc; }
+        .strategy-card li::before { content: '→'; position: absolute; left: 0; color: var(--ios-blue); }
+
+        footer { text-align: center; margin-top: 80px; padding: 40px; background: rgba(0,0,0,0.4); font-size: 13px; }
+        
+        .btn-close { background: var(--ios-cyan); color: #000; border: none; padding: 12px 30px; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="home.html" class="back-btn">← Ops Center</a>
+    <h1>Strategic Product Launch Framework</h1>
+    <p style="opacity: 0.6; font-size: 14px; margin-top: 5px;">VTC Tradewings • Oli-Ohh Pasta Project</p>
+</header>
+
+<div class="container">
+    
+    <div class="tracker-grid">
+        <!-- 11 MARCH POPUP CARD -->
+        <div class="glass-card" onclick="openModal('modal11')">
+            <div style="padding: 20px 0;">
+                <span style="font-size: 3rem;">📅</span>
+                <h2>11 March 2026</h2>
+                <p style="color: var(--ios-cyan); font-weight: bold;">View Margin & Rollout Plan →</p>
+                <p style="font-size: 12px; opacity: 0.5; margin-top: 10px;">Click to open meeting insights</p>
+            </div>
+        </div>
+
+        <!-- 31 MARCH POPUP CARD -->
+        <div class="glass-card" onclick="openModal('modal31')">
+            <div style="padding: 20px 0;">
+                <span style="font-size: 3rem;">📄</span>
+                <h2>31 March 2026</h2>
+                <p style="color: var(--ios-cyan); font-weight: bold;">View Channel & Sampling Data →</p>
+                <p style="font-size: 12px; opacity: 0.5; margin-top: 10px;">Click to open meeting insights</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Core Strategy</h2>
+    <div class="strategy-grid">
+        <div class="strategy-card">
+            <h3>Pricing Framework</h3>
+            <ul>
+                <li>Gram-to-gram parity with market leaders.</li>
+                <li>15% commission markup strategy.</li>
+                <li>100-store pilot rollout.</li>
+            </ul>
+        </div>
+        <div class="strategy-card">
+            <h3>Demand Management</h3>
+            <ul>
+                <li>Minimum billing enforcement.</li>
+                <li>Zero breathing space initial supply.</li>
+                <li>Phased city-wise entry.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 11 MARCH (No Checkboxes) -->
+<div class="overlay" id="modal11" onclick="closeModal('modal11')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h2 style="color: var(--ios-cyan);">11-Mar Insights</h2>
+        <ul class="modal-list">
+            <li>• Base margin analysis for category</li>
+            <li>• Distributor margin vs competition</li>
+            <li>• Retailer/Wholesale margin calcs</li>
+            <li>• Minimum billing quantity setup</li>
+            <li>• Three-tier launch phased rollout</li>
+            <li>• Sampling & launch team support</li>
+        </ul>
+        <button class="btn-close" onclick="closeModal('modal11')">Close Window</button>
+    </div>
+</div>
+
+<!-- MODAL 31 MARCH -->
+<div class="overlay" id="modal31" onclick="closeModal('modal31')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h2 style="color: var(--ios-cyan);">31-Mar Insights</h2>
+        <ul class="modal-list">
+            <li>• Channel Classification Strategy</li>
+            <li>• Channel Distribution Mapping</li>
+            <li>• Channel Supply Standards</li>
+            <li>• Scheme Survey Analysis</li>
+            <li>• Distribution Economics Final</li>
+            <li>• Sampling & BTL Roadmap</li>
+        </ul>
+        <button class="btn-close" onclick="closeModal('modal31')">Close Window</button>
+    </div>
+</div>
+
+<footer>
+    <p>Minutes by <strong>Surendra Singh</strong> | Developed by Rounak Singh</p>
+</footer>
+
+<script>
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+</script>
+
+</body>
+</html>

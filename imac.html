@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VTC iMc Dashboard</title>
+    <style>
+        /* Base Reset & TV Optimization */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0d1117;
+            color: #f0f6fc; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* Top Bar Layout */
+        .top-bar {
+            position: absolute;
+            top: 4vh;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 4vw;
+            z-index: 10;
+        }
+
+        .home-btn {
+            background-color: #1a2333;
+            border: 1.5px solid #25354c;
+            border-radius: 5px;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .home-btn:hover, .home-btn:focus {
+            background-color: #1e3a5f;
+            border-color: #38bdf8;
+            outline: none;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        header {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .network-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .network-lines line {
+            stroke: #25354c;
+            stroke-width: 2;
+            transition: stroke 0.2s ease;
+        }
+
+        .network-lines line.active {
+            stroke: #38bdf8;
+            stroke-width: 2.5;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: row; 
+            justify-content: center;
+            gap: 1.5rem; 
+            width: 100%;
+            max-width: 1000px; 
+            margin-top: 15vh;
+            z-index: 2;
+        }
+
+        .card {
+            background-color: #1a2333; 
+            border: 1.5px solid #25354c;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1; 
+            max-width: 190px; 
+            padding: 0.75rem 0.5rem; 
+            min-height: 55px; 
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .card span {
+            color: #e2e8f0;
+            font-size: 0.95rem; 
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            white-space: nowrap; 
+        }
+
+        .card:hover, .card:focus {
+            background-color: #1e3a5f; 
+            border-color: #38bdf8; 
+            transform: translateY(3px);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+            outline: none;
+        }
+
+        /* --- ULTRA-COMPACT MODAL STRUCTURE --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(10, 14, 20, 0.98);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-container {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            width: 98vw;
+            height: 94vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1f242c;
+        }
+
+        .modal-header h2 {
+            font-size: 1.1rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .close-btn, .back-btn {
+            color: #ffffff;
+            border: none;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .close-btn { background-color: #da3637; }
+        .close-btn:hover { background-color: #b62b2c; }
+        .back-btn { background-color: #21262d; border: 1px solid #30363d; }
+        .back-btn:hover { background-color: #30363d; }
+
+        /* --- OPERATION MODAL SYSTEM --- */
+        .modal-body {
+            flex: 1;
+            overflow: hidden;
+            padding: 0.4rem;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.4rem;
+        }
+
+        /* Follow Process Custom Layout Container */
+        .follow-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .follow-grid-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+        }
+
+        .pillar {
+            background-color: #0d1117;
+            border: 1px solid #21262d;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .pillar-header {
+            padding: 5px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-align: center;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        .pillar-resale { background-color: #1f6feb; }
+        .pillar-system { background-color: #238636; }
+        .pillar-logistics { background-color: #d29922; }
+        .pillar-finance { background-color: #8957e5; }
+        .pillar-hr { background-color: #db6174; }
+        .pillar-operation { background-color: #6e7681; }
+
+        .pillar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pillar-content::-webkit-scrollbar { width: 3px; }
+        .pillar-content::-webkit-scrollbar-thumb { background-color: #30363d; }
+
+        .process-item-card {
+            background-color: #161b22;
+            border: 1px solid #21262d;
+            border-radius: 3px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        /* Highlighted Block Layout for Follow Process Text Content */
+        .follow-block-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            padding: 0.6rem;
+            height: 100%;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.35;
+        }
+
+        .follow-text {
+            color: #e2e8f0;
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .process-title {
+            font-weight: 700;
+            color: #58a6ff;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.1;
+        }
+
+        .process-sno {
+            font-size: 0.65rem;
+            background-color: #21262d;
+            color: #8b949e;
+            padding: 0px 3px;
+            border-radius: 2px;
+        }
+
+        .process-desc {
+            color: #8b949e;
+            font-size: 0.68rem;
+            line-height: 1.2;
+        }
+
+        /* --- COMMON GUIDELINES COMPONENT (IMAGE 2) --- */
+        .guidelines-panel {
+            background-color: #1a2333;
+            border: 1px solid #25354c;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-top: 0.1rem;
+        }
+
+        .guidelines-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ff9e22;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #25354c;
+            padding-bottom: 4px;
+        }
+
+        .guidelines-list {
+            list-style-type: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .guidelines-item {
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            line-height: 1.3;
+            display: flex;
+            gap: 6px;
+        }
+
+        .guidelines-item strong {
+            color: #38bdf8;
+        }
+
+        .guidelines-quote {
+            font-size: 0.82rem;
+            color: #8b949e;
+            font-style: italic;
+            text-align: center;
+            border-top: 1px dashed #25354c;
+            padding-top: 8px;
+            line-height: 1.4;
+        }
+
+        /* --- TRAINING MODAL HIERARCHY STYLES --- */
+        .training-body {
+            flex: 1;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .hierarchy-root {
+            background-color: #238636;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 0.6rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .hierarchy-root::after {
+            content: '';
+            position: absolute;
+            bottom: -2.5rem;
+            left: 50%;
+            width: 2px;
+            height: 2.5rem;
+            background-color: #30363d;
+        }
+
+        .hierarchy-branches {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 1.2rem;
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+        }
+
+        /* Horizontal Connect Line */
+        .hierarchy-branches::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background-color: #30363d;
+        }
+
+        .branch-card-node {
+            flex: 1;
+            background-color: #1a2333;
+            border: 1.5px solid #25354c;
+            border-radius: 6px;
+            padding: 1.5rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+
+        .branch-card-node::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 1.2rem;
+            background-color: #30363d;
+            transform: translateY(-100%);
+        }
+
+        .branch-card-node:hover {
+            background-color: #1e3a5f;
+            border-color: #38bdf8;
+            transform: translateY(3px);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .branch-card-node h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        /* --- DETAILED DATA LAYOUT --- */
+        .training-detail-view {
+            width: 100%;
+            max-width: 1200px;
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .branch-node {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .branch-header {
+            padding: 8px 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-align: center;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        .branch-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        .branch-content::-webkit-scrollbar { width: 3px; }
+        .branch-content::-webkit-scrollbar-thumb { background-color: #30363d; }
+
+        .slide-heading-red {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #ff4444;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .slide-bullet-list {
+            list-style-type: disc;
+            padding-left: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .slide-bullet-item {
+            font-size: 0.74rem;
+            color: #f0f6fc;
+            line-height: 1.4;
+        }
+
+        .no-data {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-style: italic;
+            text-align: center;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="home.html" class="home-btn">Home</a>
+        <header id="main-title">
+            <h1>VTC iMc</h1>
+        </header>
+    </div>
+
+    <svg class="network-lines" id="svg-canvas">
+        <line id="line1" x1="0" y1="0" x2="0" y2="0" />
+        <line id="line2" x1="0" y1="0" x2="0" y2="0" />
+        <line id="line3" x1="0" y1="0" x2="0" y2="0" />
+        <line id="line4" x1="0" y1="0" x2="0" y2="0" />
+    </svg>
+
+    <main class="dashboard-container">
+        <a href="javascript:void(0)" class="card" id="card1">
+            <span>Operation Process</span>
+        </a>
+        <a href="javascript:void(0)" class="card" id="card2">
+            <span>Training of Process</span>
+        </a>
+        <a href="javascript:void(0)" class="card" id="card3">
+            <span>Follow Process</span>
+        </a>
+        <a href="#" class="card" id="card4">
+            <span>Profile</span>
+        </a>
+    </main>
+
+    <!-- Modal 1: Operation Process -->
+    <div class="modal-overlay" id="processModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Operation Processes Categorized by Department</h2>
+                <button class="close-btn" id="closeModalBtn">Close</button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="pillar">
+                    <div class="pillar-header pillar-resale">Resale</div>
+                    <div class="pillar-content">
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">1</span> Store Identification</div>
+                            <div class="process-desc">Identify new market opportunities. Update category details in records.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">2</span> Store Visit (CCR)</div>
+                            <div class="process-desc">Visit stores per route. Check stock/display and punch PDA details.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">3</span> Order Booking (BCP)</div>
+                            <div class="process-desc">Take retailer orders per demand. Follow designated BCP steps.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">4</span> Order Transfer</div>
+                            <div class="process-desc">Transfer booked orders via mobile Bizom; verify transfer accuracy.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">5</span> Daily Review</div>
+                            <div class="process-desc">Review sales per PFD/FJP. Discuss actions and pending issues.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">6</span> Monthly Review</div>
+                            <div class="process-desc">Analyze monthly targets. Identify gaps and fix monthly dates.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-header pillar-system">System</div>
+                    <div class="pillar-content">
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">7</span> Daily Reporting</div>
+                            <div class="process-desc">Prepare and share daily sales/activity updates to management.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">8</span> Order Collection</div>
+                            <div class="process-desc">Collect sales orders. Verify completeness prior to processing.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">9</span> Order Invoicing</div>
+                            <div class="process-desc">Generate customer invoices; verify schemes/prices apply properly.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">17</span> System DCR Report</div>
+                            <div class="process-desc">Generate Daily Critical Reports to monitor dashboard updates.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">18</span> DRCP Process</div>
+                            <div class="process-desc">GPS-tracked Route Coverage Planning to map active sales beats.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">19</span> Software Mgmt</div>
+                            <div class="process-desc">Manage software errors, user access, and routine infrastructure patches.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-header pillar-logistics">Logistics</div>
+                    <div class="pillar-content">
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">10</span> Stock Outward</div>
+                            <div class="process-desc">Dispatch stock per invoices. Maintain precise tracking logs.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">11</span> Delivery</div>
+                            <div class="process-desc">Deliver items on time. Confirm cargo matches physical conditions.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">12</span> MDC Management</div>
+                            <div class="process-desc">Monitor market delivery expenses against operational budgets.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">13</span> SRN (Return)</div>
+                            <div class="process-desc">Process Sales Return Notes in alignment with return rules.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">14</span> Damage (Expiry)</div>
+                            <div class="process-desc">Accept items expiring within 3 months per corporate policy.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">15</span> Delivery Proof</div>
+                            <div class="process-desc">Collect client confirmations; archive physical POD signatures.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">25</span> Purchase Shipment</div>
+                            <div class="process-desc">Order from plant per resale needs to avoid stock shortages.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-header pillar-finance">Finance</div>
+                    <div class="pillar-content">
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">16</span> Customer Credit</div>
+                            <div class="process-desc">Monitor customer limits and balances per AR Norms Policies.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-header pillar-hr">HR</div>
+                    <div class="pillar-content">
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">20</span> Attendance</div>
+                            <div class="process-desc">Track field attendance logs and active market hours.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">21</span> Hiring</div>
+                            <div class="process-desc">Manage recruitment and execute candidate onboarding structures.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">22</span> OC Training</div>
+                            <div class="process-desc">Deploy OC program schedules to align functional skill sets.</div>
+                        </div>
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">23</span> Monthly Training</div>
+                            <div class="process-desc">Execute continuous education to scale up team capabilities.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-header pillar-operation">Operation</div>
+                    <div class="pillar-content">
+                        <div class="process-item-card">
+                            <div class="process-title"><span class="process-sno">24</span> Sub D Process</div>
+                            <div class="process-desc">Appoint regional sub-distributors to expand footprint coverage.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Training of Process Matrix -->
+    <div class="modal-overlay" id="trainingModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="trainingModalTitle">Training of Process Matrix</h2>
+                <div class="header-buttons">
+                    <button class="back-btn" id="backToHierarchyBtn" style="display: none;">← Back to Departments</button>
+                    <button class="close-btn" id="closeTrainingModalBtn">Close</button>
+                </div>
+            </div>
+            
+            <div class="training-body">
+                
+                <div id="hierarchyStructure" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                    <div class="hierarchy-root">Training Process</div>
+                    
+                    <div class="hierarchy-branches">
+                        <div class="branch-card-node" onclick="showTrainingDetail('resale')">
+                            <h3 style="color: #58a6ff;">Resale</h3>
+                        </div>
+                        <div class="branch-card-node" onclick="showTrainingDetail('hr')">
+                            <h3 style="color: #db6174;">HR</h3>
+                        </div>
+                        <div class="branch-card-node" onclick="showTrainingDetail('system')">
+                            <h3 style="color: #57ab5a;">System</h3>
+                        </div>
+                        <div class="branch-card-node" onclick="showTrainingDetail('finance')">
+                            <h3 style="color: #8957e5;">Finance</h3>
+                        </div>
+                        <div class="branch-card-node" onclick="showTrainingDetail('logistics')">
+                            <h3 style="color: #d29922;">Logistics</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="training-detail-view" id="detail-resale">
+                    <div class="branch-node">
+                        <div class="branch-header pillar-resale">1-Store identification & Store visit (CCR)</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Store Identification:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Search for new potential stores in the assigned area.</li>
+                                    <li class="slide-bullet-item">Verify store details and business potential.</li>
+                                    <li class="slide-bullet-item">Collect complete store's information as per policy (Geo Tag Location, GST no, Mobile, Address).</li>
+                                    <li class="slide-bullet-item">Share details to system team to add in software.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Store Visit (CCR- Call Compliance Report):</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Visit stores as per assigned route plan.</li>
+                                    <li class="slide-bullet-item">Check stock availability and discuss product requirements.</li>
+                                    <li class="slide-bullet-item">Resolve customer concerns and handle objections.</li>
+                                    <li class="slide-bullet-item">Update visit status in the system as per CCR norms.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-node">
+                        <div class="branch-header pillar-system">2-Order Booking (BCP) & Order transfer to Billing</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Order Booking (BCP-Basic Call Procedure):</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Follow the BCP Step for order taking.</li>
+                                    <li class="slide-bullet-item">Verify stock availability.</li>
+                                    <li class="slide-bullet-item">Enter orders correctly in the Bizom application only.</li>
+                                    <li class="slide-bullet-item">Confirm order details and delivery date before submission.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Order Transfer to Billing:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Verify booked orders.</li>
+                                    <li class="slide-bullet-item">Transfer orders to billing on time to branch server via application.</li>
+                                    <li class="slide-bullet-item">Coordinate with billing and logistics teams if changes required.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-node">
+                        <div class="branch-header pillar-logistics">3-Daily review & Monthly Review</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Daily Review:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Review daily sales and visit target performance.</li>
+                                    <li class="slide-bullet-item">Check all the stores CCR and pending activities.</li>
+                                    <li class="slide-bullet-item">Discuss challenges, identify issues and action plans.</li>
+                                    <li class="slide-bullet-item">Next Day PFD target plan.</li>
+                                    <li class="slide-bullet-item">Fill the review book/Tracker summary as per company policy.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Monthly Review:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Monthly review scorecard format will set as per tracking mechanism.</li>
+                                    <li class="slide-bullet-item">Measure overall focus area and analyze monthly sales performance.</li>
+                                    <li class="slide-bullet-item">Review target achievement and market opportunities.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="training-detail-view" id="detail-hr" style="grid-template-columns: repeat(2, 1fr);">
+                    <div class="branch-node">
+                        <div class="branch-header pillar-hr">1 - HR-Attendance & Hiring</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Hiring:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Ensures the right manpower is available for business growth.</li>
+                                    <li class="slide-bullet-item">Identify manpower requirements.</li>
+                                    <li class="slide-bullet-item">Source and screen candidates and Conduct interviews as per hiring process and selection.</li>
+                                    <li class="slide-bullet-item">Complete joining formalities.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Attendance Management:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Ensures employee presence and discipline.</li>
+                                    <li class="slide-bullet-item">All the HR activities in HR MS software not manual innervations.</li>
+                                    <li class="slide-bullet-item">Monitor daily attendance.</li>
+                                    <li class="slide-bullet-item">Track market working hours and GPS records(CCR).</li>
+                                    <li class="slide-bullet-item">Follow up on missing attendance.</li>
+                                    <li class="slide-bullet-item">Update attendance records accurately.</li>
+                                    <li class="slide-bullet-item">Resolve attendance discrepancies.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="branch-node">
+                        <div class="branch-header pillar-hr" style="background-color: #9e3f50;">2 - HR-OC Training & Monthly Capability Training</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">OC Training:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">OC Training is an initial training program provided to all new employees at the time of joining. The training duration is a minimum of 3 days. During this session, all new joiners are introduced to the company's Rules & Regulations (R&R), policies, processes, organizational structure, code of conduct, and work culture.</li>
+                                    <li class="slide-bullet-item">Plan OC training schedules..</li>
+                                    <li class="slide-bullet-item">Conduct department-wise process training..</li>
+                                    <li class="slide-bullet-item">Track training completion.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Monthly Capability Training:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Identify training needs..</li>
+                                    <li class="slide-bullet-item">Conduct monthly capability sessions..</li>
+                                    <li class="slide-bullet-item">Evaluate employee participation.</li>
+                                    <li class="slide-bullet-item">Monitor improvement actions.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="training-detail-view" id="detail-system">
+                    <div class="branch-node">
+                        <div class="branch-header pillar-system">DRCP Process & Order Collection</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">DRCP Process (Daily coverage route Plan) :</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Prepare and maintain customers master data with Geo Tag Locations.</li>
+                                    <li class="slide-bullet-item">Send Dump data to Stack Box (Outsource company) to make route according to shared norms( Like One area all sellers , distance maintain , no store in beat fixed)</li>
+                                    <li class="slide-bullet-item">Check all the received DRCP routes and get resolve error and send DRCP to sales manager before the uploading in system.</li>
+                                    <li class="slide-bullet-item">Final DRCP Upload in system and rollout to resale team.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Order Collection in system:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Collect market orders from the sellers app.</li>
+                                    <li class="slide-bullet-item">Verify customer and product details.</li>
+                                    <li class="slide-bullet-item">Check for missing or pending orders.</li>
+                                    <li class="slide-bullet-item">Check company policy before the invoice generation (Like- Double bill policy , Contact details</li>
+                                    <li class="slide-bullet-item">Coordinate with the sales team if required and generate Order for stock delivery</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-node" style="grid-column: span 2;">
+                        <div class="branch-header pillar-system">DCR / Reporting / Software</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">System DCR Report & Other Reporting:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Prepare DCR and MIS reports.</li>
+                                    <li class="slide-bullet-item">Validate report accuracy.</li>
+                                    <li class="slide-bullet-item">Share reports within timelines.</li>
+                                    <li class="slide-bullet-item">Follow up on report discrepancies.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Software Management:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Manage software access and user creation..</li>
+                                    <li class="slide-bullet-item">Ensures smooth business operations.</li>
+                                    <li class="slide-bullet-item">Supports all departments through system availability.</li>
+                                    <li class="slide-bullet-item">Coordinate software updates and changes.</li>
+                                    <li class="slide-bullet-item">Improves efficiency and data accuracy.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="training-detail-view" id="detail-finance">
+                    <div class="branch-node">
+                        <div class="branch-header pillar-finance">1-Customer Credit Management</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Customer Credit Management Guidelines:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Credit will be given as per Channel wise AR Norm policy.</li>
+                                    <li class="slide-bullet-item">Monitor customer credit limits and track outstanding payments regularly.</li>
+                                    <li class="slide-bullet-item">Coordinate with the sales team for overdue cases and ensure healthy cash flow.</li>
+                                    <li class="slide-bullet-item">Escalate customers exceeding credit limits / overdue payment for reduced financial risk.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="branch-node">
+                        <div class="branch-header pillar-finance">2-Expense Management</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Expense Management Guidelines:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Review branch expenses regularly.</li>
+                                    <li class="slide-bullet-item">Verify expenses against approved budgets.</li>
+                                    <li class="slide-bullet-item">Ensure proper approvals before payments.</li>
+                                    <li class="slide-bullet-item">Identify unnecessary expenses.</li>
+                                    <li class="slide-bullet-item">Share monthly expense analysis.</li>
+                                    <li class="slide-bullet-item">Helps control company costs.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="branch-node">
+                        <div class="branch-header pillar-finance">3-GST, Accounting & Ledgers</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">GST & Accounting:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Ensures compliance with government regulations.</li>
+                                    <li class="slide-bullet-item">Verify accounting entries and ensure proper GST compliance.</li>
+                                    <li class="slide-bullet-item">Reconcile sales, purchases, and tax records.</li>
+                                    <li class="slide-bullet-item">Maintain accounting documents and support GST filing and audit requirements.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Ledger Management (Key Customers):</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Maintain customer ledgers regularly.</li>
+                                    <li class="slide-bullet-item">Reconcile balances with customers.</li>
+                                    <li class="slide-bullet-item">Monitor debit and credit transactions.</li>
+                                    <li class="slide-bullet-item">Resolve ledger mismatches promptly.</li>
+                                    <li class="slide-bullet-item">Support collection and outstanding tracking to map balances accurately.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="training-detail-view" id="detail-logistics">
+                    <div class="branch-node">
+                        <div class="branch-header pillar-logistics">Stock Inward & Delivery</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Purchase Stock Inward:</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Verify shipment documents.</li>
+                                    <li class="slide-bullet-item">Check product quantity and condition..</li>
+                                    <li class="slide-bullet-item">Report shortages, damages, or mismatches.</li>
+                                    <li class="slide-bullet-item">Send Shipment invoice to system team for GRN (Stock in system)</li>
+                                    <li class="slide-bullet-item">Store products in the designated location.</li>
+                                    <li class="slide-bullet-item">Always verify before accepting stock</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Delivery:-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Deliver products as per invoice.</li>
+                                    <li class="slide-bullet-item">Follow the planned delivery route.</li>
+                                    <li class="slide-bullet-item">Ensure products reach customers safely..</li>
+                                    <li class="slide-bullet-item">Coordinate with customers when any issues.</li>
+                                    <li class="slide-bullet-item">Always verify before delivering stock.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-node">
+                        <div class="branch-header pillar-logistics">MDC & SRN (Return)</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">MDC (Market Delivery Cost):</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Follow approved transportation methods.</li>
+                                    <li class="slide-bullet-item">Record delivery expenses accurately.</li>
+                                    <li class="slide-bullet-item">Monitor route efficiency.</li>
+                                    <li class="slide-bullet-item">Helps control delivery expenses.</li>
+                                    <li class="slide-bullet-item">Submit cost records supporting.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">SRN (Return):-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Ensures proper handling of returned products.</li>
+                                    <li class="slide-bullet-item">Verify returned products and return reasons.</li>
+                                    <li class="slide-bullet-item">Check past purchase from VTC history of returned product</li>
+                                    <li class="slide-bullet-item">Take the approval and enter in system</li>
+                                    <li class="slide-bullet-item">Adjust proper Credit note in system</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="branch-node">
+                        <div class="branch-header pillar-logistics">Damage, Proof & Purchase</div>
+                        <div class="branch-content">
+                            <div>
+                                <div class="slide-heading-red">Damage (Expiry):</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Identify damaged or expired stock. (As per damage expired policy)</li>
+                                    <li class="slide-bullet-item">Segregate affected products.</li>
+                                    <li class="slide-bullet-item">Check past purchase from VTC history of returned product</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Delivery Proof (POD):-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Delivered stock to customer as per the order invoice</li>
+                                    <li class="slide-bullet-item">Collect customer signature/stamp if AR Customers otherwise collect cash.</li>
+                                    <li class="slide-bullet-item">Verify delivery details.</li>
+                                    <li class="slide-bullet-item">Submit POD invoice on time at branch cashier</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="slide-heading-red">Purchase /Shipment Process :-</div>
+                                <ul class="slide-bullet-list">
+                                    <li class="slide-bullet-item">Place the Order to vender according to requirement and trend with time line.</li>
+                                    <li class="slide-bullet-item">Ensures stock availability as per lead day of order shipment.</li>
+                                    <li class="slide-bullet-item">Coordinate purchase shipments to timely received.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Follow Process Portal (Image 1 & Image 2 Data Mixed) -->
+    <div class="modal-overlay" id="followModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>VTC Food Division - Follow the Process Matrix</h2>
+                <button class="close-btn" id="closeFollowModalBtn">Close</button>
+            </div>
+            <div class="follow-modal-body">
+                
+                <!-- TOP SECTION: Departmental Guidelines (Image 1 Data Structured as Clean Block Cards) -->
+                <div class="follow-grid-container">
+                    
+                    <div class="pillar">
+                        <div class="pillar-header pillar-resale">Resale</div>
+                        <div class="pillar-content">
+                            <div class="follow-block-card">
+                                <div class="follow-text">Identify new stores as per guidelines, Visit assigned stores as per route plan, follow BCP steps for order booking, transfer orders on time, and participate in daily and monthly reviews. Ensure all market activities are updated in the system.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pillar">
+                        <div class="pillar-header pillar-system">System</div>
+                        <div class="pillar-content">
+                            <div class="follow-block-card">
+                                <div class="follow-text">DRCP preparation, accurate invoicing, Ensure timely reporting, software management, and issue resolution. Support all departments and close system requirements within defined timelines.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pillar">
+                        <div class="pillar-header pillar-logistics">Logistics</div>
+                        <div class="pillar-content">
+                            <div class="follow-block-card">
+                                <div class="follow-text">Follow Inventory management, ensure timely delivery, maintain POD records, manage returns and damages as per policy, and control delivery costs effectively.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pillar">
+                        <div class="pillar-header pillar-finance">Finance</div>
+                        <div class="pillar-content">
+                            <div class="follow-block-card">
+                                <div class="follow-text">Monitor collections, outstanding payments, customer credit limits, expenses, and operational activities. Ensure timely reconciliation and adherence to financial controls.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pillar">
+                        <div class="pillar-header pillar-hr">HR</div>
+                        <div class="pillar-content">
+                            <div class="follow-block-card">
+                                <div class="follow-text">Follow hiring, onboarding, attendance, and training processes. Ensure employees are trained, qualified, and compliant with company policies and procedures.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pillar">
+                        <div class="pillar-header pillar-operation">Operations</div>
+                        <div class="pillar-content">
+                            <div class="follow-block-card">
+                                <div class="follow-text">Follow approved business expansion and Sub-Distributor (Sub-D) processes. Ensure implementation as per company norms and monitor operational effectiveness.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- BOTTOM SECTION: Common Process Guidelines (Image 2 Data Layout) -->
+                <div class="guidelines-panel">
+                    <div class="guidelines-title">Common Process Guidelines (For All Departments)</div>
+                    <ul class="guidelines-list">
+                        <li class="guidelines-item"><strong>1.</strong> Understand the SOP and department responsibilities.</li>
+                        <li class="guidelines-item"><strong>2.</strong> Follow the approved process without deviation.</li>
+                        <li class="guidelines-item"><strong>3.</strong> Update all activities in the system on time.</li>
+                        <li class="guidelines-item"><strong>4.</strong> Escalate issues through the proper channel.</li>
+                        <li class="guidelines-item"><strong>5.</strong> Maintain required records and documentation.</li>
+                        <li class="guidelines-item"><strong>6.</strong> Participate in daily, weekly, and monthly reviews.</li>
+                        <li class="guidelines-item" style="grid-column: span 2;"><strong>7.</strong> Focus on accuracy, compliance, and continuous improvement.</li>
+                    </ul>
+                    <div class="guidelines-quote">
+                        "Understand the process, follow the SOP, update activities on time, maintain proper records, and escalate issues through the defined channel. Consistent process adherence ensures operational efficiency, compliance, and business growth."
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --- Line Drawing Engine --- */
+        function drawNetworkLines() {
+            const title = document.getElementById('main-title').getBoundingClientRect();
+            const canvas = document.getElementById('svg-canvas').getBoundingClientRect();
+            
+            const startX = title.left + (title.width / 2) - canvas.left;
+            const startY = title.bottom - canvas.top + 5; 
+
+            for (let i = 1; i <= 4; i++) {
+                const card = document.getElementById(`card${i}`).getBoundingClientRect();
+                const line = document.getElementById(`line${i}`);
+                
+                const endX = card.left + (card.width / 2) - canvas.left;
+                const endY = card.top - canvas.top;
+
+                line.setAttribute('x1', startX);
+                line.setAttribute('y1', startY);
+                line.setAttribute('x2', endX);
+                line.setAttribute('y2', endY);
+            }
+        }
+
+        function setupLineInteractions() {
+            for (let i = 1; i <= 4; i++) {
+                const card = document.getElementById(`card${i}`);
+                const line = document.getElementById(`line${i}`);
+
+                const activate = () => line.classList.add('active');
+                const deactivate = () => line.classList.remove('active');
+
+                card.addEventListener('mouseenter', activate);
+                card.addEventListener('mouseleave', deactivate);
+                card.addEventListener('focus', activate);
+                card.addEventListener('blur', deactivate);
+            }
+        }
+
+        /* --- Modals UI Core Logic --- */
+        const processModal = document.getElementById('processModal');
+        const trainingModal = document.getElementById('trainingModal');
+        const followModal = document.getElementById('followModal');
+        
+        const operationCard = document.getElementById('card1');
+        const trainingCard = document.getElementById('card2');
+        const followCard = document.getElementById('card3');
+        
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeTrainingModalBtn = document.getElementById('closeTrainingModalBtn');
+        const closeFollowModalBtn = document.getElementById('closeFollowModalBtn');
+        const backToHierarchyBtn = document.getElementById('backToHierarchyBtn');
+        
+        const hierarchyStructure = document.getElementById('hierarchyStructure');
+        const detailViews = document.querySelectorAll('.training-detail-view');
+
+        // Operations Open/Close
+        operationCard.addEventListener('click', () => processModal.classList.add('active'));
+        closeModalBtn.addEventListener('click', () => processModal.classList.remove('active'));
+
+        // Training Process Open
+        trainingCard.addEventListener('click', () => {
+            resetTrainingModalContext();
+            trainingModal.classList.add('active');
+        });
+        closeTrainingModalBtn.addEventListener('click', () => trainingModal.classList.remove('active'));
+
+        // Follow Process Open/Close
+        followCard.addEventListener('click', () => followModal.classList.add('active'));
+        closeFollowModalBtn.addEventListener('click', () => followModal.classList.remove('active'));
+
+        // Click Back Button inside Training Modal
+        backToHierarchyBtn.addEventListener('click', resetTrainingModalContext);
+
+        // Handles Drill-down inside Matrix Branches
+        function showTrainingDetail(departmentId) {
+            hierarchyStructure.style.display = 'none';
+            detailViews.forEach(view => view.style.display = 'none');
+            
+            const targetedView = document.getElementById(`detail-${departmentId}`);
+            if(targetedView) {
+                targetedView.style.display = 'grid';
+            }
+            
+            document.getElementById('trainingModalTitle').innerText = `Training Process Matrix: ${departmentId.toUpperCase()}`;
+            backToHierarchyBtn.style.display = 'inline-block';
+        }
+
+        // Return Training View back to root level departments list
+        function resetTrainingModalContext() {
+            detailViews.forEach(view => view.style.display = 'none');
+            hierarchyStructure.style.display = 'flex';
+            document.getElementById('trainingModalTitle').innerText = "Training of Process Matrix";
+            backToHierarchyBtn.style.display = 'none';
+        }
+
+        // Escape Key Rule
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                processModal.classList.remove('active');
+                trainingModal.classList.remove('active');
+                followModal.classList.remove('active');
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            drawNetworkLines();
+            setupLineInteractions();
+        });
+        window.addEventListener('resize', drawNetworkLines);
+    </script>
+</body>
+</html>

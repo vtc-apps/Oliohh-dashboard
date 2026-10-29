@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MT Standlone Report</title>
+<style>
+  :root{
+    --ink:#1a1d24;
+    --paper:#f6f4ee;
+    --card:#ffffff;
+    --line:#e0dbcf;
+    --muted:#6b7280;
+    --accent:#2b5f4e;
+    --head:#1f2a37;
+    --zebra:#faf9f5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.5;
+    padding:0 16px 32px;-webkit-font-smoothing:antialiased;
+  }
+  .topbar{max-width:1080px;margin:0 auto;padding:14px 0 12px}
+  .home-btn{
+    display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);
+    font-weight:600;font-size:.9rem;background:var(--card);border:1px solid var(--line);
+    padding:9px 15px 9px 12px;border-radius:9px;transition:border-color .15s,box-shadow .15s;
+  }
+  .home-btn:hover{border-color:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.07)}
+  .home-btn svg{width:17px;height:17px}
+
+  header{max-width:1080px;margin:0 auto 12px}
+  h1{font-size:clamp(1.3rem,3vw,1.7rem);letter-spacing:-.02em;font-weight:700}
+  .sub{color:var(--muted);margin-top:3px;font-size:.82rem}
+
+  .card{
+    max-width:1080px;margin:0 auto;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  }
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  th,td{padding:7px 8px;text-align:right;font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+
+  .grouphead th{
+    background:#f0ede4;color:var(--ink);font-size:.72rem;font-weight:700;
+    text-align:center;padding:6px 8px;border-bottom:1px solid var(--line);
+  }
+  .grouphead th.g-all{color:var(--accent)}
+  .grouphead th:first-child{background:#f0ede4}
+
+  thead tr.cols th{
+    background:var(--head);color:#fff;font-size:.66rem;font-weight:600;
+    letter-spacing:.01em;white-space:normal;line-height:1.25;vertical-align:bottom;
+  }
+  tbody td{border-bottom:1px solid #efece3;font-size:.82rem;white-space:nowrap}
+  tbody td:first-child{font-weight:600}
+  tbody tr:nth-child(even){background:var(--zebra)}
+  tbody tr:hover{background:#f2efe6}
+  .dash{color:#b7b1a2}
+
+  td.trend{text-align:center;font-size:.9rem;font-weight:700}
+  .trend-up{color:#15803d}
+  .trend-down{color:#c02626}
+  tr.total-row td .trend-up{color:#4ade80}
+  tr.total-row td .trend-down{color:#ff6b5e}
+
+  tr.total-row td{
+    background:var(--head);color:#fff;font-weight:700;font-size:.85rem;border-bottom:none;
+  }
+  .footnote{
+    max-width:1080px;margin:10px auto 0;color:var(--muted);font-size:.72rem;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a class="home-btn" href="home.html" aria-label="Back to home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+      Home
+    </a>
+  </div>
+
+  <header>
+    <h1>MT Standlone Report</h1>
+    <p class="sub">Region-wise store coverage and case volume — overall and August to October.</p>
+  </header>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr class="grouphead">
+            <th></th>
+            <th class="g-all" colspan="3">Overall</th>
+            <th colspan="2">August</th>
+            <th colspan="2">September</th>
+            <th colspan="2">October</th>
+            <th></th>
+          </tr>
+          <tr class="cols">
+            <th style="width:11%">Region</th>
+            <th>Total coverage</th>
+            <th>Billed stores</th>
+            <th>Total cases</th>
+            <th>Aug billed stores</th>
+            <th>Aug cases</th>
+            <th>Sep billed stores</th>
+            <th>Sep cases</th>
+            <th>Oct billed stores</th>
+            <th>Oct cases</th>
+            <th style="width:6%">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>NCR</td><td>862</td><td>220</td><td>167.44</td><td>23</td><td>19.22</td><td>18</td><td>6.39</td><td>4</td><td>-0.86</td><td class="trend"><span class="trend-down">&#9660;</span></td></tr>
+          <tr><td>GUJARAT</td><td>136</td><td>24</td><td>7.83</td><td>8</td><td>2.00</td><td>2</td><td>0.33</td><td>0</td><td>0.00</td><td class="trend"><span class="trend-down">&#9660;</span></td></tr>
+          <tr><td>Tricity</td><td>204</td><td>36</td><td>17.72</td><td>5</td><td>1.67</td><td>6</td><td>2.33</td><td>3</td><td>3.08</td><td class="trend"><span class="trend-up">&#9650;</span></td></tr>
+          <tr><td>Banglore</td><td>210</td><td>5</td><td>1.00</td><td>0</td><td>-0.67</td><td>0</td><td>0.00</td><td>0</td><td>0.00</td><td class="trend dash">–</td></tr>
+          <tr><td>W UP</td><td>537</td><td>528</td><td>146.67</td><td>102</td><td>25.33</td><td>154</td><td>37.67</td><td>82</td><td>18.50</td><td class="trend"><span class="trend-down">&#9660;</span></td></tr>
+          <tr><td>Rest of india</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="dash">–</td><td class="trend dash">–</td></tr>
+          <tr class="total-row"><td>Total</td><td>1949</td><td>813</td><td>340.67</td><td>138</td><td>47.56</td><td>180</td><td>46.72</td><td>89</td><td>20.72</td><td class="trend"><span class="trend-down">&#9660;</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footnote">
+    <span></span>
+    <span id="genline"></span>
+  </div>
+
+<script>
+  document.getElementById('genline').textContent =
+    "Generated " + new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+</script>
+</body>
+</html>

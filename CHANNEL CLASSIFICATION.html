@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Classification | Oli Ohh Pasta</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --ios-cyan: #00ffd5;
+            --ios-blue: #007AFF;
+            --bg-dark: #0b0e11;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; }
+
+        body {
+            background: 
+                radial-gradient(at 0% 0%, rgba(15, 32, 39, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(44, 83, 100, 1) 0, transparent 50%),
+                var(--bg-dark);
+            color: white;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* NEW HOME BUTTON STYLE */
+        .home-card {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 12px 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .home-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--ios-cyan);
+            transform: translateY(-2px);
+        }
+
+        .home-card span {
+            color: var(--ios-cyan);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            margin-top: 20px;
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #fff 0%, #00ffd5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* GRID SYSTEM */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--ios-cyan);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            color: var(--ios-cyan);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+            opacity: 0.7;
+        }
+
+        /* MODAL OVERLAY */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #161b22;
+            border: 1px solid var(--glass-border);
+            border-radius: 35px;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            padding: 40px 30px;
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(40px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate-slide {
+            animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--glass);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            z-index: 10;
+        }
+
+        .close-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--ios-cyan);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .nav-btn:hover { background: var(--ios-cyan); color: black; }
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+        .modal-card h2 {
+            color: var(--ios-cyan);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: rgba(0, 255, 213, 0.1);
+            color: var(--ios-cyan);
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--ios-cyan);
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .attr-name {
+            font-weight: 700;
+            color: var(--ios-cyan);
+            width: 35%;
+        }
+
+        .description-box {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            border-left: 3px solid var(--ios-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HOME GLASS CARD -->
+    <a href="home.html" class="home-card">
+        <span>← HOME</span>
+    </a>
+
+    <header>
+        <h1>Channel Classification</h1>
+    </header>
+
+    <div class="grid-container" id="channelGrid"></div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card" id="modalCard">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <button class="nav-btn prev-btn" onclick="navigateChannel(-1)">‹</button>
+            <button class="nav-btn next-btn" onclick="navigateChannel(1)">›</button>
+            
+            <div id="slideWrapper">
+                <h2 id="modalTitle">Channel Name</h2>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const standardScheme = "Buy 6 Pcs (1 Outer) get 10% scheme, Buy 12 Pcs (2 Outer) get 10% scheme + Rs 50, Buy 36 Pcs (6 Outer) get 12% scheme + Rs 250, Buy 72 Pcs (12 Outer) get 15% scheme + Rs 500";
+
+        const channels = [
+            { id: "01", name: "General Trade", desc: "Local kirana stores (S/M/L) catering to daily essentials.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "Countertop & eye-level hotspots.", audit: "Photo audit.", promo: "Promo SKU." },
+            { id: "02", name: "MT Standalone", desc: "Independent self-service supermarkets and convenience stores.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "Gondola ends & countertops.", audit: "Photo verification.", promo: "Unique SKU codes." },
+            { id: "03", name: "Wholesale", desc: "Bulk B2B stockists selling large quantities to other retailers.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "Danglers & branding posters.", audit: "Photo verification.", promo: "Bulk purchase incentives." },
+            { id: "04", name: "MT Regional", desc: "Self-service supermarket chains operating within specific regions.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "End cap & Gondola displays.", audit: "Systematic photo audit.", promo: "Promotion SKU delivery." },
+            { id: "05", name: "MT National", desc: "National hypermarkets (Reliance, D Mart, Vishal Mega Mart).", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: "TBD", visibility: "High-impact Gondola displays.", audit: "Strict audit.", promo: "National SKU bundles." },
+            { id: "06", name: "Ecommerce", desc: "Online platforms (Amazon, Flipkart) selling via digital storefronts.", credit: "30 Days", freq: "NA", margin: "15% (Markup)", scheme: "TBD", visibility: "Digital banners & SEO.", audit: "Portal analytics.", promo: "Online coupons." },
+            { id: "07", name: "Quick Commerce", desc: "10-15 minute delivery apps (Blinkit, Zepto, Instamart).", credit: "30 Days", freq: "NA", margin: "15% (Markup)", scheme: "TBD", visibility: "App 'Hot-picks'.", audit: "Live app monitoring.", promo: "Flash discounts." },
+            { id: "08", name: "Institutional", desc: "Canteens (Police, College) providing directly to members.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: "TBD", visibility: "Canteen countertops.", audit: "Physical inspection.", promo: "Member pricing." },
+            { id: "09", name: "Speciality", desc: "Food stalls, Maggi points, and high-traffic area kiosks.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: "TBD", visibility: "Banners & standees.", audit: "Seller photo audit.", promo: "Meal bundles." }
+        ];
+
+        let currentChannelIndex = 0;
+
+        const gridElement = document.getElementById('channelGrid');
+        channels.forEach((ch, index) => {
+            gridElement.innerHTML += `
+                <div class="glass-card" onclick="openModal(${index})">
+                    <span class="card-tag">Channel ${ch.id}</span>
+                    <h2>${ch.name}</h2>
+                </div>
+            `;
+        });
+
+        function openModal(index) {
+            currentChannelIndex = index;
+            updateModalContent();
+            document.getElementById('modalOverlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function navigateChannel(step) {
+            currentChannelIndex = (currentChannelIndex + step + channels.length) % channels.length;
+            const wrapper = document.getElementById('slideWrapper');
+            wrapper.classList.remove('animate-slide');
+            void wrapper.offsetWidth; 
+            wrapper.classList.add('animate-slide');
+            updateModalContent();
+        }
+
+        function updateModalContent() {
+            const ch = channels[currentChannelIndex];
+            document.getElementById('modalTitle').innerText = ch.name;
+            document.getElementById('modalContent').innerHTML = `
+                <div class="description-box">${ch.desc}</div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Classification Attribute</th><th>Data / Standard</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="attr-name">Credit Norms</td><td>${ch.credit}</td></tr>
+                        <tr><td class="attr-name">Visit Frequency</td><td>${ch.freq}</td></tr>
+                        <tr><td class="attr-name">Brand Margin</td><td>${ch.margin}</td></tr>
+                        <tr><td class="attr-name">Scheme Slab</td><td>${ch.scheme}</td></tr>
+                        <tr><td class="attr-name">Visibility</td><td>${ch.visibility}</td></tr>
+                        <tr><td class="attr-name">Visibility Audit</td><td>${ch.audit}</td></tr>
+                        <tr><td class="attr-name">Consumer Promo</td><td>${ch.promo}</td></tr>
+                    </tbody>
+                </table>
+                <p style="text-align:center; margin-top:20px; opacity:0.4; font-size:0.8rem;">Channel ${currentChannelIndex + 1} of ${channels.length}</p>
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

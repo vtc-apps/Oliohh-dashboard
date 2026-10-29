@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli-Ohh | Secure Access</title>
+        <link rel="manifest" href="/ohlio-dashboard/manifest.json">
+<meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/lock.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ios-cyan: #00ffd5;
+            --ios-blue: #007AFF;
+            --ios-red: #ff3b30;
+            --spring: cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* High-Performance Glass (Optimized for TV) */
+            --glass: rgba(15, 20, 25, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-main: white;
+            --text-sub: rgba(255, 255, 255, 0.4);
+            --overlay: rgba(0, 0, 0, 0.6);
+            --pin-bg: rgba(255, 255, 255, 0.05);
+            --btn-bg: var(--ios-cyan);
+            --btn-text: black;
+            --text-glow: 0 0 15px rgba(0, 255, 213, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
+
+        body {
+            height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Hardware Accelerated Video BG */
+        .video-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
+            object-fit: cover;
+            will-change: transform;
+            transform: translateZ(0); 
+        }
+
+        .theme-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--overlay);
+            z-index: -1;
+        }
+
+        .login-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px; padding: 50px 40px;
+            width: 90%; max-width: 440px; text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            animation: entrance 1s var(--spring) forwards;
+            transform: translateZ(0); 
+        }
+
+        @keyframes entrance { 
+            from { opacity: 0; transform: scale(0.96) translateY(20px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+
+        .hi-akshay {
+            font-size: 3rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 8px;
+            color: var(--text-main);
+            text-shadow: var(--text-glow);
+        }
+
+        .status-label { 
+            font-size: 0.75rem; font-weight: 700; 
+            color: var(--text-sub); 
+            text-transform: uppercase; letter-spacing: 3px; 
+        }
+
+        /* PIN Inputs */
+        .pin-wrapper { display: flex; justify-content: center; gap: 12px; margin: 35px 0; }
+        .pin-box {
+            width: 55px; height: 75px; 
+            background: var(--pin-bg);
+            border: 2px solid transparent; 
+            border-radius: 18px;
+            font-size: 2rem; font-weight: 700; color: var(--text-main); 
+            text-align: center; outline: none; 
+            transition: 0.2s var(--spring);
+        }
+        .pin-box:focus { border-color: var(--ios-cyan); transform: scale(1.05) translateY(-3px); }
+
+        /* Reset View Container */
+        .reset-container { display: none; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .input-field {
+            background: rgba(255, 255, 255, 0.07); border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 15px; color: white; font-size: 1rem; text-align: center; outline: none;
+        }
+
+        .unlock-btn {
+            background: var(--btn-bg); color: var(--btn-text); border: none; 
+            padding: 18px 40px; border-radius: 20px;
+            font-weight: 800; font-size: 0.9rem; 
+            text-transform: uppercase; letter-spacing: 1.5px;
+            cursor: pointer; width: 100%; transition: 0.3s var(--spring);
+        }
+        .unlock-btn:hover { transform: scale(1.02); background: #fff; color: #000; }
+
+        .reset-link {
+            margin-top: 25px; font-size: 0.7rem; color: var(--text-sub); 
+            letter-spacing: 1px; cursor: pointer; transition: 0.3s;
+        }
+        .reset-link:hover { color: var(--ios-cyan); }
+
+        .shake { animation: hapticShake 0.3s ease-in-out; }
+        @keyframes hapticShake { 0%, 100% { transform: translateX(0); } 33% { transform: translateX(-8px); } 66% { transform: translateX(8px); } }
+
+        .success-exit { opacity: 0; transform: scale(0.95) translateY(-20px); transition: 0.5s ease-in forwards; }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop playsinline class="video-bg">
+        <source src="oli ohh draft 1.mp4" type="video/mp4">
+    </video>
+    <div class="theme-overlay"></div>
+
+    <div class="login-card" id="loginCard">
+        <h1 class="hi-akshay" id="titleText">Hi Akshay</h1>
+        <p class="status-label" id="statusText">Authentication Required</p>
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView">
+            <div class="pin-wrapper">
+                <input type="password" inputmode="numeric" maxlength="1" class="pin-box" autofocus>
+                <input type="password" inputmode="numeric" maxlength="1" class="pin-box">
+                <input type="password" inputmode="numeric" maxlength="1" class="pin-box">
+                <input type="password" inputmode="numeric" maxlength="1" class="pin-box">
+            </div>
+            <button class="unlock-btn" onclick="validateAccess()">Unlock Dashboard</button>
+            <p class="reset-link" onclick="toggleView('reset')">SETTINGS / RESET PIN</p>
+        </div>
+
+        <!-- RESET VIEW -->
+        <div id="resetView" class="reset-container">
+            <input type="password" id="oldPin" class="input-field" placeholder="Verify Current User PIN">
+            <input type="password" id="newPin" class="input-field" placeholder="New 4-Digit PIN">
+            <input type="password" id="confirmPin" class="input-field" placeholder="Confirm New PIN">
+            <button class="unlock-btn" style="margin-top: 10px;" onclick="handlePinUpdate()">Update PIN</button>
+            <p class="reset-link" onclick="toggleView('login')">BACK TO LOGIN</p>
+        </div>
+    </div>
+
+    <script>
+        const boxes = document.querySelectorAll('.pin-box');
+        const card = document.getElementById('loginCard');
+        
+        // --- PIN CONFIGURATION ---
+        const MASTER_PIN = "1090"; // Your Static Backend PIN
+        let akshayPin = localStorage.getItem('akshay_pin') || "1234"; // Akshay's Changeable PIN
+
+        // Auto-focus and Auto-Login
+        boxes.forEach((box, i) => {
+            box.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && i < boxes.length - 1) boxes[i + 1].focus();
+                
+                const typed = Array.from(boxes).map(b => b.value).join('');
+                if (typed.length === 4) setTimeout(validateAccess, 250);
+            });
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i - 1].focus();
+            });
+        });
+
+        function validateAccess() {
+            const enteredPin = Array.from(boxes).map(b => b.value).join('');
+            
+            if (enteredPin === MASTER_PIN || enteredPin === akshayPin) {
+                card.classList.add('success-exit');
+                setTimeout(() => { window.location.href = 'home.html'; }, 500);
+            } else {
+                card.classList.add('shake');
+                boxes.forEach(b => { b.value = ''; b.style.borderColor = 'var(--ios-red)'; });
+                setTimeout(() => { 
+                    card.classList.remove('shake'); 
+                    boxes.forEach(b => b.style.borderColor = ''); 
+                    boxes[0].focus(); 
+                }, 300);
+            }
+        }
+
+        function toggleView(view) {
+            const loginView = document.getElementById('loginView');
+            const resetView = document.getElementById('resetView');
+            const title = document.getElementById('titleText');
+
+            if (view === 'reset') {
+                loginView.style.display = 'none';
+                resetView.style.display = 'flex';
+                title.innerText = "Settings";
+            } else {
+                loginView.style.display = 'block';
+                resetView.style.display = 'none';
+                title.innerText = "Hi Akshay";
+                boxes[0].focus();
+            }
+        }
+
+        function handlePinUpdate() {
+            const oldVal = document.getElementById('oldPin').value;
+            const newVal = document.getElementById('newPin').value;
+            const confVal = document.getElementById('confirmPin').value;
+
+            // Must know current Akshay PIN or Master PIN to change Akshay's PIN
+            if (oldVal !== akshayPin && oldVal !== MASTER_PIN) {
+                alert("Incorrect Authorization.");
+                return;
+            }
+            if (newVal.length !== 4 || isNaN(newVal)) {
+                alert("Enter 4 digits.");
+                return;
+            }
+            if (newVal !== confVal) {
+                alert("Mismatch.");
+                return;
+            }
+
+            localStorage.setItem('akshay_pin', newVal);
+            akshayPin = newVal;
+            alert("PIN Updated!");
+            location.reload(); 
+        }
+        
+    </script>
+    <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/ohlio-dashboard/service-worker.js")
+    .then(() => console.log("Service Worker Registered"))
+    .catch(err => console.log(err));
+}
+</script>
+</body>
+</html>

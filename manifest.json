@@ -1,0 +1,22 @@
+{
+  "name": "Ohlio Dashboard",
+  "short_name": "Ohlio",
+  "start_url": "/ohlio-dashboard/index.html",
+  "scope": "/ohlio-dashboard/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/ohlio-dashboard/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/ohlio-dashboard/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

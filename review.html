@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli Ohh | Review Intelligence System</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --ios-cyan: #00ffd5;
+            --ios-yellow: #f7b731;
+            --ios-star: #ffcc00;
+            --bg-dark: #0b0e11;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
+        
+        body {            
+            background: radial-gradient(at 0% 0%, rgba(15, 32, 39, 1) 0, transparent 50%), 
+                        #0b0e11; 
+            color: white; 
+            min-height: 100vh; 
+            padding-top: 40px;
+        }
+
+        /* --- FLOATING TOGGLE ICON --- */
+        .admin-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 45px;
+            height: 45px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 3000;
+            transition: 0.3s;
+        }
+        .admin-toggle:hover { border-color: var(--ios-cyan); box-shadow: 0 0 15px rgba(0,255,213,0.3); }
+        .admin-toggle svg { width: 20px; height: 20px; fill: var(--ios-cyan); }
+
+        /* --- MINIMIZABLE TOOL --- */
+        #admin-panel {
+            display: none; /* Hidden by default */
+            background: rgba(10, 15, 20, 0.95);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px;
+            margin: 0 40px 40px 40px;
+            backdrop-filter: blur(30px);
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .close-tool {
+            float: right;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+        }
+
+        /* --- TOOL INPUTS --- */
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.5; }
+        
+        input, select, textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+            outline: none;
+        }
+        input:focus { border-color: var(--ios-cyan); }
+
+        .add-btn {
+            background: var(--ios-cyan);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            text-transform: uppercase;
+        }
+
+        /* --- CONTENT --- */
+        .main-content { padding: 0 40px 40px 40px; max-width: 1200px; margin: 0 auto; }
+        .back-btn { display: inline-flex; align-items: center; margin-bottom: 30px; color: var(--ios-cyan); text-decoration: none; font-size: 0.7rem; font-weight: 700; border: 1px solid var(--ios-cyan); padding: 8px 16px; border-radius: 100px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
+        .stat-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 25px; border-radius: 25px; text-align: center; }
+        .stat-val { font-size: 2rem; font-weight: 900; color: var(--ios-yellow); }
+
+        .review-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 30px; border-radius: 30px; margin-bottom: 20px; position: relative; }
+        .platform-tag { position: absolute; top: 30px; right: 30px; font-size: 0.6rem; padding: 4px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
+        .tag-meesho { color: #ff00ad; border: 1px solid #ff00ad; }
+        .tag-amazon { color: #ff9900; border: 1px solid #ff9900; }
+        .tag-flipkart { color: #2874f0; border: 1px solid #2874f0; }
+        .stars { color: var(--ios-star); margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-toggle" onclick="toggleAdminPanel()" title="Add Review">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    </div>
+
+    <div id="admin-panel">
+        <span class="close-tool" onclick="toggleAdminPanel()">ESC ✕</span>
+        <h3 style="font-size: 0.8rem; letter-spacing: 2px; color: var(--ios-cyan);">INGESTION CONSOLE</h3>
+        
+        <div class="tool-grid">
+            <div class="input-group"><label>Source</label>
+                <select id="input-platform">
+                    <option value="meesho">Meesho</option>
+                    <option value="amazon">Amazon Now</option>
+                    <option value="flipkart">FK Minutes</option>
+                </select>
+            </div>
+            <div class="input-group"><label>Customer Name</label><input type="text" id="input-name" placeholder="Name"></div>
+            <div class="input-group"><label>Stars</label>
+                <select id="input-rating">
+                    <option value="5">5 Stars</option><option value="4">4 Stars</option>
+                </select>
+            </div>
+        </div>
+        <div class="input-group" style="margin-top: 15px;">
+            <label>Review Body</label>
+            <textarea id="input-text" rows="2" placeholder="Paste feedback text here..."></textarea>
+        </div>
+        <button class="add-btn" onclick="addNewReview()">Sync New Review</button>
+    </div>
+
+    <div class="main-content">
+        <a href="javascript:history.back()" class="back-btn">← Command Center</a>
+
+        <header style="margin-bottom: 40px;">
+            <h1 style="font-size: 2.5rem; letter-spacing: -2px;">Review Intelligence</h1>
+            <p style="opacity: 0.4; font-size: 0.75rem; letter-spacing: 3px;">OLI OHH PASTA • ACTIVE FEED</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card"><span class="stat-val" id="avg-rating">0.0</span><div style="font-size: 0.6rem; opacity: 0.5;">AVG RATING</div></div>
+            <div class="stat-card"><span class="stat-val" id="feed-count">0</span><div style="font-size: 0.6rem; opacity: 0.5;">LIVE FEEDS</div></div>
+            <div class="stat-card"><span class="stat-val" style="color:var(--ios-cyan)">100%</span><div style="font-size: 0.6rem; opacity: 0.5;">SYNC RATE</div></div>
+        </div>
+
+        <div id="review-container"></div>
+    </div>
+
+    <script>
+        let reviews = JSON.parse(localStorage.getItem('oliOhhReviews')) || [
+            { name: "Demo User", platform: "meesho", rating: 5, text: "Click the + icon in the top right to add your first real review!", date: "System" }
+        ];
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function render() {
+            const container = document.getElementById('review-container');
+            container.innerHTML = '';
+            const sorted = [...reviews].reverse();
+
+            sorted.forEach(rev => {
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.innerHTML = `
+                    <span class="platform-tag tag-${rev.platform}">${rev.platform}</span>
+                    <div style="font-weight: 800; color: var(--ios-cyan); margin-bottom: 8px;">${rev.name}</div>
+                    <div class="stars">${"★".repeat(rev.rating)}</div>
+                    <p style="font-size: 0.95rem; line-height: 1.6; opacity: 0.8;">"${rev.text}"</p>
+                    <div style="font-size: 0.65rem; opacity: 0.3; margin-top: 20px;">VERIFIED MEESHO FEED • ${rev.date}</div>
+                `;
+                container.appendChild(card);
+            });
+
+            const avg = reviews.length ? (reviews.reduce((a, b) => a + parseInt(b.rating), 0) / reviews.length).toFixed(1) : "0.0";
+            document.getElementById('avg-rating').innerText = avg;
+            document.getElementById('feed-count').innerText = reviews.length;
+        }
+
+        function addNewReview() {
+            const platform = document.getElementById('input-platform').value;
+            const name = document.getElementById('input-name').value;
+            const rating = document.getElementById('input-rating').value;
+            const text = document.getElementById('input-text').value;
+
+            if(!name || !text) return alert("Fill all fields");
+
+            reviews.push({ name, platform, rating: parseInt(rating), text, date: "Just Now" });
+            localStorage.setItem('oliOhhReviews', JSON.stringify(reviews));
+            
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-text').value = '';
+            
+            toggleAdminPanel();
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>

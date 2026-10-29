@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPS | Mission Command v2.14</title>
+    <style>
+        :root {
+            --neon-cyan: #00ffd5;
+            --neon-purple: #af52de;
+            --neon-orange: #ff9500;
+            --neon-red: #ff3b30;
+            --panel-solid: #0c1114;
+            --card-solid: #13191d;
+            --border-crisp: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Global Performance Overrides */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: system-ui, -apple-system, sans-serif;
+            text-rendering: optimizeSpeed;
+            -webkit-font-smoothing: none;
+        }
+        
+        body {
+            background: #05080a; 
+            color: #ffffff; 
+            height: 100vh; 
+            display: flex; 
+            overflow: hidden;
+        }
+
+        /* --- HARDWARE-ACCELERATED LAYER NAVIGATION --- */
+        nav {
+            width: 80px; 
+            background: #000000; 
+            border-right: 1px solid var(--border-crisp); 
+            display: flex;
+            flex-direction: column; 
+            padding: 30px 16px; 
+            z-index: 1000;
+            will-change: width;
+            transition: width 0.15s ease-out;
+        }
+        nav:hover { width: 220px; }
+        
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            width: 100%; 
+            text-decoration: none; 
+            color: #888888; 
+            margin-bottom: 12px; 
+            border-radius: 8px; 
+        }
+        .nav-item:hover { color: var(--neon-cyan); background: rgba(255,255,255,0.04); }
+        .nav-icon { width: 48px; min-width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .nav-text { display: none; margin-left: 10px; font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+        nav:hover .nav-text { display: block; }
+
+        .nav-separator { width: 100%; height: 1px; background: var(--border-crisp); margin: 15px 0; }
+        .logout { margin-top: auto; color: var(--neon-red) !important; border-top: 1px solid var(--border-crisp); padding-top: 20px; }
+
+        /* --- NO-LAYOUT-REFLOW STRUCTURE --- */
+        .workspace {
+            flex: 1;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        main { 
+            flex: 62; 
+            padding: 35px 40px; 
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; 
+            position: relative; 
+        }
+
+        .right-panel {
+            flex: 38;
+            background: var(--panel-solid);
+            border-left: 1px solid var(--border-crisp);
+            padding: 35px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-title-container { display: flex; align-items: center; width: 100%; }
+        .h-text h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; }
+        .h-text p { font-size: 0.75rem; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 1px; }
+
+        .imac-link {
+            background: rgba(0, 255, 213, 0.08);
+            border: 1px solid var(--neon-cyan);
+            padding: 6px 16px;
+            border-radius: 8px;
+            color: var(--neon-cyan);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-decoration: none;
+            margin-left: auto;
+        }
+
+        /* --- ZERO-RENDER DEADLINE POPUP --- */
+        #deadlinePop {
+            display: none; 
+            position: absolute; 
+            top: 95px; 
+            right: 45px; 
+            width: 280px;
+            background: #151b20; 
+            border: 1px solid var(--neon-red); 
+            border-radius: 12px; 
+            padding: 20px;
+            z-index: 2000; 
+        }
+        .pop-close { cursor: pointer; float: right; color: var(--neon-red); font-size: 1.2rem; }
+        .pop-item { font-size: 0.75rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: #ffbaba; }
+
+        /* --- EXPANDED HIGH-CAPACITY MODAL POPUP FOR MOM DATA --- */
+        #notesPop {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 45%;
+            transform: translate(-50%, -50%);
+            width: 88%;
+            max-width: 820px;
+            height: 82vh;
+            background: #0b0f12;
+            border: 1px solid var(--neon-purple);
+            border-radius: 16px;
+            padding: 30px;
+            z-index: 3000;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+            flex-direction: column;
+        }
+        .notes-pop-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+        .notes-pop-close { 
+            cursor: pointer; 
+            color: #ffffff; 
+            background: rgba(175, 82, 222, 0.15);
+            border: 1px solid var(--neon-purple);
+            font-size: 0.8rem; 
+            font-weight: 900; 
+            padding: 5px 14px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        .notes-pop-close:hover {
+            background: var(--neon-purple);
+            color: #000;
+        }
+        
+        .notes-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .notes-card-block {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+        .notes-body ul { margin-left: 18px; }
+        .notes-body li { font-size: 0.85rem; color: #cccccc; margin-bottom: 8px; line-height: 1.4; }
+
+        /* --- ZERO-JS ACCORDIONS (PURE CSS CLICK Toggle) --- */
+        .accordion-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+        .acc-card { background: var(--card-solid); border: 1px solid var(--border-crisp); border-radius: 12px; }
+        
+        .acc-trigger { display: none; }
+        .acc-header { padding: 14px 22px; display: flex; align-items: center; cursor: pointer; }
+        .acc-header h2 { font-size: 0.85rem; text-transform: uppercase; color: #aaaaaa; margin-left: 15px; flex-grow: 1; }
+        
+        .acc-content { 
+            display: none;
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px;
+            padding: 0 22px 16px 22px;
+        }
+        .acc-trigger:checked ~ .acc-content { display: grid; }
+        .acc-trigger:checked ~ .acc-header h2 { color: var(--neon-cyan); }
+
+        .link-item { 
+            display: flex; 
+            background: rgba(255,255,255,0.02); 
+            padding: 10px 16px; 
+            border-radius: 8px;
+            text-decoration: none; 
+            color: white; 
+            border: 1px solid var(--border-crisp);
+        }
+        .link-item:hover { border-color: var(--neon-cyan); }
+        .link-item b { font-size: 0.8rem; display: block; }
+        .link-item i { font-size: 0.65rem; color: #666666; font-style: normal; display: block; }
+
+        /* --- STATIC METRICS (COMPACT MTD / YTD DUAL BARS) --- */
+        .metrics-head-row { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; }
+        .metrics-heading { font-size: 0.8rem; text-transform: uppercase; color: var(--neon-cyan); font-weight: 800; }
+        .metrics-caption { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.5px; color: #666666; font-weight: 700; white-space: nowrap; }
+        .charts-container { display: flex; flex-direction: column; gap: 8px; }
+        
+        .mini-chart-card {
+            background: var(--card-solid);
+            border: 1px solid var(--border-crisp);
+            border-radius: 10px;
+            padding: 9px 12px 8px 12px;
+        }
+        .chart-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .chart-title-lbl { font-size: 0.66rem; font-weight: 800; color: #888888; text-transform: uppercase; }
+        .chart-unit-lbl { font-size: 0.56rem; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .kpi-grid { display: grid; grid-template-columns: 30px 1fr auto 46px; column-gap: 10px; row-gap: 6px; align-items: center; }
+        .kpi-grid.no-pct { grid-template-columns: 30px 1fr auto; }
+        .kpi-period { font-size: 0.58rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: #777777; }
+        .kpi-track { width: 100%; height: 5px; background: rgba(255, 255, 255, 0.05); border-radius: 3px; overflow: hidden; }
+        .kpi-fill { height: 100%; border-radius: 3px; }
+        .kpi-track.no-target { background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.10) 0 4px, transparent 4px 8px); }
+        .kpi-nums { font-size: 0.66rem; color: #666666; white-space: nowrap; text-align: right; }
+        .kpi-nums b { font-weight: 700; color: #ffffff; }
+        .kpi-pct { font-size: 0.8rem; font-weight: 900; text-align: right; }
+        .kpi-pct.na { color: #444444; }
+
+        /* --- NOTIFICATIONS --- */
+        .notification-section { display: flex; flex-direction: column; gap: 12px; }
+        .notification-heading { font-size: 0.8rem; text-transform: uppercase; color: var(--neon-orange); font-weight: 800; }
+        .notification-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; }
+        
+        .glass-card-link {
+            background: var(--card-solid);
+            border: 1px solid var(--border-crisp);
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: white;
+            min-height: 52px;
+            cursor: pointer;
+        }
+        .full-width-card { grid-column: span 2; }
+        
+        .glass-card-link.plan-primary-highlight { border-color: var(--neon-orange); background: rgba(255, 149, 0, 0.05); }
+        .glass-card-link.plan-primary-highlight h4 { color: #fff; font-weight: 900; }
+        .glass-card-link.notes-purple-highlight { border-color: var(--neon-purple); background: rgba(175, 82, 222, 0.04); }
+        .glass-card-link.notes-purple-highlight h4 { color: var(--neon-purple); font-weight: 800; }
+        .glass-card-link.business-cyan-highlight { border-color: var(--neon-cyan); background: rgba(0, 255, 213, 0.05); }
+        .glass-card-link.business-cyan-highlight h4 { color: var(--neon-cyan); font-weight: 800; }
+        .glass-card-link.business-cyan-highlight:hover { background: rgba(0, 255, 213, 0.09); }
+        .glass-card-link.milestone-accent:hover { border-color: var(--neon-cyan); }
+        .glass-card-link.deadline-accent:hover { border-color: var(--neon-red); }
+        .glass-card-link.notes-purple-highlight:hover { background: rgba(175, 82, 222, 0.08); }
+
+        .glass-card-text { min-width: 0; flex-grow: 1; }
+        .glass-card-text h4 { font-size: 0.78rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .glass-card-text p { font-size: 0.63rem; color: #666666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .glass-card-arrow { font-size: 0.75rem; color: #444444; }
+
+        /* --- ROADMAP --- */
+        .roadmap-section { display: flex; flex-direction: column; gap: 10px; }
+        .roadmap-heading { font-size: 0.8rem; text-transform: uppercase; color: var(--neon-purple); font-weight: 800; }
+        .activation-stack { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; }
+        
+        .road-card {
+            background: var(--card-solid);
+            border: 1px solid var(--border-crisp);
+            padding: 10px 12px; 
+            border-radius: 12px; 
+            text-decoration: none;
+            display: flex; 
+            flex-direction: column;
+            gap: 6px;
+        }
+        .road-card:hover { border-color: var(--neon-purple); }
+        .road-card-header { display: flex; justify-content: space-between; align-items: center; }
+        .road-icon { font-size: 1.1rem; }
+        
+        .status-badge { font-size: 0.55rem; text-transform: uppercase; font-weight: 900; padding: 2px 7px; border-radius: 4px; }
+        .active-sector { background: rgba(0, 255, 213, 0.1); color: var(--neon-cyan); }
+        .upcoming-deployment { background: rgba(255, 149, 0, 0.1); color: var(--neon-orange); }
+        .strategy-phase { background: rgba(175, 82, 222, 0.1); color: var(--neon-purple); }
+
+        .road-details { display: flex; flex-direction: column; min-width: 0; }
+        .road-name { font-size: 0.8rem; font-weight: 800; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .road-zone { font-size: 0.6rem; color: #555555; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="about oli-ohh.html" class="nav-item"><span class="nav-icon">📦</span><span class="nav-text">Product Info</span></a>
+        <!-- HIDDEN: <a href="meeting-highlights.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">Meetings</span></a> -->
+        <a href="suggestion.html" class="nav-item"><span class="nav-icon">💡</span><span class="nav-text">Suggestions</span></a>
+        <div class="nav-separator"></div>
+        <!-- HIDDEN: <a href="CHANNEL CLASSIFICATION.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Channel Desc</span></a> -->
+        <a href="margin-structure.html" class="nav-item"><span class="nav-icon">💵</span><span class="nav-text">Margins</span></a>
+        <!-- Quick Commerce & E-Commerce moved into the Channel wise Data accordion -->
+        <a href="index.html" class="nav-item logout"><span class="nav-icon">🚪</span><span class="nav-text">Logout System</span></a>
+    </nav>
+
+    <div class="workspace">
+        <main>
+            <div id="deadlinePop">
+                <span class="pop-close" onclick="toggleDeadlines()">&times;</span>
+                <h3 style="font-size: 0.7rem; color: var(--neon-red); margin-bottom: 10px;">⚠️ PENDING MISSION TASKS</h3>
+                <div class="pop-item">Hire Sampling Staff - 30 Apr</div>
+                <div class="pop-item">E-Rickshaw Sampling - 15 May</div>
+                <div class="pop-item">Staff Recruitment (+2) - 15 May</div>
+                <div class="pop-item">Store Merchandisers - 20 May</div>
+                <div class="pop-item">Hire Remaining Staff - 25 May</div>
+            </div>
+
+            <!-- BIG HIGH-CAPACITY MODAL POPUP FOR ALL MoM DATA -->
+            <div id="notesPop">
+                <div class="notes-pop-top-bar">
+                    <div>
+                        <h2 style="font-size: 1.3rem; color: #fff; font-weight: 900;">Meeting Minutes (MoM)</h2>
+                    </div>
+                    <span class="notes-pop-close" onclick="toggleNotes()">Close Terminal ×</span>
+                </div>
+                
+                <div class="notes-scroll-container notes-body">
+                    <div class="notes-card-block">
+                        <ul>
+                           <li>A chart of DRCP billed.</li>
+                           <li>Top sheet for regional accounts, like a report card.</li>
+                           <li>Current status: targets and achievements.</li>
+                           <li>Snapshot of MT regional accounts across 4 states.</li>
+                           <li>Focus on MTR and standalone stores.</li>
+                           <li>Targets in MT regional accounts and achievements.</li>
+                           <li>MT standalone data well-described.</li>
+                           <li>Increase coverage.</li>
+                           <li>IRHPL closing by Deepak Sir.</li>
+                           <li>Plan for tri-city regional targets.</li>
+                           <li>Sampling in Bangalore (Danglers).</li>
+                           <li>Tejasvi's sampling plan: bell and window sampling.</li>
+                           <li>Add performance card for marketing and quick com.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <header>
+                <div class="header-title-container">
+                    <div class="h-text">
+                        <p>System Active / v2.14</p>
+                        <h1>Command Center</h1>
+                    </div>
+                    <a href="imac.html" class="imac-link">iMC →</a>
+                </div>
+            </header>
+
+            <div class="accordion-group">
+                <div class="acc-card">
+                    <input type="checkbox" id="acc1" class="acc-trigger" checked />
+                    <label for="acc1" class="acc-header">
+                        <span style="font-size: 1.5rem;">🌍</span>
+                        <h2>Channel wise Data</h2>
+                        <span>▾</span>
+                    </label>
+                    <div class="acc-content">
+                        <a href="MTregional.html" class="link-item"><div><b>MT Regional</b><i>D2R North India</i></div></a>
+                        <a href="mtstandlone.html" class="link-item"><div><b>MT Standalone</b><i>Standalone stores</i></div></a>
+                        <a href="subdnorm.html" class="link-item"><div><b>Sub-D Norms</b><i>Distribution guidelines</i></div></a>
+                        <a href="quick-commerce.html" class="link-item"><div><b>Quick Commerce</b><i>Blinkit &amp; Zepto</i></div></a>
+                        <a href="ecommerce.html" class="link-item"><div><b>E-Commerce</b><i>Online channel</i></div></a>
+                    </div>
+                </div>
+
+                <div class="acc-card">
+                    <input type="checkbox" id="acc2" class="acc-trigger" />
+                    <label for="acc2" class="acc-header">
+                        <span style="font-size: 1.5rem;">📣</span>
+                        <h2>Marketing Hub</h2>
+                        <span>▾</span>
+                    </label>
+                    <div class="acc-content">
+                        <a href="instagram.html" class="link-item"><div><b>Instagram</b><i>Presence & Ads</i></div></a>
+                        <a href="shopify.html" class="link-item"><div><b>Shopify</b><i>Sales Tracking</i></div></a>
+                        <a href="performance.html" class="link-item"><div><b>Q-Com Performance</b><i>Quick commerce metrics</i></div></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roadmap-section">
+                <span class="roadmap-heading">Activation Road Map</span>
+                <div class="activation-stack">
+                    <a href="NCR.html" class="road-card">
+                        <div class="road-card-header"><span class="road-icon">🏛️</span><span class="status-badge active-sector">Active</span></div>
+                        <div class="road-details"><span class="road-name">DELHI NCR</span><span class="road-zone">Core Hub</span></div>
+                    </a>
+                    <a href="CHD.html" class="road-card">
+                        <div class="road-card-header"><span class="road-icon">🏙️</span><span class="status-badge upcoming-deployment">Upcoming</span></div>
+                        <div class="road-details"><span class="road-name">CHANDIGARH</span><span class="road-zone">Pipeline</span></div>
+                    </a>
+                    <a href="GUJURAT.html" class="road-card">
+                        <div class="road-card-header"><span class="road-icon">🏯</span><span class="status-badge strategy-phase">Strategy</span></div>
+                        <div class="road-details"><span class="road-name">GUJARAT</span><span class="road-zone">Assessment</span></div>
+                    </a>
+                    <a href="westup.html" class="road-card">
+                        <div class="road-card-header"><span class="road-icon">🏰</span><span class="status-badge upcoming-deployment">Upcoming</span></div>
+                        <div class="road-details"><span class="road-name">W-UP</span><span class="road-zone">Pipeline</span></div>
+                    </a>
+                </div>
+            </div>
+
+            <footer style="margin-top:auto; padding-top:20px; font-size:0.6rem; opacity:0.3; text-align:center;">
+                ROUNAK SINGH | VTC TRADEWINGS &copy; 2026
+            </footer>
+        </main>
+
+        <aside class="right-panel">
+            <div class="chart-section" style="display:flex;flex-direction:column;gap:12px;">
+                <div class="metrics-head-row">
+                    <span class="metrics-heading">MTD / YTD Execution Status</span>
+                    <span class="metrics-caption">MTD Oct'26 · YTD AMJJASO'26 · Achieved / Target</span>
+                </div>
+                <div class="charts-container">
+                    <!-- VALUE CARD (source: DCR MTD Summary — Value Lakhs; bar scaled to ₹26 L) — updated 27 Oct'26 -->
+                    <div class="mini-chart-card">
+                        <div class="chart-top-bar">
+                            <span class="chart-title-lbl">Value</span>
+                            <span class="chart-unit-lbl">₹ Lakhs</span>
+                        </div>
+                        <div class="kpi-grid no-pct">
+                            <span class="kpi-period">MTD</span>
+                            <div class="kpi-track"><div class="kpi-fill" style="width:6.3%; background:var(--neon-cyan);"></div></div>
+                            <span class="kpi-nums"><b>1.63</b></span>
+
+                            <span class="kpi-period">YTD</span>
+                            <div class="kpi-track"><div class="kpi-fill" style="width:99.1%; background:var(--neon-cyan);"></div></div>
+                            <span class="kpi-nums"><b>25.76</b></span>
+                        </div>
+                    </div>
+
+                    <!-- COVERAGE CARD (source: DCR MTD Summary — Billed Stores; bar scaled to 600) — updated 27 Oct'26 -->
+                    <div class="mini-chart-card">
+                        <div class="chart-top-bar">
+                            <span class="chart-title-lbl">Coverage</span>
+                            <span class="chart-unit-lbl">Billed Stores</span>
+                        </div>
+                        <div class="kpi-grid no-pct">
+                            <span class="kpi-period">MTD</span>
+                            <div class="kpi-track"><div class="kpi-fill" style="width:30.2%; background:var(--neon-orange);"></div></div>
+                            <span class="kpi-nums"><b>181</b></span>
+
+                            <span class="kpi-period">YTD</span>
+                            <div class="kpi-track"><div class="kpi-fill" style="width:100%; background:var(--neon-orange);"></div></div>
+                            <span class="kpi-nums"><b>947</b></span>
+                        </div>
+                    </div>
+
+                    <!-- VOLUME CARD (source: DCR MTD Summary — Pcs) — updated 27 Oct'26 -->
+                    <div class="mini-chart-card">
+                        <div class="chart-top-bar">
+                            <span class="chart-title-lbl">Volume</span>
+                            <span class="chart-unit-lbl">Pcs</span>
+                        </div>
+                        <div class="kpi-grid">
+                            <span class="kpi-period">MTD</span>
+                            <div class="kpi-track"><div class="kpi-fill" style="width:5.2%; background:var(--neon-purple);"></div></div>
+                            <span class="kpi-nums"><b>2,581</b> / 50,000</span>
+                            <span class="kpi-pct" style="color:var(--neon-purple);">5.2%</span>
+
+                            <span class="kpi-period">YTD</span>
+                            <div class="kpi-track"><div class="kpi-fill" style="width:78.4%; background:var(--neon-purple);"></div></div>
+                            <span class="kpi-nums"><b>39,178</b> / 50,000</span>
+                            <span class="kpi-pct" style="color:var(--neon-purple);">78.4%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notification-section">
+                <span class="notification-heading">Notifications & Controls</span>
+                <div class="notification-grid">
+                    <a href="3monthsdata.html" class="glass-card-link full-width-card plan-primary-highlight">
+                        <div class="glass-card-text">
+                            <h4>Upcoming Quarterly Plans</h4>
+                            <p>View strategy targets for next 3 months</p>
+                        </div>
+                        <span class="glass-card-arrow">→</span>
+                    </a>
+
+                    <!-- BUSINESS UPDATE CARD -->
+                    <a href="bussiness.html" class="glass-card-link full-width-card business-cyan-highlight">
+                        <div class="glass-card-text">
+                            <h4>Business Update</h4>
+                            <p>Latest business performance & status</p>
+                        </div>
+                        <span class="glass-card-arrow">→</span>
+                    </a>
+                    
+                    <!-- MEETING NOTES INTERACTIVE TRIGGER -->
+                    <div class="glass-card-link full-width-card notes-purple-highlight" onclick="toggleNotes()">
+                        <div class="glass-card-text">
+                            <h4>Last Meeting Notes</h4>
+                            <p>MoM Status Log</p>
+                        </div>
+                        <span class="glass-card-arrow">📝</span>
+                    </div>
+
+                    <a href="TASKS.html" class="glass-card-link milestone-accent">
+                        <div class="glass-card-text">
+                            <h4>Milestone 100cr</h4>
+                            <p>Target overview</p>
+                        </div>
+                        <span class="glass-card-arrow">→</span>
+                    </a>
+                    <div class="glass-card-link deadline-accent" onclick="toggleDeadlines()">
+                        <div class="glass-card-text">
+                            <h4>Deadlines Panel</h4>
+                            <p>Toggle targets</p>
+                        </div>
+                        <span class="glass-card-arrow">⚡</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        function toggleDeadlines() {
+            var pop = document.getElementById('deadlinePop');
+            pop.style.display = (pop.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function toggleNotes() {
+            var notesPop = document.getElementById('notesPop');
+            notesPop.style.display = (notesPop.style.display === 'flex') ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>

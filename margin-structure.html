@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli-Ohh | Scheme Summary (Dark)</title>
+    <style>
+        /* SF Pro Style Typography */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #000000;
+            color: #ffffff;
+            padding: 30px 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* NAVIGATION & HOME BUTTON */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        .home-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 0.5px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* HEADER */
+        .header {
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #8e8e93;
+            font-size: 17px;
+            margin-top: 4px;
+        }
+
+        /* GROUPED TABLE CONTAINER */
+        .table-wrapper {
+            background: #1c1c1e;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 0.5px solid #38383a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #2c2c2e;
+            text-align: left;
+            padding: 14px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 0.5px solid #38383a;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 18px 20px;
+            border-bottom: 0.5px solid #38383a;
+            vertical-align: middle;
+            font-size: 15px;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        th.num, td.num { text-align: right; }
+
+        .scheme-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0a84ff;
+        }
+
+        .landing {
+            font-weight: 600;
+            color: #30d158;
+        }
+
+        .margin {
+            font-weight: 700;
+            color: #ffd60a;
+        }
+
+        .muted {
+            color: #8e8e93;
+            font-size: 13px;
+        }
+
+        .date {
+            font-size: 13px;
+            color: #f2f2f7;
+            white-space: nowrap;
+        }
+
+        /* Rows shown in bold in the source sheet */
+        tr.emphasis td { font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="nav-bar">
+        <a href="home.html" class="home-btn">← Home</a>
+        <div style="font-size: 12px; color: #8e8e93; font-weight: 600;">TRANS_ID: AMJ2026</div>
+    </div>
+
+    <div class="header">
+        <h1>Oli-Ohh Pasta</h1>
+        <p>Scheme Summary</p>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Scheme Name</th>
+                    <th class="num">MRP</th>
+                    <th class="num">Net Landing</th>
+                    <th class="num">Margin %</th>
+                    <th class="num">Min Bill Qty</th>
+                    <th>Method of Disbursement</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="emphasis">
+                    <td class="scheme-name">Buy 6 Pcs get 5% scheme</td>
+                    <td class="num">89</td>
+                    <td class="num landing">73.52</td>
+                    <td class="num margin">21.1%</td>
+                    <td class="num">6</td>
+                    <td>On Bill</td>
+                    <td class="date">07-May-25</td>
+                    <td class="date">21-Dec-26</td>
+                </tr>
+                <tr class="emphasis">
+                    <td class="scheme-name">Buy 12 Pcs get 10% scheme</td>
+                    <td class="num">89</td>
+                    <td class="num landing">69.65</td>
+                    <td class="num margin">27.8%</td>
+                    <td class="num">12</td>
+                    <td>On Bill</td>
+                    <td class="date">05-May-25</td>
+                    <td class="date">21-Dec-26</td>
+                </tr>
+                <tr>
+                    <td class="scheme-name">Buy 24 Pcs get 12% scheme</td>
+                    <td class="num">89</td>
+                    <td class="num landing">68.12</td>
+                    <td class="num margin">30.7%</td>
+                    <td class="num">24</td>
+                    <td>On Bill</td>
+                    <td class="date">01-Jun-25</td>
+                    <td class="date">21-Dec-26</td>
+                </tr>
+                <tr>
+                    <td class="scheme-name">Buy 36 Pcs get 15% scheme</td>
+                    <td class="num">89</td>
+                    <td class="num landing">65.78</td>
+                    <td class="num margin">35.3%</td>
+                    <td class="num">36</td>
+                    <td>On Bill</td>
+                    <td class="date">01-Jun-25</td>
+                    <td class="date">21-Dec-26</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

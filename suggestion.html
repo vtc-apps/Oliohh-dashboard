@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Suggestion Center</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',Arial;
+}
+
+body{
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.container{
+width:450px;
+background:rgba(255,255,255,0.08);
+padding:40px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+text-align:center;
+}
+
+h1{
+margin-bottom:25px;
+}
+
+input, textarea{
+
+width:100%;
+padding:12px;
+margin-top:12px;
+border-radius:8px;
+border:none;
+font-size:15px;
+}
+
+textarea{
+height:140px;
+resize:none;
+}
+
+button{
+
+margin-top:20px;
+padding:12px 25px;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.submit-btn{
+
+background:linear-gradient(135deg,#00c6ff,#0072ff);
+color:white;
+}
+
+.submit-btn:hover{
+
+transform:scale(1.05);
+box-shadow:0 0 15px #00ffd5;
+}
+
+.back-btn{
+
+margin-top:15px;
+background:transparent;
+border:2px solid #00ffd5;
+color:#00ffd5;
+}
+
+.back-btn:hover{
+
+background:#00ffd5;
+color:black;
+}
+
+#msg{
+
+margin-top:15px;
+font-size:14px;
+color:#00ffd5;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div class="container">
+
+<h1>💡 Submit Your Suggestion</h1>
+
+<input type="text" id="name" placeholder="Your Name">
+
+<textarea id="suggestion" placeholder="Write your suggestion for the Oli-Ohh Launch..."></textarea>
+
+<button class="submit-btn" onclick="submitSuggestion()">Submit Suggestion</button>
+
+<br>
+
+<a href="javascript:history.back()" class="back-btn">← Back to Dashboard</a>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+
+function submitSuggestion(){
+
+const name=document.getElementById("name").value;
+const suggestion=document.getElementById("suggestion").value;
+
+if(name=="" || suggestion==""){
+document.getElementById("msg").innerHTML="⚠ Please fill all fields";
+return;
+}
+
+fetch(https://script.google.com/macros/library/d/1EP4e0k6YVseXh1wEBq6qmsn8WBKvoGnu7JkGKbLKxfGOQEn4qtvatmOf/2,{
+
+method:"POST",
+
+body:JSON.stringify({
+name:name,
+suggestion:suggestion
+})
+
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("msg").innerHTML="✅ Suggestion submitted successfully!";
+
+document.getElementById("name").value="";
+document.getElementById("suggestion").value="";
+
+})
+
+.catch(()=>{
+
+document.getElementById("msg").innerHTML="⚠ Error submitting suggestion";
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

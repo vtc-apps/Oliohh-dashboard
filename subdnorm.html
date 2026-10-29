@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub-D Norms | Neural Interface</title>
+    <style>
+        :root {
+            --bg-color: #050508;
+            --accent-cyan: #00f2ff;
+            --accent-blue: #007aff;
+            --glass-bg: rgba(20, 20, 25, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-dim: #a1a1a6;
+            --text-bright: #ffffff;
+            --thread-glow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(0, 122, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 242, 255, 0.1) 0%, transparent 40%);
+            color: var(--text-bright);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- BACK TO HOME BUTTON STYLES --- */
+        .back-home-btn {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 10px 18px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text-bright);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .back-home-btn:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: var(--thread-glow);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .back-home-btn svg {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            stroke: var(--accent-cyan);
+        }
+        /* ---------------------------------- */
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            animation: initReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes initReveal {
+            from { opacity: 0; transform: scale(0.95) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .status-header {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin: 0;
+            background: linear-gradient(180deg, #fff 0%, #666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .category-group {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .thread-node {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: var(--thread-glow);
+            margin-right: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .category-label {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .items-container {
+            margin-left: 5px;
+            padding-left: 30px;
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .main-thread {
+            position: absolute;
+            left: 0;
+            top: -15px;
+            width: 2px;
+            height: calc(100% + 15px);
+            background: linear-gradient(to bottom, var(--accent-cyan), transparent);
+            box-shadow: var(--thread-glow);
+            opacity: 0.3;
+        }
+
+        .item-row {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .item-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent-cyan);
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .branch-thread {
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--accent-cyan);
+            opacity: 0;
+            transition: all 0.4s ease;
+            box-shadow: var(--thread-glow);
+        }
+
+        .item-row:hover .branch-thread {
+            opacity: 0.6;
+            width: 30px;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+
+        .item-details {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        .main-thread::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to bottom, transparent, var(--accent-cyan), transparent);
+            animation: flowDown 3s infinite linear;
+        }
+
+        @keyframes flowDown {
+            0% { top: -50px; opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .item-row::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 15px; height: 15px;
+            border-right: 2px solid var(--accent-cyan);
+            border-top: 2px solid var(--accent-cyan);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .item-row:hover::before { opacity: 1; }
+
+        @media (max-width: 900px) {
+            .items-container {
+                grid-template-columns: 1fr;
+            }
+            .back-home-btn {
+                top: 15px;
+                left: 15px;
+                padding: 8px 14px;
+            }
+        }
+
+
+        /* --- TABLE VIEW --- */
+        .table-wrap {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+        .norms-table { width: 100%; border-collapse: collapse; min-width: 560px; }
+        .norms-table th {
+            text-align: left; padding: 16px 22px;
+            font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--accent-cyan); border-bottom: 1px solid rgba(0, 242, 255, 0.35);
+            background: rgba(0, 242, 255, 0.04);
+        }
+        .norms-table td { padding: 14px 22px; border-bottom: 1px solid var(--glass-border); vertical-align: top; }
+        .norms-table tr.grp-start td { border-top: 1px solid rgba(0, 242, 255, 0.25); }
+        .norms-table tbody tr:last-child td { border-bottom: none; }
+        .norms-table td.cat {
+            font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: var(--accent-cyan);
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.3); white-space: nowrap;
+            border-right: 1px solid var(--glass-border); width: 220px;
+        }
+        .norms-table .dot {
+            display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent-cyan); box-shadow: var(--thread-glow);
+            margin-right: 10px; vertical-align: middle;
+        }
+        .norms-table td.norm { font-size: 15px; font-weight: 600; color: var(--text-bright); width: 260px; }
+        .norms-table td.det { font-size: 14px; font-weight: 300; color: var(--text-dim); line-height: 1.5; }
+        .norms-table tbody tr:hover td:not(.cat) { background: rgba(255, 255, 255, 0.04); }
+        @media (max-width: 650px) {
+            .norms-table td, .norms-table th { padding: 12px 14px; }
+            .norms-table td.cat { white-space: normal; width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="home.html" class="back-home-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Home
+    </a>
+
+    <div class="main-container">
+        <header>
+            <div class="status-header">Neural Protocol 0.8.4 - Active Connection</div>
+            <h1>SUB-D NORMS</h1>
+        </header>
+
+        <div class="table-wrap">
+            <table class="norms-table">
+                <thead><tr><th>Category</th><th>Norm</th><th>Details</th></tr></thead>
+                <tbody>
+                <tr><td class="cat" rowspan="2"><span class="dot"></span>LOCATION & COVERAGE</td><td class="norm">Service Gap Area Identified</td><td class="det">Location where direct service is not available</td></tr>
+                <tr><td class="norm">High Potential Market</td><td class="det">City identified for expansion and growth</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="6"><span class="dot"></span>ELIGIBILITY CRITERIA</td><td class="norm">Experience</td><td class="det">2–3 years in FMCG/Food distribution</td></tr>
+                <tr><td class="norm">Order Booking Capability</td><td class="det">Able to handle order booking & delivery</td></tr>
+                <tr><td class="norm">Existing Brand Handling</td><td class="det">Currently managing FMCG/Food brands</td></tr>
+                <tr><td class="norm">Market Reputation</td><td class="det">Good reputation in the market</td></tr>
+                <tr><td class="norm">Retailer Network</td><td class="det">Strong retailer connectivity</td></tr>
+                <tr><td class="norm">Basic Knowledge</td><td class="det">Sales, billing & collection understanding</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="2"><span class="dot"></span>DISTRIBUTOR MARGIN</td><td class="norm">Margin Agreement</td><td class="det">8% margin on primary retailing Includes delivery & operational cost</td></tr>
+                <tr><td class="norm">Profitability Check</td><td class="det">Ensures sustainable operations</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="1"><span class="dot"></span>CREDIT NORMS</td><td class="norm">Credit Period</td><td class="det">12 days credit allowed</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="2"><span class="dot"></span>CLAIMS</td><td class="norm">Brand Margin</td><td class="det">Fixed brand margin</td></tr>
+                <tr><td class="norm">Scheme Claims</td><td class="det">Additional schemes reimbursed by VTC</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="2"><span class="dot"></span>IT INFRASTRUCTURE</td><td class="norm">Software Support</td><td class="det">Provided by VTC at no cost</td></tr>
+                <tr><td class="norm">Hardware/Internet Setup</td><td class="det">Managed by Sub-Distributor</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="3"><span class="dot"></span>FRONT SALES TEAM</td><td class="norm">Cost Inclusion</td><td class="det">Included in margin structure</td></tr>
+                <tr><td class="norm">VTC Salesperson Impact</td><td class="det">Margin differs if VTC provides seller</td></tr>
+                <tr><td class="norm">Distributor Sales Team</td><td class="det">Separate margin if managed by distributor</td></tr>
+                <tr class="grp-start"><td class="cat" rowspan="2"><span class="dot"></span>SALE RETURN</td><td class="norm">Fresh Return</td><td class="det">Approval Required</td></tr>
+                <tr><td class="norm">Damage/Expired</td><td class="det">Approval Required</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

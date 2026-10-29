@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli Ohh - Shopify Performance Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --card-bg: #1a1d24;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-green: #10b981;
+            --blue-traffic: #00aeef;
+            --purple-traffic: #6f42c1;
+            --organic-traffic: #4285f4;
+            --border-color: #2e3440;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation / Home Button */
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .home-btn:hover {
+            background-color: #242933;
+            border-color: var(--text-muted);
+        }
+
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Main Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sub-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .metric-large {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-sub {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .metric-sub strong {
+            color: var(--text-main);
+        }
+
+        /* Custom Visuals from image_c77c45.png */
+        .trend-badge {
+            color: var(--accent-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        /* Traffic Breakdown Visualization Bar */
+        .traffic-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .traffic-stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .stat-val {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+
+        .traffic-bar {
+            display: flex;
+            height: 45px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .bar-segment {
+            height: 100%;
+        }
+
+        /* Channel specific icon styling replacements */
+        .channel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .sub-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sub-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Top-Most Navigation Link -->
+    <div class="nav-container">
+        <a href="home.html" class="home-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+        </a>
+        <div class="dashboard-title">Oli Ohh Analytics</div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">May 1–Jul 24, 2026</div>
+    </div>
+
+    <!-- Main Section (Top Two Row Cards) -->
+    <div class="dashboard-grid">
+        
+        <!-- Sales Attributed to Marketing -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title" style="border-bottom: 1px dashed var(--text-muted);">Sales attributed to marketing</span>
+                <span class="card-title" style="font-size: 1.1rem; line-height: 1;">—</span>
+            </div>
+            <div class="metric-large">₹11,821.10</div>
+            <div class="metric-sub">of <strong>₹13,392.20</strong> total store sales</div>
+            
+            <!-- Simulated Mini Area Chart Line -->
+            <div style="margin-top: 2rem; height: 40px; border-bottom: 2px dotted #2e3440; position: relative; overflow: hidden;">
+                <svg width="100%" height="100%" viewBox="0 0 100 20" preserveAspectRatio="none" style="position: absolute; bottom: 0;">
+                    <path d="M0,18 L6.6,18 L7.4,16.4 L8.3,18 L20.9,18 L21.7,16.4 L22.6,18 L50.3,18" fill="none" stroke="#00aeef" stroke-width="1.2"></path>
+                    <path d="M50.3,18 L51.1,4.4 L52.3,0.9 L53.4,7.7 L54.6,5.8 L56,3.9 L57.4,4.3 L58.9,9.2 L60.3,12.5 L61.4,16.1 L62.6,14.6 L63.7,18 L65.1,16.1 L66.6,17.7 L67.7,16.4 L68.9,18 L70.3,16.6 L71.4,17.5 L72.6,7 L73.4,5.1 L74.3,15.3 L75.4,17.2 L76.6,18 L78,16 L79.1,9.7 L80.3,15.9 L81.4,17.8 L82.9,16.3 L84.3,18 L85.7,17.1 L87.1,18 L88.6,16.3 L90,17.5 L91.4,15.6 L92.9,16.8 L94.6,17.6 L96.6,16.8 L98.6,17.5 L100,17.1" fill="none" stroke="#00aeef" stroke-width="1.2" stroke-linejoin="round"></path>
+                    <line x1="50.3" y1="18" x2="100" y2="18" stroke="#00aeef" stroke-width="1" stroke-dasharray="1 1.5"></line>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Sessions by Traffic Type -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title" style="border-bottom: 1px dashed var(--text-muted);">Sessions by traffic type</span>
+            </div>
+            
+            <div class="traffic-stats">
+                <div class="traffic-stat-item">
+                    <span class="stat-label"><span class="dot" style="background-color: var(--blue-traffic);"></span>Unknown</span>
+                    <span class="stat-val">2,544</span>
+                </div>
+                <div class="traffic-stat-item">
+                    <span class="stat-label"><span class="dot" style="background-color: var(--purple-traffic);"></span>Direct</span>
+                    <span class="stat-val">1,126</span>
+                </div>
+                <div class="traffic-stat-item">
+                    <span class="stat-label"><span class="dot" style="background-color: var(--organic-traffic);"></span>Organic</span>
+                    <span class="stat-val">659</span>
+                </div>
+            </div>
+
+            <!-- Visualization Bar Segment percentages calibrated to data -->
+            <div class="traffic-bar">
+                <div class="bar-segment" style="width: 58.8%; background-color: var(--blue-traffic); margin-right: 2px;" title="Unknown — 2,544 sessions"></div>
+                <div class="bar-segment" style="width: 26.0%; background-color: var(--purple-traffic); margin-right: 2px;" title="Direct — 1,126 sessions"></div>
+                <div class="bar-segment" style="width: 15.2%; background-color: var(--organic-traffic);" title="Organic — 659 sessions"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Sub-Section (Four Channel Breakdown Grid) -->
+    <div class="sub-grid">
+        
+        <!-- Instagram Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="channel-header">
+                    <span style="color: #e1306c; font-weight: bold; font-size: 1.1rem;">📸</span>
+                    <span class="card-title" style="border-bottom: 1px dashed var(--text-muted);">Instagram</span>
+                </div>
+                <span class="metric-sub">2,531 sessions</span>
+            </div>
+            <div class="metric-large" style="margin-top: 1.5rem; font-size: 1.6rem;">₹9,134.40</div>
+            <div class="metric-sub">Order value for <strong>36 orders</strong> at <strong>1.42%</strong> conversion rate.</div>
+        </div>
+
+        <!-- Google Search Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="channel-header">
+                    <span style="color: #4285f4; font-weight: bold; font-size: 1.1rem;">G</span>
+                    <span class="card-title" style="border-bottom: 1px dashed var(--text-muted);">Google Search</span>
+                </div>
+                <span class="metric-sub">629 sessions</span>
+            </div>
+            <div class="metric-large" style="margin-top: 1.5rem; font-size: 1.6rem;">₹2,548.70</div>
+            <div class="metric-sub">Order value for <strong>11 orders</strong> at <strong>1.74%</strong> conversion rate.</div>
+        </div>
+
+        <!-- Direct Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="channel-header">
+                    <span style="color: var(--purple-traffic); font-weight: bold; font-size: 1.1rem;">🏠</span>
+                    <span class="card-title" style="border-bottom: 1px dashed var(--text-muted);">Direct</span>
+                </div>
+                <span class="metric-sub">1,126 sessions</span>
+            </div>
+            <div class="metric-large" style="margin-top: 1.5rem; font-size: 1.6rem;">₹1,374.00</div>
+            <div class="metric-sub">Order value for <strong>7 orders</strong> at <strong>0.62%</strong> conversion rate.</div>
+        </div>
+
+        <!-- Shopify Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="channel-header">
+                    <span style="color: #5e8e3e; font-weight: bold; font-size: 1.1rem;">🛍️</span>
+                    <span class="card-title" style="border-bottom: 1px dashed var(--text-muted);">Shopify</span>
+                </div>
+                <span class="metric-sub">2 sessions</span>
+            </div>
+            <div class="metric-large" style="margin-top: 1.5rem; font-size: 1.6rem;">₹138.00</div>
+            <div class="metric-sub">Order value for <strong>1 order</strong> at <strong>50%</strong> conversion rate.</div>
+        </div>
+
+    </div>
+
+</body>
+</html>

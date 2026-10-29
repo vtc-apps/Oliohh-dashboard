@@ -1,0 +1,187 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quick Com Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#f4f5f7;
+    --panel:#ffffff;
+    --ink:#14161a;
+    --muted:#6b7280;
+    --line:#e4e7ec;
+    --line-strong:#cfd4dc;
+    --band:#ffe600;
+    --band-ink:#1c1c00;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:40px; min-height:100vh;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(244,245,247,.85);
+    backdrop-filter:saturate(1.2) blur(8px);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:16px; padding:12px 20px;
+  }
+  .home-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--panel); color:var(--ink);
+    border:1px solid var(--line-strong);
+    border-radius:10px; padding:8px 14px;
+    font-size:14px; font-weight:600; cursor:pointer;
+    box-shadow:var(--shadow); text-decoration:none;
+    transition:transform .08s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .home-btn:hover{border-color:#b7bec9; transform:translateY(-1px)}
+  .home-btn:active{transform:translateY(0)}
+  .home-btn svg{width:18px;height:18px}
+  .brand{margin-left:auto; margin-right:auto; display:flex; flex-direction:column; align-items:center; line-height:1.1}
+  .brand h1{margin:0; font-size:18px; font-weight:700; letter-spacing:-.01em}
+  .brand span{font-size:11px; color:var(--muted); font-weight:500; letter-spacing:.06em; text-transform:uppercase}
+  .spacer{width:98px; flex:0 0 auto}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:1140px; margin:0 auto; padding:26px 20px 20px}
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    overflow:hidden; margin-bottom:26px;
+  }
+  .band{
+    background:var(--band); color:var(--band-ink);
+    text-align:center; font-weight:700; letter-spacing:.02em;
+    padding:11px 16px; font-size:15px; border-bottom:1px solid rgba(0,0,0,.08);
+  }
+  .table-scroll{overflow-x:auto}
+  table{border-collapse:collapse; width:100%; min-width:940px}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:center; font-size:13.5px; white-space:nowrap}
+  thead th{background:#f1f3f6; font-weight:600; color:#374151; position:sticky; top:0}
+  tbody td{color:var(--ink); min-width:64px; height:40px}
+  tbody tr:hover td{background:#fafbfc}
+  td:first-child, th:first-child{position:sticky; left:0; z-index:1; background:#f1f3f6}
+  tbody td:first-child{background:#fff}
+  tbody tr:hover td:first-child{background:#fafbfc}
+
+  /* total row */
+  tbody tr.total td{background:#fffbea; font-weight:700}
+  tbody tr.total td:first-child{background:#fffbea}
+  tbody tr.total:hover td, tbody tr.total:hover td:first-child{background:#fff7d6}
+
+  .sub{display:block; font-size:11.5px; color:var(--muted); font-weight:500; margin-top:2px}
+  .flag{color:#e2662a; font-weight:600}
+  .note{max-width:1140px; margin:-14px auto 26px; padding:0 20px; font-size:12px; color:var(--muted); line-height:1.6}
+
+  @media (max-width:560px){
+    .brand h1{font-size:15px}
+    .spacer{display:none}
+  }
+</style>
+
+<div class="topbar">
+  <a class="home-btn" href="home.html" title="Home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg>
+    Home
+  </a>
+  <div class="brand">
+    <h1>Quick Com Performance</h1>
+    
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<div class="wrap">
+  <section class="card">
+    <div class="band">Promo Performance</div>
+    <div class="table-scroll">
+      <table><thead><tr id="promoHead"></tr></thead><tbody id="promoBody"></tbody></table>
+    </div>
+  </section>
+</div>
+<div class="note">
+  <span class="flag">*</span> Order count not available in Blinkit export — proxied by units sold (assumption).
+  &nbsp;&nbsp;<span class="flag">†</span> Aug 2026 is a partial month (01–07 Aug).
+</div>
+<div class="wrap" style="padding-top:0">
+  <section class="card">
+    <div class="band">Add Performance</div>
+    <div class="table-scroll">
+      <table><thead><tr id="adHead"></tr></thead><tbody id="adBody"></tbody></table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     EDIT YOUR DATA HERE
+     ------------------------------------------------------------
+     Column order (keep it the same as the headers):
+       Month, Period, Promo/Add name, Plateform, Budget used,
+       No of orders, No of pieces, Spent per Order, Sales %
+
+     Each row is one array. Add, remove, or change rows freely.
+     Leave a value as "" for a blank cell.
+     Add "TOTAL" as a 10th item in a row to style it as a total row.
+     ============================================================ */
+
+  const PROMO_COLS = ["Month","Period","Promo name","Plateform","Budget used","No of orders","No of pieces","Spent per Order","Sales %"];
+  const AD_COLS    = ["Month","Period","Add name","Plateform","Budget used","No of orders","No of pieces","Spent per Order","Sales %"];
+
+  const PROMO_DATA = [
+    ["Jul 2026", "01–31 Jul 2026", "Oli Ohh Pasta – Product Listing Ads|4 campaigns · Delhi NCR", "Blinkit", "₹1,51,143", "333*", "333", "₹454", "15.2%"],
+    ["Aug 2026", "01–07 Aug 2026†", "Oli Ohh Pasta – Product Listing Ads|4 campaigns · Delhi NCR", "Blinkit", "₹56,346", "90*", "90", "₹626", "11.0%"],
+    ["Total", "01 Jul – 07 Aug 2026", "All Blinkit PLA campaigns", "Blinkit", "₹2,07,489", "423*", "423", "₹491", "14.1%", "TOTAL"],
+  ];
+
+  const AD_DATA = [
+    // ["Jul-26", "1 july-7 july", "Banner", "", "20000", "200", "210", "100", "1%"],
+    ["", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+  ];
+
+  /* ===================== end of data ========================= */
+
+  function renderHead(rowEl, cols){
+    rowEl.innerHTML = cols.map(c => "<th>"+esc(c)+"</th>").join("");
+  }
+  function cell(v){
+    v = esc(v!=null ? v : "");
+    var parts = v.split("|");
+    if(parts.length > 1){
+      return parts[0] + "<span class='sub'>" + parts.slice(1).join(" ") + "</span>";
+    }
+    return v.replace(/\*/g,"<span class='flag'>*</span>").replace(/†/g,"<span class='flag'>†</span>");
+  }
+  function renderBody(bodyEl, rows, cols){
+    bodyEl.innerHTML = rows.map(r => {
+      var isTotal = r[cols.length] === "TOTAL";
+      return "<tr"+(isTotal?" class='total'":"")+">" +
+        cols.map((_,i)=>"<td>"+cell(r[i])+"</td>").join("") + "</tr>";
+    }).join("");
+  }
+  function esc(v){
+    return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  renderHead(document.getElementById("promoHead"), PROMO_COLS);
+  renderBody(document.getElementById("promoBody"), PROMO_DATA, PROMO_COLS);
+  renderHead(document.getElementById("adHead"), AD_COLS);
+  renderBody(document.getElementById("adBody"), AD_DATA, AD_COLS);
+})();
+</script>

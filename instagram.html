@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Dashboard - Instagram Insights</title>
+    <style>
+        :root {
+            --bg: #05070f;
+            --card: #0f1524;
+            --pink: #ec4899;
+            --purple: #8b5cf6;
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --green: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 2vh 2vw;
+            overflow: hidden; /* Prevents scrolling on TV screens */
+        }
+
+        /* Compact Header with Home Button Alignment */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 8vh;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1vh;
+            margin-bottom: 2vh;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Modern TV-Friendly Home Button */
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--pink);
+            transform: scale(1.02);
+        }
+
+        .home-btn svg {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(to right, var(--pink), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            color: white;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* 4-Column Hero Stats */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5vw;
+            height: 18vh;
+            margin-bottom: 2vh;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.5vh;
+        }
+
+        .stat-card .number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .stat-card .subtext {
+            font-size: 0.95rem;
+            color: var(--pink);
+            margin-top: 0.5vh;
+        }
+
+        .stat-card .green-tag { color: var(--green); }
+
+        /* Main Workspace Split */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr 1fr;
+            gap: 1.5vw;
+            height: 66vh;
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 2.5vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            border-left: 4px solid var(--pink);
+            padding-left: 10px;
+            margin-bottom: 2vh;
+            height: 3vh;
+        }
+
+        /* Progress Elements */
+        .progress-box { display: flex; flex-direction: column; gap: 2.5vh; justify-content: center; height: 100%; }
+        .progress-group { margin-bottom: 0.5vh; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 1.1rem; margin-bottom: 6px; }
+        .progress-bar { background: rgba(255, 255, 255, 0.08); border-radius: 6px; height: 14px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(to right, var(--pink), var(--purple)); height: 100%; }
+
+        /* Row Lists */
+        .metric-list { list-style: none; display: flex; flex-direction: column; justify-content: space-around; height: 100%; }
+        .metric-list li { display: flex; justify-content: space-between; align-items: center; padding: 1.5vh 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 1.2rem; }
+        .metric-list li:last-child { border-bottom: none; }
+        .metric-list li span:first-child { color: var(--muted); }
+        .metric-list li span:last-child { font-weight: bold; font-size: 1.4rem; }
+
+        /* Asset Grid */
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 1.5vh;
+            height: 100%;
+        }
+
+        .asset-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 1.5vh;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .asset-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .asset-info h4 { font-size: 1.1rem; color: var(--muted); font-weight: 500; margin-bottom: 2px;}
+        .asset-info p { font-size: 1.5rem; font-weight: bold; color: var(--pink); }
+    </style>
+</head>
+<body>
+
+    <!-- Header Block -->
+    <header>
+        <div class="header-left">
+            <!-- Home Link with SVG icon -->
+            <a href="home.html" class="home-btn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                Home
+            </a>
+            <h1>Channel Performance Command Center</h1>
+        </div>
+        <div class="streak-badge">🔥 8-WEEK CONSISTENCY STREAK</div>
+    </header>
+
+    <!-- Top Grid -->
+    <section class="hero-grid">
+        <div class="stat-card">
+            <h3>Total Content Views</h3>
+            <p class="number">297,648</p>
+            <p class="subtext">96.9% Discovery Rate</p>
+        </div>
+        <div class="stat-card">
+            <h3>Accounts Reached</h3>
+            <p class="number">232,345</p>
+            <p class="subtext">Unique 30-Day Footprint</p>
+        </div>
+        <div class="stat-card">
+            <h3>Net Followers Gained</h3>
+            <p class="number">+1,181</p>
+            <p class="subtext green-tag">Audience Scaling Up</p>
+        </div>
+        <div class="stat-card">
+            <h3>Weekly View Momentum</h3>
+            <p class="number">8.3K</p>
+            <p class="subtext green-tag">+46% Growth This Week</p>
+        </div>
+    </section>
+
+    <!-- Mid Grid Space Split -->
+    <main class="main-layout">
+        
+        <!-- Column 1: Platform Reach Volume -->
+        <div class="panel">
+            <h2>Reach Volume</h2>
+            <div class="progress-box">
+                <div class="progress-group">
+                    <div class="progress-label"><span>Reels</span><span>14K views</span></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+                </div>
+                <div class="progress-group">
+                    <div class="progress-label"><span>Posts</span><span>12K views</span></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 85%;"></div></div>
+                </div>
+                <div class="progress-group">
+                    <div class="progress-label"><span>Stories</span><span>3.1K views</span></div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 22%;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Content High Performers -->
+        <div class="panel">
+            <h2>Top Performing Assets</h2>
+            <div class="asset-grid">
+                <div class="asset-item">
+                    <div class="asset-icon">🍝</div>
+                    <div class="asset-info"><h4>Penne Pasta</h4><p>186K Views</p></div>
+                </div>
+                <div class="asset-item">
+                    <div class="asset-icon">🍽️</div>
+                    <div class="asset-info"><h4>Oli Ohh Plating</h4><p>27K Views</p></div>
+                </div>
+                <div class="asset-item">
+                    <div class="asset-icon">📦</div>
+                    <div class="asset-info"><h4>Zoli Oli Unbox</h4><p>4.4K Views</p></div>
+                </div>
+                <div class="asset-item">
+                    <div class="asset-icon">💻</div>
+                    <div class="asset-info"><h4>Behind-The-Scenes</h4><p>4.3K Views</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: Traffic & Conversion Elements -->
+        <div class="panel">
+            <h2>Conversions</h2>
+            <ul class="metric-list">
+                <li><span>Profile Visits</span><span>5,582</span></li>
+                <li><span>Bio Link Taps</span><span>166</span></li>
+                <li><span>Content Actions</span><span>3,962</span></li>
+                <li><span>Discovery Boost</span><span style="color: var(--green);">+51%</span></li>
+            </ul>
+        </div>
+
+    </main>
+
+</body>
+</html>

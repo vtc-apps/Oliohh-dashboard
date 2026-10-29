@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli-Ohh | Q-Com Sync Center</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --ios-cyan: #00ffd5;
+            --ios-purple: #af52de;
+            --ios-yellow: #ffd60a;
+            --bg-dark: #05070a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Pro Display', -apple-system, sans-serif; }
+        body { background-color: var(--bg-dark); color: white; min-height: 100vh; padding: 100px 20px 40px 20px; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        
+        .home-card-container { position: fixed; top: 25px; left: 25px; z-index: 1000; }
+        .home-card {
+            display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff;
+            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--glass-border);
+            border-radius: 100px; padding: 12px 20px; font-size: 14px; font-weight: 500; transition: 0.4s;
+        }
+        .home-card svg { width: 16px; height: 16px; fill: var(--ios-cyan); }
+
+        .aurora { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: blur(100px); opacity: 0.3; }
+        .blob { position: absolute; width: 500px; height: 500px; border-radius: 50%; animation: move 20s infinite alternate; }
+        .b1 { background: var(--ios-cyan); top: -10%; left: -10%; }
+        .b2 { background: var(--ios-purple); bottom: -10%; right: -10%; animation-delay: -5s; }
+        @keyframes move { from { transform: translate(0, 0); } to { transform: translate(100px, 100px); } }
+
+        .header { text-align: center; margin-bottom: 50px; }
+        h1 { font-size: 3rem; font-weight: 900; letter-spacing: -2px; text-transform: uppercase; background: linear-gradient(#fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .meta { color: var(--ios-cyan); font-size: 0.7rem; letter-spacing: 4px; margin-top: 10px; opacity: 0.8; text-transform: uppercase; }
+
+        /* ---------- Sales Table ---------- */
+        .table-panel {
+            background: var(--glass); backdrop-filter: blur(40px); border: 1px solid var(--glass-border);
+            border-radius: 40px; padding: 35px; width: 100%; max-width: 1200px; margin-bottom: 50px;
+        }
+        .panel-title { letter-spacing: 2px; font-weight: 700; color: var(--ios-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 22px; }
+        .table-scroll { width: 100%; overflow-x: auto; }
+        table.sales { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
+        table.sales th, table.sales td { padding: 14px 16px; text-align: center; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.06); white-space: nowrap; }
+        table.sales thead th { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 0.7rem; }
+
+        .grp-amjj { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+        .grp-mtd { background: rgba(175, 82, 222, 0.18); color: #e0b6f5; }
+        .col-account { background: rgba(255, 214, 10, 0.14); color: var(--ios-yellow); text-align: left; }
+        .sub-amjj { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.6); }
+        .sub-mtd { background: rgba(175, 82, 222, 0.08); color: rgba(224,182,245,0.75); }
+
+        table.sales tbody td.account { text-align: left; font-weight: 600; color: #fff; }
+        table.sales tbody td.mtd { background: rgba(175, 82, 222, 0.05); }
+        table.sales tbody tr:hover td { background: rgba(255,255,255,0.04); }
+        table.sales tbody tr:hover td.mtd { background: rgba(175, 82, 222, 0.10); }
+        table.sales tbody tr:last-child td { border-bottom: none; }
+        .num { font-variant-numeric: tabular-nums; color: rgba(255,255,255,0.9); }
+
+        .platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; width: 100%; max-width: 1200px; margin-bottom: 50px; align-items: start; }
+        
+        .glass-card { 
+            background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); 
+            border-radius: 30px; padding: 25px; position: relative; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden;
+        }
+        .glass-card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-5px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .brand-name { font-size: 1.5rem; font-weight: 800; }
+        .dropdown-icon { font-size: 0.6rem; opacity: 0.3; transition: 0.4s; }
+        .glass-card.active .dropdown-icon { transform: rotate(180deg); opacity: 1; color: var(--ios-cyan); }
+
+        .bar-wrapper { position: relative; width: 100%; height: 24px; margin: 10px 0 10px 0; display: flex; align-items: center; }
+        .mini-bar-container { width: calc(100% - 60px); height: 6px; background: rgba(255,255,255,0.08); border-radius: 10px; position: relative; }
+        .mini-bar-fill { height: 100%; background: var(--ios-cyan); transition: width 1s ease; box-shadow: 0 0 15px var(--ios-cyan); border-radius: 10px; }
+        
+        .pips-container { position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        .pip { width: 4px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 50%; }
+        .pip.active { background: #fff; box-shadow: 0 0 8px #fff; transform: scale(1.2); }
+
+        .dynamic-perc { width: 50px; margin-left: 10px; font-size: 11px; font-weight: 900; color: rgba(255,255,255,0.4); text-align: right; }
+        .dynamic-perc.reached { color: var(--ios-cyan); }
+
+        .steps-content { 
+            max-height: 0; opacity: 0; overflow: hidden;
+            display: flex; flex-direction: column; gap: 12px; 
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card.active .steps-content { max-height: 350px; opacity: 1; padding-top: 20px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        .step-item { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; color: rgba(255,255,255,0.15); transition: 0.3s; }
+        .step-item.active { color: #fff; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+        .step-item.active .status-dot { background: var(--ios-cyan); box-shadow: 0 0 10px var(--ios-cyan); }
+        
+        .qty-badge { background: var(--ios-cyan); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; margin-left: auto; }
+
+        .overall-progress { background: var(--glass); backdrop-filter: blur(40px); padding: 40px; border-radius: 40px; border: 1px solid var(--glass-border); width: 100%; max-width: 1200px; }
+        .progress-meta { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
+        .main-bar-container { width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; }
+        .main-bar-fill { height: 100%; background: linear-gradient(90deg, var(--ios-purple), var(--ios-cyan)); transition: 1.5s ease; width: 0%; }
+
+        .blinkit { color: #f8cb46; } .zepto { color: #af52de; } .instamart { color: #ff6d2e; }
+        .amazon { color: #00a8e1; } .flipkart { color: #2874f0; } .bigbasket { color: #84c225; }
+
+        @media (max-width: 600px) {
+            body { padding: 90px 12px 30px 12px; }
+            h1 { font-size: 2rem; }
+            .table-panel { padding: 22px 16px; border-radius: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="home-card-container">
+        <a href="home.html" class="home-card">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Home
+        </a>
+    </div>
+
+    <div class="aurora"><div class="blob b1"></div><div class="blob b2"></div></div>
+
+    <div class="header">
+        <h1>Integration Grid</h1>
+        <div class="meta">Operations Sync • Verified April 2026</div>
+    </div>
+
+    <div class="table-panel">
+        <div class="panel-title">Account Performance</div>
+        <div class="table-scroll">
+            <table class="sales">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="col-account">Type</th>
+                        <th colspan="3" class="grp-amjj">AMJJ26</th>
+                        <th colspan="3" class="grp-mtd">MTD Jul'26</th>
+                    </tr>
+                    <tr>
+                        <th class="sub-amjj">Total Case (AMJJ26)</th>
+                        <th class="sub-amjj">Total Pcs (AMJJ26)</th>
+                        <th class="sub-amjj">Value Lakhs (AMJJ26)</th>
+                        <th class="sub-mtd">Total Case</th>
+                        <th class="sub-mtd">Total Pcs</th>
+                        <th class="sub-mtd">Value Lakhs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="account">Blinkit</td>
+                        <td class="num">57.11</td>
+                        <td class="num">2056</td>
+                        <td class="num">1.28</td>
+                        <td class="num mtd">27.28</td>
+                        <td class="num mtd">982.00</td>
+                        <td class="num mtd">0.61</td>
+                    </tr>
+                    <tr>
+                        <td class="account">Zepto</td>
+                        <td class="num">420.00</td>
+                        <td class="num">15120</td>
+                        <td class="num">10.09</td>
+                        <td class="num mtd">134.00</td>
+                        <td class="num mtd">4,824.00</td>
+                        <td class="num mtd">3.22</td>
+                    </tr>
+                    <tr>
+                        <td class="account">Intamart</td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                    </tr>
+                    <tr>
+                        <td class="account">Amazon Now</td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                    </tr>
+                    <tr>
+                        <td class="account">Flipkart Minutes</td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                    </tr>
+                    <tr>
+                        <td class="account">BigBasket</td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                        <td class="num mtd"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="platform-grid" id="grid"></div>
+
+    <div class="overall-progress">
+        <div class="progress-meta">
+            <span style="letter-spacing: 2px; font-weight: 700; color: var(--ios-cyan);">ECOSYSTEM SYNC STATUS</span>
+            <span id="global-perc" style="font-size: 2.5rem; font-weight: 900;">0%</span>
+        </div>
+        <div class="main-bar-container">
+            <div class="main-bar-fill" id="global-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        const currentProgress = {
+            blink: 6, 
+            zep: 6,   // Updated to 6 (Fulfilled)
+            insta: 2, 
+            amz: 0,
+            fk: 0,
+            bb: 0     
+        };
+
+        const platforms = [
+            { id: 'blink', name: 'Blinkit', class: 'blinkit' },
+            { id: 'zep', name: 'Zepto', class: 'zepto', note: "612 Qty PO Received" },
+            { id: 'insta', name: 'Instamart', class: 'instamart' },
+            { id: 'amz', name: 'Amazon Now', class: 'amazon' },
+            { id: 'fk', name: 'FK Minutes', class: 'flipkart' },
+            { id: 'bb', name: 'BigBasket', class: 'bigbasket' }
+        ];
+
+        const steps = ["Contacting", "Emailing", "TOT Signed", "Listed", "PO Received", "Fulfilled"];
+        const grid = document.getElementById('grid');
+
+        platforms.forEach((p) => {
+            const completedCount = currentProgress[p.id];
+            const percent = Math.round((completedCount / steps.length) * 100);
+
+            const card = document.createElement('div');
+            card.className = 'glass-card';
+            card.onclick = () => card.classList.toggle('active');
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="brand-name ${p.class}">${p.name}</span>
+                    <span class="dropdown-icon">DETAILS ▼</span>
+                </div>
+                <div class="bar-wrapper">
+                    <div class="mini-bar-container">
+                        <div class="mini-bar-fill" style="width: ${percent}%"></div>
+                        <div class="pips-container">
+                            ${steps.map((_, i) => `<div class="pip ${i < completedCount ? 'active' : ''}"></div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="dynamic-perc ${percent === 100 ? 'reached' : ''}">${percent}%</div>
+                </div>
+                <div class="steps-content">
+                    ${steps.map((step, idx) => `
+                        <div class="step-item ${idx < completedCount ? 'active' : ''}">
+                            <div class="status-dot"></div>
+                            ${idx + 1}. ${step}
+                            ${(p.id === 'zep' && idx === 4) ? '<span class="qty-badge">612 Qty</span>' : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        const totalPossible = platforms.length * steps.length;
+        const currentTotal = Object.values(currentProgress).reduce((a, b) => a + b, 0);
+        const globalPercent = Math.round((currentTotal / totalPossible) * 100);
+
+        setTimeout(() => {
+            document.getElementById('global-bar').style.width = globalPercent + '%';
+            let count = 0;
+            const counter = setInterval(() => {
+                if (count >= globalPercent) { clearInterval(counter); } 
+                else { count++; document.getElementById('global-perc').innerText = count + '%'; }
+            }, 30);
+        }, 300);
+    </script>
+</body>
+</html>

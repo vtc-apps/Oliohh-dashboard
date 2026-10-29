@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli-Ohh - Grand Launch Ceremony</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { 
+            background: radial-gradient(circle at top right, #1a2a6c, #b21f1f, #fdbb2d); 
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white; 
+            min-height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .back-btn { 
+            position: absolute; top: 20px; left: 20px;
+            display: inline-flex; align-items: center; color: #fff; 
+            text-decoration: none; font-weight: bold; border: 1px solid rgba(255,255,255,0.3); 
+            padding: 8px 16px; border-radius: 50px; transition: 0.3s; 
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            z-index: 100;
+            font-size: 14px;
+        }
+        .back-btn:hover { background: #fff; color: #111; transform: translateX(-5px); }
+
+        .hero-section {
+            text-align: center;
+            margin-top: 100px;
+            padding: 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-title { 
+            /* Clamped font size for mobile responsiveness */
+            font-size: clamp(40px, 10vw, 80px); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            background: linear-gradient(to right, #fff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            line-height: 1.1;
+        }
+
+        .milestone-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: clamp(20px, 5vw, 40px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 90%;
+            margin: 40px auto;
+            text-align: center;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .date-badge {
+            background: #ffd700;
+            color: #111;
+            padding: 8px 25px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: clamp(14px, 4vw, 18px);
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .status-msg {
+            font-size: clamp(18px, 5vw, 24px);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .highlight-text { color: #ffd700; font-weight: 800; }
+
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .strategy-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+        }
+        .strategy-item:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-10px); }
+        .strategy-item h4 { color: #ffd700; margin-bottom: 10px; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
+
+        .footer-note {
+            margin-top: 40px;
+            font-size: clamp(14px, 4vw, 18px);
+            font-style: italic;
+            opacity: 0.8;
+            padding: 0 20px 50px 20px;
+            text-align: center;
+        }
+
+        .live-dot {
+            height: 12px; width: 12px; background-color: #00ff00;
+            border-radius: 50%; display: inline-block;
+            margin-right: 10px; box-shadow: 0 0 10px #00ff00;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+
+        /* Adjustments for small screens */
+        @media (max-width: 600px) {
+            .hero-section { margin-top: 80px; }
+            .milestone-card { padding: 25px 15px; }
+            .back-btn { top: 15px; left: 15px; }
+        }
+    </style>
+</head>
+<body onload="fireConfetti()">
+
+    <a href="javascript:history.back()" class="back-btn">← Back</a>
+
+    <section class="hero-section">
+        <h1 class="main-title">Oli-Ohh Ceremony</h1>
+        <p style="font-size: clamp(12px, 3vw, 20px); letter-spacing: 3px; text-transform: uppercase; opacity: 0.9;">The Revolution Begins</p>
+    </section>
+
+    <div class="milestone-card">
+        <div class="date-badge">MARCH 23, 2026</div>
+        <h2 class="status-msg">
+            <span class="live-dot"></span>
+            <span class="highlight-text">First Order Billed Successfully!</span>
+        </h2>
+        <p style="font-size: clamp(14px, 4vw, 18px); opacity: 0.9; margin-bottom: 30px;">
+            Today marks the historic beginning of <strong>Oli-Ohh Pasta</strong>. Our first commercial order has been successfully processed, signaling the start of a new era in gourmet distribution.
+        </p>
+                
+        <div style="height: 1px; background: rgba(255,255,255,0.2); width: 100%; margin: 30px 0;"></div>
+        
+        <h3 style="margin-bottom: 20px; color: #ffd700; font-size: clamp(18px, 5vw, 24px);">Distribution Strategy</h3>
+        <p style="font-size: clamp(14px, 4vw, 16px);">Our command center has successfully deployed all logistics plans and market penetration strategies. Ready for mass distribution.</p>
+        
+        <div class="strategy-grid">
+            <div class="strategy-item">
+                <h4>Logistics</h4>
+                <p style="font-size: 14px;">Real-time tracking & route optimization active.</p>
+            </div>
+            <div class="strategy-item">
+                <h4>Supply Chain</h4>
+                <p style="font-size: 14px;">Inventory synced with Noida hubs.</p>
+            </div>
+            <div class="strategy-item">
+                <h4>Expansion</h4>
+                <p style="font-size: 14px;">Roadmap for next 100 retailers locked.</p>
+            </div>
+        </div>
+    </div>
+
+    <p class="footer-note">"To a journey filled with growth, flavor, and unmatched success."</p>
+
+    <script>
+        function fireConfetti() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>

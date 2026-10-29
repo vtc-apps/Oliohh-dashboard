@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oli-Ohh - Meesho Listing Status</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial; }
+        body { background: #0f2027; color: white; padding: 40px; line-height: 1.6; }
+        
+        .back-btn { 
+            display: inline-flex; align-items: center; margin-bottom: 25px; color: #00ffd5; 
+            text-decoration: none; font-weight: bold; border: 2px solid #00ffd5; 
+            padding: 10px 20px; border-radius: 8px; transition: 0.3s; background: rgba(0, 255, 213, 0.05);
+        }
+        .back-btn:hover { background: #00ffd5; color: #111; box-shadow: 0 0 20px #00ffd5; transform: translateX(-5px); }
+        
+        .header { 
+            border-bottom: 2px solid #ff44ad; 
+            padding-bottom: 20px; 
+            margin-bottom: 40px; 
+        }
+        .header-title-container { display: flex; align-items: center; gap: 15px; }
+        h1 { font-size: 32px; color: #ff44ad; }
+
+        /* GREEN BLINKING PULSE */
+        .pulse-header {
+            width: 12px;
+            height: 12px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 10px #2ecc71;
+            animation: blink 1.5s infinite;
+        }
+        .pulse-header::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #2ecc71;
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes pulse-ring { 0% { transform: scale(0.33); } 80%, 100% { opacity: 0; } }
+
+        .account-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 68, 173, 0.3);
+            margin-bottom: 30px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        /* ATTRACTIVE LOGO CONTAINER FOR LOCAL PNG */
+        .meesho-logo-wrapper {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 250px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(255, 68, 173, 0.2);
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .meesho-logo-wrapper:hover {
+            transform: scale(1.05);
+            border-color: #ff44ad;
+        }
+        .meesho-logo-wrapper img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .account-name { font-size: 26px; color: #fff; margin-bottom: 12px; font-weight: 700; letter-spacing: 0.5px; }
+        .status-badge-live {
+            background: #2ecc71;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .visit-btn {
+            display: inline-block;
+            margin-top: 30px;
+            background: #ff44ad;
+            color: white;
+            text-decoration: none;
+            padding: 16px 35px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 68, 173, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .visit-btn:hover { 
+            background: #e03697; 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 25px rgba(255, 68, 173, 0.6); 
+        }
+
+        .info-box { 
+            background: rgba(255, 68, 173, 0.1); 
+            padding: 25px; 
+            border-radius: 12px; 
+            border-left: 5px solid #ff44ad;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .info-box h3 { color: #ff44ad; margin-bottom: 10px; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <a href="javascript:history.back()" class="back-btn">← Back to Dashboard</a>
+
+    <div class="header">
+        <div class="header-title-container">
+            <h1>Oli-Ohh × Meesho Expansion</h1>
+            <div class="pulse-header" title="Account Live"></div>
+        </div>
+        <p>Managed by: <strong>Surendra</strong> | Partner: <strong>VTC Tradewings Pvt Ltd</strong></p>
+    </div>
+
+    <div class="account-card">
+        <div class="meesho-logo-wrapper">
+            <img src="Meesho.png" alt="Meesho Logo">
+        </div>
+        
+        <p style="color: #ff44ad; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; margin-bottom: 12px; font-weight: 600;">Active Marketplace Account</p>
+        <div class="account-name">VTC TRADEWINGS PRIVATE LIMITED_NOIDA</div>
+        <div class="status-badge-live">
+            <span style="width: 10px; height: 10px; background: white; border-radius: 50%; animation: blink 1s infinite;"></span>
+            Status: LIVE
+        </div>
+        <br>
+        <a href="https://www.meesho.com/VTCTRADEWINGSPRIVATELIMITEDNOIDA?ms=2" class="visit-btn">Visit Official Meesho Store</a>
+    </div>
+
+    <div class="info-box">
+        <h3>Launch Milestone:</h3>
+        <p>The <strong>Oli-Ohh</strong> brand catalog is now successfully integrated into the Meesho ecosystem. Managed via <strong>VTC Tradewings</strong>, the account is fully verified and products are active for the value-segment audience. Technical checks for logistics and COD fulfillment are verified as 100% operational.</p>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oli-Ohh | Futuristic Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent-cyan: #00ffd5;
+            --ios-blue: #007AFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
+
+        body {
+            background: 
+                radial-gradient(at 0% 0%, #0f2027 0, transparent 50%), 
+                radial-gradient(at 100% 0%, #203a43 0, transparent 50%), 
+                radial-gradient(at 50% 100%, #2c5364 0, transparent 50%),
+                #0b0e11;
+            color: white;
+            min-height: 100vh;
+            background-attachment: fixed;
+            padding-bottom: 50px;
+        }
+
+        /* TOP NAVIGATION */
+        nav {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .back-container {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 8px 18px;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .back-container:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+            border-color: var(--accent-cyan);
+        }
+
+        .back-link { text-decoration: none; color: white; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        header { text-align: center; padding: 60px 20px 40px; }
+        .header-title { 
+            font-size: clamp(28px, 6vw, 48px); 
+            font-weight: 900; 
+            letter-spacing: -2px; 
+            background: linear-gradient(to bottom, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* KPI DASHBOARD */
+        .dashboard { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 40px; 
+        }
+
+        .card { 
+            background: var(--glass); 
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 30px 20px; 
+            border-radius: 30px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.4s ease; 
+        }
+
+        .card.active { border: 2px solid var(--accent-cyan); box-shadow: 0 15px 35px rgba(0, 255, 213, 0.2); }
+        .card h1 { font-size: 42px; font-weight: 800; color: var(--accent-cyan); }
+
+        /* THE MAIN GLASS TASK CONTAINER */
+        .glass-task-container {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .controls-row { display: flex; gap: 15px; margin-bottom: 30px; }
+        .search-box input { 
+            flex: 1; padding: 18px 25px; border-radius: 20px; 
+            border: 1px solid var(--glass-border); background: rgba(0,0,0,0.4); 
+            color: white; font-size: 16px; outline: none;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.4; }
+        td { padding: 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+
+        /* GLASS TASK LINKS */
+        .task-link-wrapper {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 18px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .task-link-wrapper:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-cyan);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0, 255, 213, 0.2);
+        }
+
+        /* PULSE DOTS */
+        .pulse-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 12px; }
+        .dot-green { background: #2ecc71; box-shadow: 0 0 10px #2ecc71; animation: pulse 2s infinite; }
+        .dot-orange { background: #f39c12; box-shadow: 0 0 10px #f39c12; animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+
+        .status { padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: 900; letter-spacing: 1px; }
+        .done { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .progressing { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+        .pending { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+        footer { text-align: center; padding: 60px; opacity: 0.3; font-size: 11px; letter-spacing: 2px; }
+    </style>
+</head>
+<body onload="initializeKPIs()">
+
+<nav>
+    <div class="back-container" onclick="history.back()">
+        <a href="#" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            CENTER
+        </a>
+    </div>
+    <div style="font-weight: 800; font-size: 11px; letter-spacing: 3px; color: var(--accent-cyan);">LAUNCH OPS V2.0</div>
+</nav>
+
+<header>
+    <div class="header-title">Oli-Ohh Launch Command Center</div>
+</header>
+
+<div class="container">
+    <!-- DASHBOARD -->
+    <section class="dashboard">
+        <div class="card active" data-status="all"><h2>Total Tasks</h2><h1 id="totalTasks">0</h1></div>
+        <div class="card" data-status="Completed"><h2>Completed</h2><h1 id="completedTasks">0</h1></div>
+        <div class="card" data-status="In Progress"><h2>Active</h2><h1 id="progressTasks">0</h1></div>
+        <div class="card" data-status="Pending"><h2>Pending</h2><h1 id="pendingTasks">0</h1></div>
+    </section>
+
+    <!-- THE GLASS CONTAINER FOR TASKS -->
+    <section class="glass-task-container">
+        <div class="controls-row">
+            <div class="search-box"><input type="text" id="searchInput" placeholder="Search operational tasks..."></div>
+            <button style="background:transparent; color:var(--accent-cyan); border:1px solid var(--accent-cyan); padding:0 20px; border-radius:15px; cursor:pointer;" onclick="resetFilters()">RESET</button>
+        </div>
+
+        <table id="taskTable">
+            <thead>
+                <tr><th>Category</th><th>Task Activity</th><th>Owner</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Launching</td>
+                    <td>
+                        <a href="oli-ohh lauch.html" class="task-link-wrapper">
+                            <span class="pulse-dot dot-green"></span>
+                            Oli-Ohh Launch Ceremony
+                        </a>
+                    </td>
+                    <td>Akshay</td>
+                    <td><span class="status done">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>Strategy</td>
+                    <td>
+                        <a href="margin-structure.html" class="task-link-wrapper">
+                            <span class="pulse-dot dot-green"></span>
+                            Margin Structure
+                        </a>
+                    </td>
+                    <td>Sunil</td>
+                    <td><span class="status done">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>Coverage</td>
+                    <td>
+                        <a href="ecommerce-listing.html" class="task-link-wrapper">
+                            <span class="pulse-dot dot-green"></span>
+                            E-Commerce Listing
+                        </a>
+                    </td>
+                    <td>Vishal</td>
+                    <td><span class="status done">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>Coverage</td>
+                    <td>
+                        <a href="quick-commerce.html" class="task-link-wrapper">
+                            <span class="pulse-dot dot-orange"></span>
+                            Quick Commerce Listing
+                        </a>
+                    </td>
+                    <td>Ajit</td>
+                    <td><span class="status progressing">In Progress</span></td>
+                </tr>
+                <tr>
+                    <td>Activation</td>
+                    <td>
+                        <div class="task-link-wrapper" style="cursor:default; opacity:0.6;">
+                            Mandi Activation
+                        </div>
+                    </td>
+                    <td>Vipin</td>
+                    <td><span class="status pending">Pending</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<footer>
+    &copy; 2026 Developed by <span style="color:var(--accent-cyan); font-weight:800;">ROUNAK SINGH</span>
+</footer>
+
+<script>
+    // Filtering logic remains the same to preserve functionality
+    const rows = document.querySelectorAll("#taskTable tbody tr");
+    const cards = document.querySelectorAll(".card");
+    const searchInput = document.getElementById("searchInput");
+    let activeStatus = "all";
+
+    function initializeKPIs() {
+        let comp = 0, prog = 0, pend = 0;
+        rows.forEach(row => {
+            const st = row.cells[3].textContent.trim();
+            if (st.includes("Completed")) comp++;
+            else if (st.includes("In Progress")) prog++;
+            else if (st.includes("Pending")) pend++;
+        });
+        document.getElementById("totalTasks").innerText = rows.length;
+        document.getElementById("completedTasks").innerText = comp;
+        document.getElementById("progressTasks").innerText = prog;
+        document.getElementById("pendingTasks").innerText = pend;
+    }
+
+    function applyFilters() {
+        const term = searchInput.value.toLowerCase();
+        rows.forEach(row => {
+            const sMatch = (activeStatus === "all" || row.cells[3].innerText.includes(activeStatus));
+            const tMatch = row.innerText.toLowerCase().includes(term);
+            row.style.display = (sMatch && tMatch) ? "" : "none";
+        });
+    }
+
+    cards.forEach(card => {
+        card.onclick = () => {
+            cards.forEach(c => c.classList.remove("active"));
+            card.classList.add("active");
+            activeStatus = card.dataset.status;
+            applyFilters();
+        };
+    });
+
+    searchInput.addEventListener("keyup", applyFilters);
+    function resetFilters() { searchInput.value = ""; activeStatus = "all"; applyFilters(); }
+</script>
+</body>
+</html>
