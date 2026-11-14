@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Channel classification · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+</head>
+<body>
+<main class="page">
+<header class="page-head">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Channels</span></nav>
+  <h1>Channel classification</h1>
+  <p class="lede">Credit, visit frequency, margin, scheme and visibility standards for each of the 9 channels.</p>
+</header>
+<div class="grid g3" id="channelGrid"></div>
+<div class="modal" id="chModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <header><h2 id="modalTitle" style="font-size:var(--fs-lg)"></h2><button class="btn is-ghost is-sm" type="button" data-close-modal>Close</button></header>
+    <div id="modalContent"></div>
+    <div class="hstack mt-2" style="justify-content:space-between"><button class="btn is-ghost is-sm" id="prevCh" type="button">Previous</button><span class="muted" id="chPos" style="font-size:var(--fs-sm)"></span><button class="btn is-ghost is-sm" id="nextCh" type="button">Next</button></div>
+  </div>
+</div>
+<script>const standardScheme = "Buy 6 Pcs (1 Outer) get 10% scheme, Buy 12 Pcs (2 Outer) get 10% scheme + Rs 50, Buy 36 Pcs (6 Outer) get 12% scheme + Rs 250, Buy 72 Pcs (12 Outer) get 15% scheme + Rs 500";
+
+        const channels = [
+            { id: "01", name: "General Trade", desc: "Local kirana stores (S/M/L) catering to daily essentials.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "Countertop & eye-level hotspots.", audit: "Photo audit.", promo: "Promo SKU." },
+            { id: "02", name: "MT Standalone", desc: "Independent self-service supermarkets and convenience stores.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "Gondola ends & countertops.", audit: "Photo verification.", promo: "Unique SKU codes." },
+            { id: "03", name: "Wholesale", desc: "Bulk B2B stockists selling large quantities to other retailers.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "Danglers & branding posters.", audit: "Photo verification.", promo: "Bulk purchase incentives." },
+            { id: "04", name: "MT Regional", desc: "Self-service supermarket chains operating within specific regions.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: standardScheme, visibility: "End cap & Gondola displays.", audit: "Systematic photo audit.", promo: "Promotion SKU delivery." },
+            { id: "05", name: "MT National", desc: "National hypermarkets (Reliance, D Mart, Vishal Mega Mart).", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: "TBD", visibility: "High-impact Gondola displays.", audit: "Strict audit.", promo: "National SKU bundles." },
+            { id: "06", name: "Ecommerce", desc: "Online platforms (Amazon, Flipkart) selling via digital storefronts.", credit: "30 Days", freq: "NA", margin: "15% (Markup)", scheme: "TBD", visibility: "Digital banners & SEO.", audit: "Portal analytics.", promo: "Online coupons." },
+            { id: "07", name: "Quick Commerce", desc: "10-15 minute delivery apps (Blinkit, Zepto, Instamart).", credit: "30 Days", freq: "NA", margin: "15% (Markup)", scheme: "TBD", visibility: "App 'Hot-picks'.", audit: "Live app monitoring.", promo: "Flash discounts." },
+            { id: "08", name: "Institutional", desc: "Canteens (Police, College) providing directly to members.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: "TBD", visibility: "Canteen countertops.", audit: "Physical inspection.", promo: "Member pricing." },
+            { id: "09", name: "Speciality", desc: "Food stalls, Maggi points, and high-traffic area kiosks.", credit: "30 Days", freq: "F2", margin: "15% (Markup)", scheme: "TBD", visibility: "Banners & standees.", audit: "Seller photo audit.", promo: "Meal bundles." }
+        ];
+(function () {
+  let cur = 0;
+  const grid = document.getElementById('channelGrid');
+  grid.innerHTML = channels.map((ch, i) => `
+    <button type="button" class="linkcard" data-i="${i}" style="flex-direction:column;text-align:left;cursor:pointer">
+      <small>Channel ${ch.id}</small><b style="font:700 var(--fs-md) var(--display)">${ch.name}</b><small>${ch.desc}</small>
+    </button>`).join('');
+  function show(i) {
+    cur = (i + channels.length) % channels.length;
+    const ch = channels[cur];
+    document.getElementById('modalTitle').textContent = ch.name;
+    document.getElementById('modalContent').innerHTML = `
+      <p class="muted" style="margin-bottom:14px">${ch.desc}</p>
+      <div class="table-wrap"><table class="t"><thead><tr><th>Classification attribute</th><th>Data / standard</th></tr></thead><tbody>
+        <tr><td>Credit norms</td><td>${ch.credit}</td></tr>
+        <tr><td>Visit frequency</td><td>${ch.freq}</td></tr>
+        <tr><td>Brand margin</td><td>${ch.margin}</td></tr>
+        <tr><td>Scheme slab</td><td>${ch.scheme.split(', ').join('<br>')}</td></tr>
+        <tr><td>Visibility</td><td>${ch.visibility}</td></tr>
+        <tr><td>Visibility audit</td><td>${ch.audit}</td></tr>
+        <tr><td>Consumer promo</td><td>${ch.promo}</td></tr>
+      </tbody></table></div>`;
+    document.getElementById('chPos').textContent = `Channel ${cur + 1} of ${channels.length}`;
+  }
+  grid.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; show(+b.dataset.i); document.getElementById('chModal').classList.add('open'); });
+  document.getElementById('prevCh').onclick = () => show(cur - 1);
+  document.getElementById('nextCh').onclick = () => show(cur + 1);
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('chModal').classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1);
+  });
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

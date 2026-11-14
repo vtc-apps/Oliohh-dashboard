@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-launch tasks · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+</head>
+<body>
+<main class="page">
+<header class="page-head"><nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Strategy</span></nav>
+  <h1>Pre-launch tasks</h1>
+  <p class="lede">Oli-Ohh launch command center: what’s done, active and pending.</p>
+</header>
+<div class="chips" id="statusChips" role="group" aria-label="Filter by status">
+  <button class="chip" type="button" data-status="all" aria-pressed="true">Total tasks <b id="totalTasks">0</b></button>
+  <button class="chip" type="button" data-status="Completed" aria-pressed="false">Completed <b id="completedTasks">0</b></button>
+  <button class="chip" type="button" data-status="In Progress" aria-pressed="false">Active <b id="progressTasks">0</b></button>
+  <button class="chip" type="button" data-status="Pending" aria-pressed="false">Pending <b id="pendingTasks">0</b></button>
+</div>
+<section class="section">
+  <div class="toolbar"><input class="input" id="searchInput" type="search" placeholder="Search operational tasks" aria-label="Search tasks"><button class="btn is-ghost is-sm" type="button" id="resetBtn">Reset</button></div>
+  <div class="table-wrap"><table class="t" id="taskTable"><thead><tr><th>Category</th><th>Task activity</th><th>Owner</th><th>Status</th></tr></thead><tbody><tr data-status="Completed"><td>Launching</td><td><a href="launch-ceremony.html"><b>Oli-Ohh Launch Ceremony</b></a></td><td><span class="tag-owner" data-initial="A">Akshay</span></td><td><span class="badge is-done">Completed</span></td></tr><tr data-status="Completed"><td>Strategy</td><td><a href="margin-structure.html"><b>Margin Structure</b></a></td><td><span class="tag-owner" data-initial="S">Sunil</span></td><td><span class="badge is-done">Completed</span></td></tr><tr data-status="Completed"><td>Coverage</td><td><a href="meesho-listing.html"><b>E-Commerce Listing</b></a></td><td><span class="tag-owner" data-initial="V">Vishal</span></td><td><span class="badge is-done">Completed</span></td></tr><tr data-status="In Progress"><td>Coverage</td><td><a href="quick-commerce.html"><b>Quick Commerce Listing</b></a></td><td><span class="tag-owner" data-initial="A">Ajit</span></td><td><span class="badge is-progress">In Progress</span></td></tr><tr data-status="Pending"><td>Activation</td><td><b>Mandi Activation</b></td><td><span class="tag-owner" data-initial="V">Vipin</span></td><td><span class="badge is-alert">Pending</span></td></tr></tbody></table></div>
+</section>
+<script>
+(function () {
+  const rows = [...document.querySelectorAll('#taskTable tbody tr')];
+  const count = s => rows.filter(r => r.dataset.status === s).length;
+  document.getElementById('totalTasks').textContent = rows.length;
+  document.getElementById('completedTasks').textContent = count('Completed');
+  document.getElementById('progressTasks').textContent = count('In Progress');
+  document.getElementById('pendingTasks').textContent = count('Pending');
+  let status = 'all';
+  const search = document.getElementById('searchInput');
+  const chips = document.getElementById('statusChips');
+  function apply() {
+    const q = search.value.toLowerCase();
+    rows.forEach(r => r.hidden = !((status === 'all' || r.dataset.status === status) && r.textContent.toLowerCase().includes(q)));
+  }
+  chips.addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    status = b.dataset.status; chips.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b)); apply();
+  });
+  search.addEventListener('input', apply);
+  document.getElementById('resetBtn').onclick = () => { search.value = ''; chips.querySelector('[data-status="all"]').click(); };
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MT Regional · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+<style>
+  :root { --north: var(--maroon); --west: #c28a00; --south: var(--basil); --east: #3b6fb6; --central: #7a4fb0; --ink-faint: #b7aea6; }
+  .reg-tag { font-size: var(--fs-xs); font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--slate-tint); color: var(--slate); }
+  .reg-North { background: var(--maroon-tint); color: var(--maroon); }
+  .reg-West { background: var(--semolina-tint); color: var(--semolina-ink); }
+  .reg-South { background: var(--basil-tint); color: var(--basil); }
+  .loc-cell { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chev { width: 14px; height: 14px; stroke: var(--muted); opacity: 0; transition: opacity .15s; }
+  #summaryBody tr { cursor: pointer; }
+  #summaryBody tr:hover .chev { opacity: 1; }
+  #summaryBody tr.sel td { background: var(--maroon-tint) !important; }
+  #summaryBody tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--maroon); }
+  #summaryBody tr.total-row td { font-weight: 700; background: #faf9f7; border-top: 1px solid var(--line-strong); }
+  .mini { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .mini .bar { width: 60px; height: 6px; margin: 0; }
+  .mini .bar i { display: block; height: 100%; background: var(--semolina); border-radius: inherit; }
+  .zero { color: #c4bcb5; }
+  .t td:not(.l), .t th:not(.l) { text-align: right; white-space: nowrap; }
+  .acct { min-width: 240px; }
+  .erp { display: block; font-size: var(--fs-xs); color: var(--muted); }
+  .flag { font-size: var(--fs-xs); font-weight: 600; }
+  .flag.y { color: var(--basil); }
+  .flag.n { color: #c4bcb5; }
+  tr.is-billed td.acct { font-weight: 600; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); background: var(--surface); border-radius: 99px; padding: 3px 10px 3px 3px; font-size: var(--fs-xs); font-weight: 600; cursor: pointer; color: var(--muted); }
+  .toggle .knob { width: 16px; height: 16px; border-radius: 50%; background: #e3ddd7; transition: background .15s; }
+  .toggle.on { border-color: var(--basil); color: var(--basil); background: var(--basil-tint); }
+  .toggle.on .knob { background: var(--basil); }
+  #detailHead th { cursor: pointer; user-select: none; }
+  #detailHead th .ar { opacity: 0; font-size: 9px; margin-left: 2px; color: inherit; }
+  #detailHead th.up .ar, #detailHead th.dn .ar { opacity: 1; }
+  #detailHead th.up { color: var(--maroon); }
+  #detailHead th.dn { color: var(--maroon); }
+  #detailHead th.dn .ar { display: inline-block; transform: rotate(180deg); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 12px; border-radius: 99px; background: var(--maroon); color: #fff; font-size: var(--fs-sm); font-weight: 600; }
+  .pill .x { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #fff; cursor: pointer; }
+  .pill .x svg { stroke: var(--maroon); }
+  .count { font-size: var(--fs-sm); color: var(--muted); }
+  .count b { color: var(--ink); }
+  .act.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .save-status { font-size: var(--fs-xs); font-weight: 600; transition: opacity .4s; }
+  .save-status.ok { color: var(--basil); }
+  .save-status.warn { color: var(--semolina-ink); }
+  .table-wrap.tall { max-height: 70vh; }
+  .empty { padding: 28px; text-align: center; color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="page">
+<header class="page-head">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Channels</span></nav>
+  <h1>Regional account status</h1>
+  <p class="lede">Outlet-level coverage and billing for MT Regional — April to October FY26.</p>
+  <div class="meta"><span><b id="stampAcc">—</b> outlets across <b id="stampLoc">—</b> locations</span></div>
+</header>
+
+<section class="section">
+  <div class="section-head"><h2>Summary by location</h2><p>Click a row to filter the outlets below</p></div>
+  <div class="table-wrap"><table class="t summary">
+    <thead><tr><th class="l">Region</th><th class="l">Location</th><th>Total stores</th><th>Stores billed</th><th>Total cases</th><th>Total value</th><th>Oct billed</th><th>Oct cases</th></tr></thead>
+    <tbody id="summaryBody"></tbody>
+  </table></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Outlet detail</h2><span class="count">Showing <b id="rowCount">0</b> outlets, billed <b id="billedCount">0</b></span></div>
+  <div class="toolbar">
+    <span id="filterPill"></span>
+    <input class="input" id="search" type="search" placeholder="Search outlet, city or ERP ID" aria-label="Search outlets">
+    <button class="btn is-ghost is-sm act" id="billedOnly" title="Show only stores with Billed Store Overall (AMJJASO26) = 1">Billed only</button>
+    <button class="btn is-ghost is-sm act" id="markAll" title="Mark every row in this view as listed">Mark all listed</button>
+    <button class="btn is-ghost is-sm act" id="clearAll" title="Mark every row in this view as not listed">Clear all listed</button>
+    <button class="btn is-sm act" id="exportCsv" title="Download the table as CSV">Export CSV</button>
+    <span class="save-status" id="saveStatus" aria-live="polite"></span>
+  </div>
+  <div class="table-wrap tall"><table class="t detail">
+    <thead><tr id="detailHead">
+      <th class="l" data-k="region">Region <span class="ar">&#9650;</span></th>
+      <th class="l" data-k="dist">Serviced by <span class="ar">&#9650;</span></th>
+      <th class="l" data-k="location">Location <span class="ar">&#9650;</span></th>
+      <th class="l" data-k="city">City <span class="ar">&#9650;</span></th>
+      <th class="l" data-k="outlet">Outlet <span class="ar">&#9650;</span></th>
+      <th data-k="cases">Cases (AMJJASO26) <span class="ar">&#9650;</span></th>
+      <th data-k="value">Value (AMJJASO26) <span class="ar">&#9650;</span></th>
+      <th data-k="octCases">Oct cases <span class="ar">&#9650;</span></th>
+      <th data-k="billed">Billed <span class="ar">&#9650;</span></th>
+      <th data-k="listed">Listed <span class="ar">&#9650;</span></th>
+    </tr></thead>
+    <tbody id="detailBody"></tbody>
+    <tfoot id="detailFoot"></tfoot>
+  </table>
+  <div class="empty" id="emptyState" hidden>No outlets match this view. Clear the search or pick another location.</div></div>
+  <p class="muted mt-2" style="font-size:var(--fs-sm);max-width:80ch">Sourced from latest_regional_data_to_hub.xlsx. Billed = “Billed Store Overall (AMJJASO26)” flag 1. “Listed” is not in the source file — it is a marker you set, saved in this browser.</p>
+</section>
+<script>
+const DATA = {"summary": [{"region": "North", "location": "NCR", "totalStores": 120, "billedStores": 21, "cases": 50.86, "value": 121049.03, "octBilled": 2, "octCases": 0.06}, {"region": "West", "location": "GUJARAT", "totalStores": 34, "billedStores": 4, "cases": 3.34, "value": 7885.97, "octBilled": 0, "octCases": 0.0}, {"region": "North", "location": "Tricity", "totalStores": 11, "billedStores": 4, "cases": 1.66, "value": 4179.05, "octBilled": 0, "octCases": 0.0}, {"region": "South", "location": "Karnataka", "totalStores": 8, "billedStores": 1, "cases": 0.0, "value": -0.2, "octBilled": 0, "octCases": 0.0}, {"region": null, "location": "Rest Of India", "totalStores": null, "billedStores": null, "cases": null, "value": null, "octBilled": null, "octCases": null}, {"region": null, "location": "Total", "totalStores": 173, "billedStores": 30, "cases": 55.86, "value": 133113.85, "octBilled": 2, "octCases": 0.06}], "detail": [{"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "NAMH MEDITECH PRIVATE LIMITED(Jodhpur)", "erp": "VTGUJ_G0396", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "NAMH MEDITECH PRIVATE LIMITED(Satelight)", "erp": "VTGUJ_G0397", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "NAMH MEDITECH PRIVATE LIMITED(Science City)", "erp": "VTGUJ_G0398", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPERCENTRE RETAILHUB PRIVATE LIMITED(Rajvi Icon)", "erp": "VTGUJ_G0393", "seller": "Jayprakash", "cases": 0.67, "value": 1541.98, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPERCENTRE RETAILHUB PRIVATE LIMITED(Atlantis One)", "erp": "VTGUJ_G0394", "seller": "Jayprakash", "cases": 0.83, "value": 1983.1, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPERCENTRE RETAILHUB PRIVATE LIMITED(Vraj Vihar 3)", "erp": "VTGUJ_G0395", "seller": "Jayprakash", "cases": 1.17, "value": 2818.91, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SHREEJI KAJUWALA AND DRY FRUITS(Prahladnagar)", "erp": "VTGUJ_G0380", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SHREEJI KAJUWALA AND DRY FRUITS(Abhishek Complex)", "erp": "VTGUJ_G0381", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SHREEJI KAJUWALA AND DRY FRUITS(Time Square Building)", "erp": "VTGUJ_G0382", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "DANGEE DUMS LIMITED", "erp": "VTGUJ_G0401", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Vadodara", "outlet": "CHANDAN SUPER MART", "erp": "VTGVD_01008", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Vadodara", "outlet": "CHANDAN SUPER MARKET (Mota Mava)", "erp": "VTGVD_01058", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Vadodara", "outlet": "CHANDAN SUPER MARKET ( Amin Marg)", "erp": "VTGVD_01059", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "MAGSON RETAIL AND DISTRIBUTION LIMITED", "erp": "VTGUJ_G0389", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Surat", "outlet": "TIGMON FOODS LLP", "erp": "VTGUJ_G0390", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS", "erp": "VTGUJ_G0392", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SHREEJI KAJUWALA & DRYFRUITS SOUTH BOPAL", "erp": "VTGUJ_G0411", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS - SCIENCE CITY", "erp": "VTGUJ_G0415", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPERCENTER RETAIL HUB PVT LTD- MEMNAGAR", "erp": "VTGUJ_G0417", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "NAMAH MEDTECH PVT LTD", "erp": "VTGUJ_G0444", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS - Chankyapuri", "erp": "VTGUJ_G0445", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS - NIKOL", "erp": "VTGUJ_G0446", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Gandhinagar", "outlet": "SUPREME TRADERS INFOCITY", "erp": "VTGUJ_G0452", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPERCENTRE RETAILHUB PRIVATE LIMITED", "erp": "VTGUJ_G0468", "seller": "Jayprakash", "cases": 0.67, "value": 1541.98, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "NAMH MEDITECH PRIVATE LIMITED", "erp": "VTGUJ_G0469", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS-STC", "erp": "VTGUJ_G0471", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS- TIMS SQUARE 2", "erp": "VTGUJ_G0472", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Disa", "outlet": "SUPREME TRADERS- Tragad Road", "erp": "VTGUJ_G0474", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Rajkot", "outlet": "YAMUNAJI ENTERPRISE- NAMH WELLNESS", "erp": "VTGUJ_G0492", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "PURVI ENTERPRISE- NAMH WELLNESS", "erp": "VTGUJ_G0494", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS-NARODA", "erp": "VTGUJ_G0512", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "SUPREME TRADERS-MONEYPLANT", "erp": "VTGUJ_G0513", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "MIRACLE MEDICO  (NAMH WELLNESS KUDASAN)", "erp": "VTGUJ_G0384", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "West", "dist": "Synergy Trade Tricks", "location": "GUJARAT", "city": "Ahmedabad", "outlet": "LANDCRAFT RETAIL PVT LTD (FOOD SQUARE)", "erp": "VTGUJ_G0386", "seller": "Jayprakash", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Chandigarh", "outlet": "Punjab Stores", "erp": "VTLND_00062", "seller": "Jitendra Gupta", "cases": 0.33, "value": 835.81, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Mohali", "outlet": "Punjab Store(Mohali)", "erp": "VTLND_00055", "seller": "Jitendra Gupta", "cases": 0.67, "value": 1671.62, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Chandigarh", "outlet": "Sindhi Sweets (Sector 17)", "erp": "VTLND_00032", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Chandigarh", "outlet": "NUFARM MARKET LLP (Sec-20)", "erp": "VTCHD_N0073", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Chandigarh", "outlet": "NUFARM MARKET LLP (Sec.-15)", "erp": "VTCHD_N0072", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Panchkula", "outlet": "ABNI ENTERPRISES", "erp": "VTCHD_N0380", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Panchkula", "outlet": "ABNI ENTERPRISES (JS Wholesale )", "erp": "VTCHD_N0381", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Panchkula", "outlet": "ABNI ENTERPRISES (JS Wholesale )", "erp": "VTCHD_N0382", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Mohali", "outlet": "NEW MODERN BAZAAR DEPARTMENTAL STORES PVT. LTD", "erp": "VTCHD_N0384", "seller": "Jitendra Gupta", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Panchkula", "outlet": "M/S ABHYUDAY FOOD ENTERPRISES", "erp": "VTCHD_N0392", "seller": "Jitendra Gupta", "cases": 0.33, "value": 835.81, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Chandigarh", "location": "Tricity", "city": "Chandigarh", "outlet": "ABHYUDAY ESSENTIALS (CHANDIGARH)", "erp": "VTCHD_N0394", "seller": "Jitendra Gupta", "cases": 0.33, "value": 835.81, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Garg Dastak ( Sec-54 Gurgaon  )", "erp": "VTLND_01376", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Marche Retail Pvt Ltd (South Point Mall)", "erp": "VTLND_00831", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Marche Retail Pvt Ltd (Good Earth)", "erp": "VTLND_00828", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Marche Retail Pvt Ltd (Dlf Galleria)", "erp": "VTLND_00829", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Ssm Retail Pvt Ltd(Sector-50)", "erp": "VTLND_01026", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Honey Money Top (DLF Farms )", "erp": "VTLND_01051", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "New Modern Bazaar Dept Store Pvt Ltd Arjun Marg", "erp": "VTLND_01113", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "New Modern Bazaar Dept Store Pvt Ltd (SECTOR 16)", "erp": "VTLND_01103", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Ssm Retail Pvt Ltd(Sec-70)", "erp": "VTLND_01106", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "New Modern Bazaar Dept Store Pvt Ltd ( CYBER CITY )", "erp": "VTLND_01105", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd(Dwarka Sec-12A)", "erp": "VTLND_01108", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "New Modern Bazaar Dept Store Pvt Ltd Sector 65 Gurgaon", "erp": "VTLND_01110", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd (Saket)", "erp": "VTLND_01102", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd Nfc New Delhi", "erp": "VTLND_01121", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Honey Money Top", "erp": "VTLND_00383", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Ssm Retailpvt Ltd(Sec-49)", "erp": "VTLND_00402", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Garg Dastak(DLF 1, Gurugram)", "erp": "VTLND_00974", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Kalish Colony New A11", "erp": "VTLND_01111", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "New Modern Bazaar Dept Store Pvt Ltd New(SS Plaza)", "erp": "VTLND_01112", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd Mall Road", "erp": "VTLND_01116", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd Green Park", "erp": "VTLND_01117", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd Basant Lok", "erp": "VTLND_01120", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "New Modern Bazaar Dept Store Pvt. Ltd. (Sec-129)", "erp": "VTLND_01419", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Shreejee Foods", "erp": "VTLND_01019", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2368.13, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Departmental Stores Pvt Ltd(IGI Airpot Aerocity)", "erp": "VTLND_01471", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "New Modern Bazaar Dept Store Pvt Ltd D-20Defence Colony", "erp": "VTLND_01115", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Marche Retail Pvt Ltd Mall Of India Sector-18", "erp": "VTLND_01443", "seller": "Bedanand Kamat", "cases": 0.67, "value": 1857.36, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "M/S Freshlee Retail Private Limited", "erp": "VTLND_00982", "seller": "Bedanand Kamat", "cases": 10.0, "value": 23684.13, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Om Daily Needs Retailing Pvt Ltd", "erp": "VTLND_00230", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Honey Money Top (Taimoor Nagar )", "erp": "VTLND_00983", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Daily Needs (Sec-53 )", "erp": "VTLND_00382", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Marche Retail Pvt Ltd (Khasra No 712/1)-Chattarpur,Delhi", "erp": "VTLND_00836", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Marche Retail Pvt Ltd Noida (Gf Shop No 03&03A)", "erp": "VTLND_01123", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Ssm Retail Pvt. Ltd(Sector-46)", "erp": "VTLND_01387", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "Daily Needs( sec-9, vaishali)", "erp": "VTLND_00673", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2452.27, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "37 Krishna Super Marche", "erp": "VTNOI_N0139", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "NEW MODERN BAZAAR DEPARTMENTAL STORES SECTOR 85", "erp": "VTNOI_N0201", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "NEEDS RETAIL", "erp": "VTNOI_N0215", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "CP WHOLESALE INDIA PRIVATE LIMITED (LOTS) (NOIDA)", "erp": "VTNOI_N0265", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "CP WHOLESALE INDIA PRIVATE LIMITED (LOTS)(SOUTH DELHI)", "erp": "VTNOI_N0263", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "SILVER ARROW AUTOMOBILES PRIVATE LIMITED (MERCEDES BENZ)(SEC.8 NOIDA)", "erp": "VTNOI_N0298", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "T&T MOTORS PRIVATE LIMITED(Mercedes Benz Delhi)", "erp": "VTNOI_N0301", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "MARCHE RETAIL PVT LTD(Faridabad)", "erp": "VTNOI_N0336", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Marche Retails (P) LTd(SOUTH DELHI)", "erp": "VTNOI_N0337", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "FOODSTORIES PRIVATE LIMITED", "erp": "VTNOI_N0349", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Faridabad", "outlet": "SHOP EXPRESS LDA 24/7", "erp": "VTNOI_N0351", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2368.13, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Marche Retails (P) LTd", "erp": "VTNOI_N0364", "seller": "Bedanand Kamat", "cases": 0.67, "value": 1857.36, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "NEW MODERN BAZAAR DEPARTMENTAL STORES PRIVATE LIMITED (SEC- 43)", "erp": "VTNOI_N0377", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "MARCHE RETAIL PVT LTD sec-42 gur", "erp": "VTNOI_N0383", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SHOP EXPRESS LDA", "erp": "VTNOI_N0387", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SHOP EXPRESS LDA(HUDA MARKET", "erp": "VTNOI_N0390", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "NEW MODERN BAZAAR DEPARTMENTAL STORE PVT LTD. G.K", "erp": "VTNOI_N0403", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Faridabad", "outlet": "NEW MODERN BAZAR (FARIDABAD)", "erp": "VTNOI_N0420", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Faridabad", "outlet": "SHOP EXPRESS", "erp": "VTNOI_N0441", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Delhi", "outlet": "Marche Retails (P) LTd", "erp": "VTNOI_N0461", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "M/S Freshlee Retail Pvt Ltd Sector 51", "erp": "VTNOI_N0474", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "M/S Freshlee Retail Pvt Ltd Surajpur", "erp": "VTNOI_N0475", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Worldwide delight Pvt Ltd", "erp": "VTNOI_N0478", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "NUTS N MORE", "erp": "VTNOI_N0479", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "NUTS N MORE (Rajouri Garden)", "erp": "VTNOI_N0480", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "NUTS N MORE (Paschim Vihar)", "erp": "VTNOI_N0481", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "Worldwide delight Pvt Ltd (Indirapuram)", "erp": "VTNOI_N0482", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (VASANT KUNJ)", "erp": "VTNOI_N0484", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (AEROCITY)", "erp": "VTNOI_N0485", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (MAHIPALPUR)", "erp": "VTNOI_N0486", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (DHAULA KUAN)", "erp": "VTNOI_N0487", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (VIKASHPURI)", "erp": "VTNOI_N0488", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Geom365 (GGN -SEC.82)", "erp": "VTNOI_N0489", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Geom365 (NOIDA 104)", "erp": "VTNOI_N0490", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (GREEN PARK)", "erp": "VTNOI_N0491", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "Geom365 (CHHATARPUR)", "erp": "VTNOI_N0492", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Geom365 (Noida Alpha -1)", "erp": "VTNOI_N0493", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SHOP EXPRESS LDA 24x7", "erp": "VTNOI_N0494", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Ssm Retailpvt Ltd(Sec-82)", "erp": "VTNOI_N0498", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SSM RETAIL FOUR LLP", "erp": "VTNOI_N0513", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "GEOM365( UDYOG VIHAR)", "erp": "VTNOI_N0521", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "GEOM365( AMBIENCE MALL)", "erp": "VTNOI_N0522", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "GEOM365(ADCHINI)", "erp": "VTNOI_N0524", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "GEOM365(SUBROTO PARK)", "erp": "VTNOI_N0525", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "GEOM365(DARYA GANJ)", "erp": "VTNOI_N0526", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "GEOM365(C.P)", "erp": "VTNOI_N0527", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SHOP EXPRESS 24 X7 PRIVATE LIMITED", "erp": "VTNOI_N0528", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "GEOMETT BOX PRIVATE LIMITED(Okhla)", "erp": "VTNOI_N0529", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "GEOMETT BOX PRIVATE LIMITED(Convenience store)", "erp": "VTNOI_N0530", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "SHOP EXPRESS 24 X7 PRIVATE LIMITED", "erp": "VTNOI_N0534", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2368.13, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Delhi", "outlet": "NEW MODERN BAZAAR DEPARTMENT STORE P LTD", "erp": "VTNOI_N0546", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "New Delhi", "outlet": "NEW MODERN BAZAAR DEPARTMENT STORE P LTD", "erp": "VTNOI_N0547", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "MARCHE RETAIL PVT LTD", "erp": "VTNOI_N0549", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SSM RETAIL PRIVATE LIMITED SEC 55", "erp": "VTNOI_N0551", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SSM RETAIL PRIVATE LIMITED(Sec 66)", "erp": "VTNOI_N0580", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Sodhi's Super Market (SSM RETAIL SIX LLP)", "erp": "VTNOI_N0583", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "FOODSTORIES PRIVATE LIMITED", "erp": "VTNOI_N0603", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Shop Express 24*7 Private Limited", "erp": "VTNOI_N0623", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2368.13, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Geom365 41, IOCL", "erp": "VTNOI_N0634", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Delhi", "outlet": "Geom365 ( Paschim Vihar)", "erp": "VTNOI_N0635", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Delhi", "outlet": "Geom365( Pitampura )", "erp": "VTNOI_N0636", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "ALTAMASH ENTERPRISES", "erp": "VTNOI_N0642", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Sodhis Super Market", "erp": "VTNOI_N0648", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SSM RETAIL ONE LLP (Sec 23)", "erp": "VTNOI_N0654", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "SSM RETAIL TWO LLP (Sec-15)", "erp": "VTNOI_N0655", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "SHREEJEE FOODS - 121", "erp": "VTNOI_N0670", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "M/S R R Management Consultants Pvt Ltd", "erp": "VTNOI_N0674", "seller": "Bedanand Kamat", "cases": 2.0, "value": 4736.83, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Delhi", "outlet": "Kondli Bazar Private Limited", "erp": "VTNOI_N0675", "seller": "Bedanand Kamat", "cases": 20.0, "value": 47368.26, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Aggarwal Store", "erp": "VTNOI_N0689", "seller": "Bedanand Kamat", "cases": 2.0, "value": 4736.83, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Safety Store", "erp": "VTNOI_N0707", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "Baburam Bizcorp Llp", "erp": "VTNOI_N0720", "seller": "Bedanand Kamat", "cases": 1.33, "value": 3203.94, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "G One Super Mart", "erp": "VTNOI_N0737", "seller": "Bedanand Kamat", "cases": 0.33, "value": 835.81, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "Naseem Gen Store *", "erp": "VTNOI_N0746", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2451.72, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "Master Ji Departmental Store *", "erp": "VTNOI_N0749", "seller": "Bedanand Kamat", "cases": 0.33, "value": 835.81, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "MANDAVI ENTERPRISE", "erp": "VTNOI_N0763", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2451.72, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Noida", "outlet": "Kiranewala", "erp": "VTNOI_N0770", "seller": "Bedanand Kamat", "cases": 1.0, "value": 2367.85, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "Modern Stores", "erp": "VTNOI_N0771", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "United Super Store", "erp": "VTNOI_N1016", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Mumbai", "outlet": "FOODSTORIES PRIVATE LIMITED( SAKI VIHAR)", "erp": "VTNOI_N1870", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Andheri", "outlet": "FOODSTORIES PRIVATE LIMITED( ANDHERI (WEST))", "erp": "VTNOI_N1871", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Bandra", "outlet": "FOODSTORIES PRIVATE LIMITED( BANDRA)", "erp": "VTNOI_N1872", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "Sodhi Super Market (Sec-46 Old)", "erp": "VTNOI_N1873", "seller": "Bedanand Kamat", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Ghaziabad", "outlet": "V D H STORE", "erp": "VTLND_00200", "seller": "Jasvinder", "cases": 5.03, "value": 11775.44, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Gurgaon", "outlet": "ELIXDOTE FOODS LLP (GREENR 32nd AVENUE GURGAON)", "erp": "VTNOI_N1885", "seller": "Bedanand Kamat", "cases": 0.25, "value": 480.59, "octCases": 0.03, "billed": 1, "octBilled": 1}, {"region": "North", "dist": "VTC Noida", "location": "NCR", "city": "Vadodara", "outlet": "BE GREENR JALSO FOODS LLP(ALEMBIC CITY)", "erp": "VTNOI_N1889", "seller": "Bedanand Kamat", "cases": 0.25, "value": 480.59, "octCases": 0.03, "billed": 1, "octBilled": 1}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "BISHNOI ENTERPRISES (DILKHUSH)", "erp": "VTBAN_N001", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "BECCABERRY INTERNATIONAL", "erp": "VTBAN_N002", "seller": "Nitin", "cases": 0.0, "value": -0.2, "octCases": 0.0, "billed": 1, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "DRY FRUIT GALLERY", "erp": "VTBAN_N003", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "KASHMIRA DRY FRUIT", "erp": "VTBAN_N008", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "AQSA DRY FRUIT", "erp": "VTBAN_N217", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "AQSA DRY FRUIT", "erp": "VTBAN_N218", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "AQSA DRY FRUIT", "erp": "VTBAN_N219", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}, {"region": "South", "dist": "VTC Bangalore", "location": "Karnataka", "city": "Bangalore", "outlet": "AQSA DRY FRUIT", "erp": "VTBAN_N220", "seller": "Nitin", "cases": 0.0, "value": 0.0, "octCases": 0.0, "billed": 0, "octBilled": 0}]};
+DATA.detail.forEach((d,i)=>{ d._id = d.erp || ("row"+i); });
+const NAMED = ["NCR","GUJARAT","Tricity","Karnataka"];
+
+const LS_KEY = "mtreg_listed_v2";
+let listedState = {};
+let storageOK = false;
+try{
+  const t="__mtreg_test__"; localStorage.setItem(t,"1"); localStorage.removeItem(t);
+  storageOK = true;
+  const raw = localStorage.getItem(LS_KEY); if(raw) listedState = JSON.parse(raw)||{};
+}catch(e){ storageOK = false; }
+
+let saveTimer=null;
+function flashSaved(){
+  const el=document.getElementById("saveStatus"); if(!el) return;
+  if(storageOK){ el.className="save-status ok"; el.textContent="Saved"; }
+  else{ el.className="save-status warn"; el.textContent="Saved for this session"; }
+  el.style.opacity="1";
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{ el.style.opacity=".55"; }, 1600);
+}
+function saveListed(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(listedState)); }catch(e){}
+  flashSaved();
+}
+const isListed = id => !!listedState[id];
+function setListed(id,val){ if(val) listedState[id]=1; else delete listedState[id]; saveListed(); }
+
+const fmt = n => (n===null||n===undefined||n==="") ? "" : (Math.round(n*100)/100).toLocaleString("en-IN");
+const fmtC = n => {
+  if(n===null||n===undefined) return '<span class="muted">&mdash;</span>';
+  if(n===0) return '<span class="zero">0</span>';
+  return (Math.round(n*100)/100).toLocaleString("en-IN",{minimumFractionDigits:0,maximumFractionDigits:2});
+};
+const fmtV = n => {
+  if(n===null||n===undefined) return '<span class="muted">&mdash;</span>';
+  if(n===0) return '<span class="zero">0</span>';
+  return "\u20B9"+Math.round(n).toLocaleString("en-IN");
+};
+const regClass = r => "reg-tag reg-" + (r||"");
+
+function detailRowsFor(loc){
+  if(loc==="Total") return DATA.detail;
+  if(loc==="Rest Of India") return DATA.detail.filter(d=>!NAMED.includes(d.location));
+  return DATA.detail.filter(d=>d.location===loc);
+}
+
+let selected = "Total";
+let currentRows = [];
+let sortKey = null, sortDir = 1;
+let query = "";
+let billedOnly = false;
+
+document.getElementById("stampAcc").textContent = DATA.detail.length;
+document.getElementById("stampLoc").textContent = new Set(DATA.detail.map(d=>d.location)).size;
+
+const sbody = document.getElementById("summaryBody");
+DATA.summary.forEach(row=>{
+  const tr = document.createElement("tr");
+  tr.dataset.loc = row.location;
+  if(row.location==="Total") tr.classList.add("total-row");
+  const ratio = (row.totalStores && row.billedStores!=null)
+      ? Math.min(1, row.billedStores/row.totalStores) : null;
+  tr.innerHTML = `
+    <td class="l">${row.region ? `<span class="${regClass(row.region)}">${row.region}</span>` : `<span class="muted">&mdash;</span>`}</td>
+    <td class="l">
+      <span class="loc-cell"><span class="dot" style="background:${dotColor(row)}"></span>${row.location}
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></span>
+    </td>
+    <td>${row.totalStores!=null?fmt(row.totalStores):'<span class="muted">&mdash;</span>'}</td>
+    <td>${row.billedStores!=null
+        ? `<span class="mini">${fmt(row.billedStores)}<span class="bar"><i style="width:${(ratio*100).toFixed(0)}%"></i></span></span>`
+        : '<span class="muted">&mdash;</span>'}</td>
+    <td>${fmtC(row.cases)}</td>
+    <td>${fmtV(row.value)}</td>
+    <td>${row.octBilled!=null?fmtC(row.octBilled):'<span class="muted">&mdash;</span>'}</td>
+    <td>${fmtC(row.octCases)}</td>`;
+  tr.addEventListener("click", ()=>select(row.location));
+  sbody.appendChild(tr);
+});
+
+function dotColor(row){
+  const m={North:"var(--north)",South:"var(--south)",West:"var(--west)",East:"var(--east)",Central:"var(--central)"};
+  return m[row.region] || "var(--ink-faint)";
+}
+
+function select(loc){
+  selected = loc;
+  [...sbody.children].forEach(tr=>tr.classList.toggle("sel", tr.dataset.loc===loc));
+  render();
+}
+
+document.getElementById("detailHead").addEventListener("click", e=>{
+  const th = e.target.closest("th"); if(!th) return;
+  const k = th.dataset.k;
+  if(sortKey===k){ sortDir*=-1; } else { sortKey=k; sortDir=1; }
+  [...document.querySelectorAll("#detailHead th")].forEach(h=>h.classList.remove("up","dn"));
+  th.classList.add(sortDir===1?"up":"dn");
+  render();
+});
+
+document.getElementById("search").addEventListener("input", e=>{
+  query = e.target.value.trim().toLowerCase();
+  render();
+});
+
+document.getElementById("billedOnly").addEventListener("click", e=>{
+  billedOnly = !billedOnly;
+  e.currentTarget.classList.toggle("on", billedOnly);
+  render();
+});
+
+const dbody = document.getElementById("detailBody");
+const dfoot = document.getElementById("detailFoot");
+function render(){
+  let rows = detailRowsFor(selected).slice();
+  if(billedOnly) rows = rows.filter(d=>d.billed===1);
+  if(query){
+    rows = rows.filter(d =>
+      (d.outlet||"").toLowerCase().includes(query) ||
+      (d.city||"").toLowerCase().includes(query) ||
+      (d.erp||"").toLowerCase().includes(query));
+  }
+  if(sortKey){
+    rows.sort((a,b)=>{
+      if(sortKey==="listed") return (isListed(a._id)-isListed(b._id))*sortDir;
+      let x=a[sortKey], y=b[sortKey];
+      if(typeof x==="number" || typeof y==="number"){ x=x??-Infinity; y=y??-Infinity; return (x-y)*sortDir; }
+      return String(x||"").localeCompare(String(y||""))*sortDir;
+    });
+  }
+  currentRows = rows;
+
+  const pill = document.getElementById("filterPill");
+  if(selected==="Total"){ pill.innerHTML=""; }
+  else{
+    pill.innerHTML = `<span class="pill">${selected}
+      <span class="x" title="Clear filter" role="button" tabindex="0">
+        <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#0b5b55" stroke-width="3"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </span></span>`;
+    const x = pill.querySelector(".x");
+    x.addEventListener("click", ()=>select("Total"));
+    x.addEventListener("keydown", ev=>{ if(ev.key==="Enter"||ev.key===" ") select("Total"); });
+  }
+
+  document.getElementById("rowCount").textContent = rows.length;
+  document.getElementById("billedCount").textContent = rows.reduce((s,d)=>s+(d.billed===1?1:0),0);
+
+  const empty = document.getElementById("emptyState");
+  if(rows.length===0){ dbody.innerHTML=""; dfoot.innerHTML=""; empty.hidden=false; return; }
+  empty.hidden=true;
+
+  dbody.innerHTML = rows.map(d=>{
+    const on = isListed(d._id);
+    return `
+    <tr class="${d.billed===1?'is-billed':''}">
+      <td class="l">${d.region?`<span class="${regClass(d.region)}">${d.region}</span>`:''}</td>
+      <td class="l muted">${d.dist||''}</td>
+      <td class="l">${d.location||''}</td>
+      <td class="l">${d.city||''}</td>
+      <td class="l acct">${esc(d.outlet||'')}<span class="erp">${d.erp||''}</span></td>
+      <td>${fmtC(d.cases)}</td>
+      <td>${fmtV(d.value)}</td>
+      <td>${fmtC(d.octCases)}</td>
+      <td><span class="flag ${d.billed===1?'y':'n'}">${d.billed===1?'Billed':'&mdash;'}</span></td>
+      <td class="listed-cell">
+        <button class="toggle ${on?'on':''}" data-id="${d._id}" role="switch" aria-checked="${on}" aria-label="Listed status for ${esc(d.outlet||'')}">
+          <span class="knob"></span>${on?'Yes':'No'}
+        </button>
+      </td>
+    </tr>`;}).join("");
+
+  const caseSum = rows.reduce((s,d)=>s+(d.cases||0),0);
+  const valSum  = rows.reduce((s,d)=>s+(d.value||0),0);
+  const octSum  = rows.reduce((s,d)=>s+(d.octCases||0),0);
+  const billedN = rows.reduce((s,d)=>s+(d.billed===1?1:0),0);
+  const listedN = rows.reduce((s,d)=>s+(isListed(d._id)?1:0),0);
+  dfoot.innerHTML = `<tr>
+    <td class="l" colspan="5">${rows.length} outlet${rows.length!==1?'s':''}</td>
+    <td>${fmtC(Math.round(caseSum*100)/100)}</td>
+    <td>${fmtV(valSum)}</td>
+    <td>${fmtC(Math.round(octSum*100)/100)}</td>
+    <td>${billedN} billed</td>
+    <td class="l">${listedN} Yes</td>
+  </tr>`;
+}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+dbody.addEventListener("click", e=>{
+  const btn = e.target.closest(".toggle"); if(!btn) return;
+  const id = btn.dataset.id;
+  setListed(id, !isListed(id));
+  render();
+});
+
+document.getElementById("markAll").addEventListener("click", ()=>{
+  currentRows.forEach(d=>setListed(d._id,true)); render();
+});
+document.getElementById("clearAll").addEventListener("click", ()=>{
+  currentRows.forEach(d=>setListed(d._id,false)); render();
+});
+
+document.getElementById("exportCsv").addEventListener("click", ()=>{
+  const cols = [["region","Region"],["dist","Serviced by"],["location","Location"],
+    ["city","City"],["outlet","Outlet"],["erp","Outlet ERP ID"],["seller","Seller"],
+    ["cases","Case Overall (AMJJASO26)"],["value","Value Overall (AMJJASO26)"],
+    ["octCases","Oli Ohh Sale Case (Oct)"],["octBilled","Oct Billed"],
+    ["billed","Billed Store Overall (AMJJASO26)"]];
+  const q = v => { v = (v==null?"":String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  let csv = cols.map(c=>c[1]).concat("Listed").join(",")+"\n";
+  currentRows.forEach(d=>{
+    csv += cols.map(c=>q(d[c[0]])).concat(isListed(d._id)?"Yes":"No").join(",")+"\n";
+  });
+  const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `mt-regional-${selected.replace(/\s+/g,"_")}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+select("Total");
+(function(){
+  const el=document.getElementById("saveStatus");
+  if(!storageOK){ el.className="save-status warn"; el.textContent="Saved for this session"; el.style.opacity=".85"; }
+  else if(Object.keys(listedState).length){ el.className="save-status ok"; el.textContent="Marks restored"; el.style.opacity=".7"; }
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

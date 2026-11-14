@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reviews · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+</head>
+<body>
+<main class="page">
+<header class="page-head"><nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Marketing</span></nav>
+  <div class="hstack" style="justify-content:space-between;align-items:flex-end;max-width:none">
+    <div><h1>Review intelligence</h1><p class="lede">Oli Ohh Pasta active review feed.</p></div>
+    <button class="btn" type="button" data-modal="addReview">Add a review</button>
+  </div>
+</header>
+<div class="stat-strip">
+  <div><div class="kpi-label">Average rating</div><div class="kpi-value"><span id="avg-rating">0.0</span> <span style="color:var(--semolina);font-size:.8em">★</span></div></div>
+  <div><div class="kpi-label">Live feeds</div><div class="kpi-value" id="feed-count">0</div></div>
+  <div><div class="kpi-label">Sync rate</div><div class="kpi-value">100%</div></div>
+</div>
+<section class="section"><div class="grid g3 is-top" id="review-container"></div></section>
+
+<div class="modal" id="addReview" role="dialog" aria-modal="true" aria-labelledby="arTitle">
+  <div class="modal-box" style="max-width:520px">
+    <header><h2 id="arTitle" style="font-size:var(--fs-lg)">Add a review</h2><button class="btn is-ghost is-sm" type="button" data-close-modal>Close</button></header>
+    <div class="grid g2">
+      <label class="field">Source<select id="input-platform"><option value="meesho">Meesho</option><option value="amazon">Amazon Now</option><option value="flipkart">FK Minutes</option></select></label>
+      <label class="field">Stars<select id="input-rating"><option value="5">5 stars</option><option value="4">4 stars</option></select></label>
+      <label class="field span-2">Customer name<input type="text" id="input-name" placeholder="Name"></label>
+      <label class="field span-2">Review<textarea id="input-text" rows="4" placeholder="Paste the customer’s feedback here"></textarea></label>
+    </div>
+    <p class="muted mt-1" id="arMsg" role="status" style="font-size:var(--fs-sm);color:var(--pomodoro)"></p>
+    <button class="btn mt-1" type="button" id="addBtn">Add review</button>
+    <p class="muted mt-1" style="font-size:var(--fs-xs)">Reviews are saved in this browser only.</p>
+  </div>
+</div>
+<script>
+(function () {
+  let reviews;
+  try { reviews = JSON.parse(localStorage.getItem('oliOhhReviews')); } catch (e) {}
+  reviews = reviews || [{ name: 'Demo User', platform: 'meesho', rating: 5, text: 'Click the + icon in the top right to add your first real review!', date: 'System' }];
+  const names = { meesho: 'Meesho', amazon: 'Amazon Now', flipkart: 'FK Minutes' };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function render() {
+    document.getElementById('review-container').innerHTML = [...reviews].reverse().map(r => `
+      <article class="card">
+        <div class="card-head"><b>${esc(r.name)}</b><span class="badge is-active is-plain">${names[r.platform] || esc(r.platform)}</span></div>
+        <div style="color:var(--semolina);letter-spacing:2px" aria-label="${r.rating} stars">${'★'.repeat(r.rating)}</div>
+        <p class="mt-1">“${esc(r.text)}”</p>
+        <p class="muted mt-2" style="font-size:var(--fs-xs)">Verified ${names[r.platform] || ''} feed, ${esc(r.date)}</p>
+      </article>`).join('');
+    document.getElementById('avg-rating').textContent = reviews.length ? (reviews.reduce((a, b) => a + parseInt(b.rating), 0) / reviews.length).toFixed(1) : '0.0';
+    document.getElementById('feed-count').textContent = reviews.length;
+  }
+  document.getElementById('addBtn').onclick = () => {
+    const name = document.getElementById('input-name').value.trim(), text = document.getElementById('input-text').value.trim();
+    if (!name || !text) { document.getElementById('arMsg').textContent = 'Add the customer name and the review text.'; return; }
+    reviews.push({ name, platform: document.getElementById('input-platform').value, rating: parseInt(document.getElementById('input-rating').value), text, date: 'Just now' });
+    try { localStorage.setItem('oliOhhReviews', JSON.stringify(reviews)); } catch (e) {}
+    document.getElementById('input-name').value = ''; document.getElementById('input-text').value = ''; document.getElementById('arMsg').textContent = '';
+    document.getElementById('addReview').classList.remove('open');
+    render();
+  };
+  render();
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

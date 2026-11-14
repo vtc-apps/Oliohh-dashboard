@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategic core · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+<style>
+  .outlets { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .outlet { text-align: left; cursor: pointer; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); padding: 14px 16px; display: grid; gap: 4px; font: inherit; color: inherit; border-top: 3px solid var(--tc, var(--line-strong)); }
+  .outlet:hover { box-shadow: var(--shadow); border-color: var(--line-strong); border-top-color: var(--tc, var(--line-strong)); }
+  .outlet h3 { font-size: var(--fs-base); margin: 4px 0 0; }
+  .outlet .rev { font: 700 var(--fs-lg) var(--display); font-variation-settings: "wdth" 88; }
+  .outlet small { color: var(--muted); font-size: var(--fs-xs); }
+  .t-platinum { --tc: var(--maroon); } .t-gold { --tc: var(--semolina); } .t-silver { --tc: #9aa3ad; } .t-bronze { --tc: #b0703c; } .t-others { --tc: var(--line-strong); }
+  .tier { font-size: var(--fs-xs); font-weight: 700; color: var(--tc); }
+  .t-gold .tier { color: var(--semolina-ink); }
+  .filters { display: grid; gap: 14px; }
+  .filters h3 { font-size: var(--fs-sm); font-family: var(--text); font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<main class="page">
+<header class="page-head">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Strategy</span></nav>
+  <h1>Oli-Ohh strategic core</h1>
+  <p class="lede">107 outlet expansion intelligence, tiered by Lindt revenue.</p>
+  <div class="meta"><span>Showing <b id="shopCount">107 shops</b></span></div>
+</header>
+<section class="card filters">
+  <div class="toolbar" style="margin:0"><input class="input" id="mainSearch" type="search" placeholder="Search account, city or seller" aria-label="Search outlets"><button class="btn is-ghost is-sm" id="resetAll" type="button">Reset filters</button></div>
+  <div><h3>Regional nodes</h3><div class="chips" id="regionChips"></div></div>
+  <div><h3>Distribution channel</h3><div class="chips" id="channelChips"></div></div>
+  <div><h3>Strategic tiers (Lindt revenue logic)</h3><div class="chips" id="typeChips"></div></div>
+</section>
+<section class="section"><div class="outlets" id="outletGrid"></div></section>
+
+<div class="modal" id="outletModal" role="dialog" aria-modal="true" aria-labelledby="mName">
+  <div class="modal-box">
+    <header><div><span class="badge is-active" id="mType"></span><h2 id="mName" style="font-size:var(--fs-lg);margin-top:8px"></h2></div><button class="btn is-ghost is-sm" type="button" data-close-modal>Close</button></header>
+    <div class="grid g2 is-top">
+      <dl class="dl" id="modalDetails"></dl>
+      <table class="t"><thead><tr><th>Month</th><th class="num">Revenue</th></tr></thead><tbody id="mTableBody"></tbody>
+      <tfoot><tr><td>P6M avg revenue (Lindt)</td><td class="num" id="mTotal"></td></tr></tfoot></table>
+    </div>
+  </div>
+</div>
+<script>const storeList = [
+    {"id": 413, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd Basant Lok", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹207,379", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹-35,794", "Oct": "₹1,176,533", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹114,178", "26-Feb": "₹-10,643"}},
+    {"id": 488, "name": "Defence Store", "fullName": "Defence Store", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹145,276", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹142,461", "Oct": "₹435,396", "Nov": "₹73,956", "dec": "₹95,462", "26-Jan": "₹30,704", "26-Feb": "₹93,678"}},
+    {"id": 12, "name": "Punjab Stores", "fullName": "Punjab Stores", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹142,911", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹146,192", "Oct": "₹509,494", "Nov": "₹58,996", "dec": "₹-1,259", "26-Jan": "₹95,427", "26-Feb": "₹48,615"}},
+    {"id": 469, "name": "Marche Retail", "fullName": "Marche Retail Pvt Ltd Mall Of India Sector-18", "region": "Noida", "seller": "VARUN", "sales": "₹81,944", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹517,902", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹-26,239"}},
+    {"id": 351, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd (Saket)", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹84,808", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹404,248", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹104,602"}},
+    {"id": 14, "name": "Punjab Stores", "fullName": "Punjab Store(Mohali)", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹71,510", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹273,950", "Nov": "₹0", "dec": "₹19,986", "26-Jan": "₹51,989", "26-Feb": "₹83,135"}},
+    {"id": 1485, "name": "MYFRESH RETAILS", "fullName": "MYFRESH RETAILS PRIVATE LIMITED", "region": "Panchkula", "seller": "Jitender Kumar Gupta", "sales": "₹79,046", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹41,805", "Oct": "₹355,991", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹76,477"}},
+    {"id": 35, "name": "M. G. Super Mkt", "fullName": "M. G. Super Mkt", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹71,578", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹91,039", "Oct": "₹205,463", "Nov": "₹16,180", "dec": "₹-14,310", "26-Jan": "₹87,318", "26-Feb": "₹43,779"}},
+    {"id": 260, "name": "Marche Retail", "fullName": "Marche Retail Pvt Ltd (South Point Mall)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹29,145", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹248,257", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹-73,389"}},
+    {"id": 388, "name": "Sethi'S Delicacy", "fullName": "Sethi'S Delicacy", "region": "Faridabad", "seller": "Bedanand Kamat", "sales": "₹59,830", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹159,795", "Nov": "₹6,711", "dec": "₹31,368", "26-Jan": "₹110,097", "26-Feb": "₹51,011"}},
+    {"id": 60, "name": "Empire Store", "fullName": "Empire Stores", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹57,893", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹20,511", "Oct": "₹152,285", "Nov": "₹17,613", "dec": "₹51,588", "26-Jan": "₹43,780", "26-Feb": "₹61,580"}},
+    {"id": 1683, "name": "Marche Retail", "fullName": "Marche Retails (P) LTd", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹51,799", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹322,842", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹-12,047"}},
+    {"id": 2039, "name": "Marche Retail", "fullName": "Marche Retails (P) LTd", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹70,973", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹95,060", "Oct": "₹292,463", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹38,315"}},
+    {"id": 327, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd ( CYBER CITY )", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹38,897", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹92,181", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹92,199", "26-Feb": "₹49,000"}},
+    {"id": 485, "name": "Fresh Lee", "fullName": "M/S Freshlee Retail Private Limited", "region": "Noida", "seller": "VARUN", "sales": "₹57,936", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹244,584", "Oct": "₹19,783", "Nov": "₹0", "dec": "₹34,148", "26-Jan": "₹0", "26-Feb": "₹49,098"}},
+    {"id": 1500, "name": "Marche Retail", "fullName": "MARCHE RETAIL PVT LTD(Faridabad)", "region": "Gurgaon", "seller": "Bedanand Kamat", "sales": "₹41,680", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹202,923", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹47,157"}},
+    {"id": 452, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Departmental Stores Pvt Ltd(IGI Airpot Aerocity)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹29,827", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹92,366", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹114,178", "26-Feb": "₹-27,580"}},
+    {"id": 2109, "name": "ABNI ENTERPRISES", "fullName": "ABNI ENTERPRISES", "region": "Panchkula", "seller": "Jitender Kumar Gupta", "sales": "₹34,445", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹235,536", "Nov": "₹-28,867", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2125, "name": "Geom365", "fullName": "Geom365 (AEROCITY)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹21,123", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹18,311", "Oct": "₹0", "Nov": "₹22,871", "dec": "weight", "26-Jan": "₹69,257", "26-Feb": "₹27,979"}},
+    {"id": 2230, "name": "Marche Retail", "fullName": "MARCHE RETAIL PVT LTD", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹37,633", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹180,564", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹45,232"}},
+    {"id": 2127, "name": "Geom365", "fullName": "Geom365 (DHAULA KUAN)", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹24,066", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹35,465", "Oct": "₹0", "Nov": "₹26,847", "dec": "₹0", "26-Jan": "₹71,709", "26-Feb": "₹10,374"}},
+    {"id": 287, "name": "Manish Agencies", "fullName": "Manish Agencies (B-3/186, Janakpuri)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹33,999", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹18,768", "Oct": "₹153,752", "Nov": "₹0", "dec": "₹19,379", "26-Jan": "₹12,093", "26-Feb": "₹0"}},
+    {"id": 1921, "name": "SHOP EXPRESS", "fullName": "SHOP EXPRESS LDA", "region": "Gurgaon", "seller": "Bedanand Kamat", "sales": "₹35,798", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹68,690", "Nov": "₹0", "dec": "₹37,787", "26-Jan": "₹108,312", "26-Feb": "₹0"}},
+    {"id": 2130, "name": "Geom365", "fullName": "Geom365 (NOIDA 104)", "region": "Noida", "seller": "VARUN", "sales": "₹30,142", "tier": "Platinum", "channel": "MT Regional", "monthly": {"Sep": "₹14,743", "Oct": "₹0", "Nov": "₹46,734", "dec": "text", "26-Jan": "₹32,024", "26-Feb": "₹87,353"}},
+    {"id": 62, "name": "Haryana General Store", "fullName": "Haryana general store", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹28,577", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹19,061", "Oct": "₹167,426", "Nov": "₹-15,028", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 46, "name": "Harri Hyper Store", "fullName": "Harri Hyper Store", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹22,915", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹135,380", "Nov": "₹0", "dec": "₹-10,671", "26-Jan": "₹12,782", "26-Feb": "₹0"}},
+    {"id": 18, "name": "Jagat Singh & Sons Agencies Retail", "fullName": "Jagat Singh & Sons Agencies Retail", "region": "Chandigarh", "owner": "Jitender Kumar Gupta", "sales": "₹27,772", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹90,638", "Nov": "₹0", "dec": "₹35,166", "26-Jan": "₹-2,623", "26-Feb": "₹43,451"}},
+    {"id": 1681, "name": "BERRY ISLAND", "fullName": "BERRY ISLAND", "region": "New Delhi", "owner": "VARUN", "sales": "₹22,592", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹32,828", "Nov": "₹-32,828", "dec": "₹57,024", "26-Jan": "₹78,531", "26-Feb": "₹0"}},
+    {"id": 499, "name": "Alkananda Stores", "fullName": "Alkananda Stores", "region": "New Delhi", "owner": "Bedanand Kamat", "sales": "₹65,812", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹323,577", "Oct": "₹120,299", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹-63,263", "26-Feb": "₹14,256"}},
+    {"id": 473, "name": "Raj King Mart", "fullName": "Raj King Mart", "region": "New Delhi", "owner": "Bedanand Kamat", "sales": "₹26,004", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹8,740", "Oct": "₹70,440", "Nov": "₹10,187", "dec": "₹40,532", "26-Jan": "₹3,651", "26-Feb": "₹22,474"}},
+    {"id": 513, "name": "Mantan Supermart", "fullName": "Mantan Supermart", "region": "New Delhi", "owner": "Bedanand Kamat", "sales": "₹78,545", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹453,248", "Oct": "₹18,024", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 454, "name": "The Taste", "fullName": "The Taste", "region": "New Delhi", "owner": "Bedanand Kamat", "sales": "₹25,410", "tier": "Platinum", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹152,462", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+
+    // GOLD
+    {"id": 263, "name": "Marche Retail", "fullName": "Marche Retail Pvt Ltd (Dlf Galleria)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹18,649", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹70,693", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹41,201"}},
+    {"id": 2205, "name": "Geom365", "fullName": "GEOM365(C.P)", "region": "New Delhi", "seller": "VARUN", "sales": "₹17,761", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹22,862", "Oct": "₹0", "Nov": "₹5,840", "dec": "₹0", "26-Jan": "₹48,992", "26-Feb": "₹28,871"}},
+    {"id": 2168, "name": "Ssm Retail Pvt Ltd", "fullName": "Ssm Retailpvt Ltd(Sec-82)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹18,434", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹60,886", "Nov": "₹49,718", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 364, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd Nfc New Delhi", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹18,519", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-15,601", "Oct": "₹122,562", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹4,154"}},
+    {"id": 411, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd Mall Road", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹13,739", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-24,622", "Oct": "₹60,361", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹46,693"}},
+    {"id": 1911, "name": "Modern Bazaar", "fullName": "NEW MODERN BAZAAR DEPARTMENTAL STORES PRIVATE LIMITED (SEC- 43)", "region": "Noida", "seller": "VARUN", "sales": "₹19,145", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-20,355", "Oct": "₹79,229", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹55,997"}},
+    {"id": 540, "name": "Penguin Overseas", "fullName": "Penguin Overseas", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹16,402", "tier": "Gold", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹37,761", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹17,597", "26-Feb": "₹0"}},
+    {"id": 412, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd Green Park", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹16,761", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-13,765", "Oct": "₹101,852", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹12,478"}},
+    {"id": 1949, "name": "Pratap Shopping Centre", "fullName": "Pratap Shopping Centre", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹19,156", "tier": "Gold", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹28,729", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹86,205"}},
+    {"id": 331, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd Sector 65 Gurgaon", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹12,965", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-37,322", "Oct": "₹86,683", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹28,429"}},
+    {"id": 577, "name": "V. M Traders", "fullName": "V. M Traders", "region": "Noida", "seller": "VARUN", "sales": "₹19,608", "tier": "Gold", "channel": "MT Standalone", "monthly": {"Sep": "₹27,553", "Oct": "₹0", "Nov": "₹0", "dec": "₹66,893", "26-Jan": "₹0", "26-Feb": "₹23,200"}},
+    {"id": 514, "name": "Honey Money Top", "fullName": "Honey Money Top (Taimoor Nagar )", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹15,519", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹70,323", "Nov": "₹0", "dec": "₹7,157", "26-Jan": "₹15,636", "26-Feb": "₹0"}},
+    {"id": 2185, "name": "Ssm Retail Pvt Ltd", "fullName": "SSM RETAIL FOUR LLP", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹14,003", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹74,933", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹9,087", "26-Feb": "₹0"}},
+    {"id": 262, "name": "Marche Retail", "fullName": "Marche Retail Pvt Ltd (Good Earth)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹18,164", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹58,943", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹50,039"}},
+    {"id": 2232, "name": "Ssm Retail Pvt Ltd", "fullName": "SSM RETAIL PRIVATE LIMITED SEC 55", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹12,747", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹34,555", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹41,928", "26-Feb": "₹0"}},
+    {"id": 13, "name": "Peshawari Supermarket", "fullName": "Peshawari Supermarket", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹16,019", "tier": "Gold", "channel": "MT Standalone", "monthly": {"Sep": "₹-1,235", "Oct": "₹48,136", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹49,211", "26-Feb": "₹0"}},
+    {"id": 1941, "name": "Modern Bazaar", "fullName": "NEW MODERN BAZAAR DEPARTMENTAL STORE PVT LTD. G.K", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹16,944", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-2,581", "Oct": "₹73,619", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹30,624"}},
+    {"id": 11, "name": "Rlcr 7 Super Market", "fullName": "Rlcr 7 Super Market", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹14,854", "tier": "Gold", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹76,078", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹11,662", "26-Feb": "₹1,383"}},
+    {"id": 2227, "name": "Modern Bazaar", "fullName": "NEW MODERN BAZAAR DEPARTMENT STORE P LTD", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹14,667", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹65,586", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹22,414"}},
+    {"id": 330, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd(Dwarka Sec-12A)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹11,853", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-18,435", "Oct": "₹68,428", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹21,127"}},
+    {"id": 467, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd D-20Defence Colony", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹14,482", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹63,712", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹23,182"}},
+    {"id": 1962, "name": "Modern Bazaar", "fullName": "NEW MODERN BAZAR (FARIDABAD)", "region": "Faridabad", "seller": "Bedanand Kamat", "sales": "₹14,256", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹61,289", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹24,247"}},
+    {"id": 409, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Kalish Colony New A11", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹10,575", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹-16,637", "Oct": "₹52,379", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹27,710"}},
+    {"id": 568, "name": "Daily Needs", "fullName": "Daily Needs( sec-9, vaishali)", "region": "Ghaziabad", "seller": "VARUN", "sales": "₹10,193", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹53,039", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹8,119"}},
+    {"id": 434, "name": "Manav Snacks Pvt. Ltd.", "fullName": "Manav Snacks Pvt. Ltd.", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹11,049", "tier": "Gold", "channel": "MT Standalone", "monthly": {"Sep": "₹9,470", "Oct": "₹16,550", "Nov": "₹10,262", "dec": "₹11,607", "26-Jan": "₹0", "26-Feb": "₹18,406"}},
+    {"id": 2264, "name": "Ssm Retail Pvt Ltd", "fullName": "SSM RETAIL PRIVATE LIMITED(Sec 66)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹10,770", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹64,619", "Nov": "₹38,095", "dec": "₹0", "26-Jan": "₹26,525", "26-Feb": "₹0"}},
+    {"id": 2269, "name": "Ssm Retail Pvt Ltd", "fullName": "Sodhi's Super Market (SSM RETAIL SIX LLP)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹10,131", "tier": "Gold", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹60,788", "Nov": "₹0", "dec": "₹60,787", "26-Jan": "₹0", "26-Feb": "₹0"}},
+
+    // SILVER
+    {"id": 410, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd New(SS Plaza)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹6,637", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹-84,333", "Oct": "₹90,348", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹33,808"}},
+    {"id": 2128, "name": "Geom365", "fullName": "Geom365 (VIKASHPURI)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹9,040", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹54,241"}},
+    {"id": 318, "name": "Modern Bazaar", "fullName": "New Modern Bazaar Dept Store Pvt Ltd Arjun Marg", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹8,893", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹-28,297", "Oct": "₹92,181", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹-10,527"}},
+    {"id": 523, "name": "Marche Retail", "fullName": "Marche Retail Pvt Ltd (Khasra No 712/1)-Chattarpur,Delhi", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹5,920", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹44,400", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹-8,878"}},
+    {"id": 311, "name": "Honey Money Top", "fullName": "Honey Money Top (DLF Farms )", "region": "New Delhi", "seller": "Bedanand Kamat", "sales": "₹7,524", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹42,126", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹3,020"}},
+    {"id": 299, "name": "Ssm Retail Pvt Ltd", "fullName": "Ssm Retail Pvt Ltd(Sector-50)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹8,276", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹49,655", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 66, "name": "Bansal Namkeen", "fullName": "Bansal Namkeen", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹7,521", "tier": "Silver", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹45,125", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 386, "name": "Ssm Retail Pvt Ltd", "fullName": "Ssm Retailpvt Ltd(Sec-49)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹5,209", "tier": "Silver", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹31,252", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 1946, "name": "Manish Agencies", "fullName": "MANISH AGENCIES RETAIL PVT LTD (A3)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹7,155", "tier": "Silver", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹42,933", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+
+    // BRONZE
+    {"id": 2204, "name": "Geom365", "fullName": "GEOM365(DARYA GANJ)", "region": "New Delhi", "seller": "VARUN", "sales": "₹4,267", "tier": "Bronze", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹19,573", "26-Feb": "₹6,028"}},
+    {"id": 79, "name": "Cheema Mega Mart", "fullName": " CHEEMA MEGA MART", "region": "Punjab", "seller": "Jitender Kumar Gupta", "sales": "₹4,275", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹25,652", "26-Feb": "₹0"}},
+    {"id": 2111, "name": "ABNI ENTERPRISES", "fullName": "ABNI ENTERPRISES (JS Wholesale )", "region": "Panchkula", "seller": "Jitender Kumar Gupta", "sales": "₹3,142", "tier": "Bronze", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹7,479", "26-Feb": "₹11,375"}},
+    {"id": 384, "name": "Honey Money Top", "fullName": "Honey Money Top", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹4,887", "tier": "Bronze", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹29,321", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 1503, "name": "NEEDS SUPERMARKET (MAGNOLIAS)", "fullName": "NEEDS SUPERMARKET (MAGNOLIAS)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹3,220", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹19,321", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 255, "name": "Pastry Palace", "fullName": "Pastry Palace", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹3,735", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹22,410", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 69, "name": "Hr Supermarket", "fullName": "Hr Supermarket", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹4,327", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹25,959", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 1947, "name": "MANISH AGENCIES RETAILS PVT LTD (VIKASPURI)", "fullName": "MANISH AGENCIES RETAILS PVT LTD (VIKASPURI)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹4,224", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹25,341", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 398, "name": "Market", "fullName": "Market", "region": "Ghaziabad", "seller": "VARUN", "sales": "₹3,269", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹19,615", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 10, "name": "Dewan Chand", "fullName": "Dewan Chand Joginder Pal Bhatia", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹2,025", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹12,152", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 326, "name": "Ssm Retail Pvt Ltd", "fullName": "Ssm Retail Pvt Ltd(Sec-70)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹2,271", "tier": "Bronze", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹13,626", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 382, "name": "Kwality Bazaar", "fullName": "Kwality Bazaar", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹2,205", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹13,230", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 546, "name": "Marche Retail Pvt Ltd Noida", "fullName": "Marche Retail Pvt Ltd Noida", "region": "Noida", "seller": "VARUN", "sales": "₹1,960", "tier": "Bronze", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹11,761", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 24, "name": "Thakkar Supermarket", "fullName": "Thakkar Supermarket", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹1,587", "tier": "Bronze", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹9,520", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+
+    // OTHERS
+    {"id": 290, "name": "Stop & Shop", "fullName": "M/S Stop & Shop -50", "region": "Noida", "seller": "VARUN", "sales": "₹-1,963", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹-11,775", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 20, "name": "Sharma Provision", "fullName": "Sharma Provision Store", "region": "Chandigarh", "seller": "Jitender Kumar Gupta", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2187, "name": "Rush Enterprises", "fullName": "Rush Enterprises", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹-4,644", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹-27,862", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2383, "name": "JAY CEE GRAND", "fullName": "JAY CEE GRAND", "region": "Noida", "seller": "VARUN", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 1501, "name": "Marche Retails (P) LTd(SOUTH DELHI)", "fullName": "Marche Retails (P) LTd(SOUTH DELHI)", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹-5,804", "tier": "Others", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹-34,821", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 1917, "name": "MARCHE RETAIL PVT LTD sec-42 gur", "fullName": "MARCHE RETAIL PVT LTD sec-42 gur", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹492", "tier": "Others", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹2,953", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2338, "name": "Maa Annapurna Store", "fullName": "Maa Annapurna Store", "region": "Noida", "seller": "VARUN", "sales": "₹449", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹2,693", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 87, "name": "Bansal Bakers", "fullName": "Bansal Bakers", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 347, "name": "Avr Super Mart (Noida Sec 137)", "fullName": "Avr Super Mart (Noida Sec 137)", "region": "Noida", "seller": "VARUN", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 253, "name": "Dastak", "fullName": "Garg Dastak ( Sec-54 Gurgaon )", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹0", "tier": "Others", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 352, "name": "Avr Supar Mart (Noida Sec 143)", "fullName": "Avr Supar Mart (Noida Sec 143)", "region": "Noida", "seller": "VARUN", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 426, "name": "Shreejee Foods", "fullName": "Shreejee Foods", "region": "Noida", "seller": "VARUN", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 565, "name": "Ssm Retail Pvt Ltd", "fullName": "Ssm Retail Pvt. Ltd(Sector-46)", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹0", "tier": "Others", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 921, "name": "Budget Bazaar", "fullName": "Budget Bazaar", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹-419", "tier": "Others", "channel": "MT Regional", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹-2,516", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 1358, "name": "Needs supermart", "fullName": "NEEDS SUPERMART", "region": "Gurgaon", "seller": "SANJAY", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2097, "name": "Pratap Shopping Centre", "fullName": "Pratap Shopping Centre", "region": "Mohali", "seller": "Jitender Kumar Gupta", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2212, "name": "Manish Agencies", "fullName": "MANISH AGENCIES RETAILS PRIVATE LIMITED", "region": "New Delhi", "seller": "Sumit Kumar", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}},
+    {"id": 2390, "name": "MODERN BASKET RETAILS PRIVATE LIMITED", "fullName": "MODERN BASKET RETAILS PRIVATE LIMITED", "region": "Noida", "seller": "VARUN", "sales": "₹0", "tier": "Others", "channel": "MT Standalone", "monthly": {"Sep": "₹0", "Oct": "₹0", "Nov": "₹0", "dec": "₹0", "26-Jan": "₹0", "26-Feb": "₹0"}}
+];
+
+(function () {
+  const grid = document.getElementById('outletGrid');
+  const search = document.getElementById('mainSearch');
+  const sel = { reg: new Set(), chan: new Set(), typ: new Set() };
+  const field = { reg: 'region', chan: 'channel', typ: 'tier' };
+  const lists = {
+    reg: [...new Set(storeList.map(s => s.region))].sort(),
+    chan: [...new Set(storeList.map(s => s.channel))].sort(),
+    typ: ['Platinum', 'Gold', 'Silver', 'Bronze', 'Others']
+  };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function chips(cat, boxId) {
+    const box = document.getElementById(boxId);
+    const n = v => storeList.filter(s => s[field[cat]] === v).length;
+    box.innerHTML = `<button type="button" class="chip" data-v="" aria-pressed="true">All (${storeList.length})</button>` +
+      lists[cat].map(v => `<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="false">${esc(v)} (${n(v)})</button>`).join('');
+    box.addEventListener('click', e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      const v = b.dataset.v;
+      if (!v) sel[cat].clear(); else sel[cat].has(v) ? sel[cat].delete(v) : sel[cat].add(v);
+      box.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.v ? String(sel[cat].has(c.dataset.v)) : String(sel[cat].size === 0)));
+      apply();
+    });
+  }
+
+  function apply() {
+    const q = search.value.toLowerCase();
+    const rows = storeList.filter(s =>
+      (s.name.toLowerCase().includes(q) || s.region.toLowerCase().includes(q) || s.seller.toLowerCase().includes(q)) &&
+      (!sel.reg.size || sel.reg.has(s.region)) && (!sel.chan.size || sel.chan.has(s.channel)) && (!sel.typ.size || sel.typ.has(s.tier)));
+    grid.innerHTML = rows.length ? rows.map((s, i) => `
+      <button type="button" class="outlet t-${(s.tier || 'others').toLowerCase()}" data-i="${storeList.indexOf(s)}">
+        <span class="tier">${esc(s.tier)}</span>
+        <h3>${esc(s.name)}</h3>
+        <small>P6M avg revenue as per Lindt</small>
+        <span class="rev">${esc(s.sales)}</span>
+        <small>${esc(s.region)} · ${esc(s.channel)}</small>
+      </button>`).join('') : '<div class="card muted">No outlets match. Clear a filter or the search.</div>';
+    document.getElementById('shopCount').textContent = rows.length + (rows.length === 1 ? ' shop' : ' shops');
+  }
+
+  grid.addEventListener('click', e => {
+    const b = e.target.closest('.outlet'); if (!b) return;
+    const s = storeList[+b.dataset.i];
+    document.getElementById('mName').textContent = s.fullName;
+    document.getElementById('mType').textContent = s.tier;
+    document.getElementById('mTotal').textContent = s.sales;
+    document.getElementById('modalDetails').innerHTML = [['Region', s.region], ['Partner', s.channel], ['Seller', s.seller]]
+      .map(d => `<dt>${d[0]}</dt><dd>${esc(d[1])}</dd>`).join('');
+    document.getElementById('mTableBody').innerHTML = Object.entries(s.monthly)
+      .map(([m, v]) => `<tr><td>${esc(m)}</td><td class="num">${esc(v)}</td></tr>`).join('');
+    document.getElementById('outletModal').classList.add('open');
+  });
+
+  document.getElementById('resetAll').onclick = () => {
+    search.value = ''; Object.values(sel).forEach(s => s.clear());
+    document.querySelectorAll('.filters .chip').forEach(c => c.setAttribute('aria-pressed', String(!c.dataset.v)));
+    apply();
+  };
+  search.addEventListener('input', apply);
+  chips('reg', 'regionChips'); chips('chan', 'channelChips'); chips('typ', 'typeChips');
+  apply();
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

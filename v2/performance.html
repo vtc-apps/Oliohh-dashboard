@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q-com performance · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+<style>
+  .sub { display: block; font-size: var(--fs-xs); color: var(--muted); }
+  .flag { color: var(--pomodoro); font-weight: 700; }
+  tr.total td { font-weight: 700; background: var(--semolina-tint) !important; }
+  .t td { white-space: nowrap; }
+</style>
+</head>
+<body>
+<main class="page">
+<header class="page-head"><nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Marketing</span></nav>
+  <h1>Quick com performance</h1>
+  <p class="lede">Promo and ad spend against orders and sales on quick-commerce platforms.</p>
+</header>
+<div class="stat-strip">
+  <div><div class="kpi-label">Budget used (Jul – 7 Aug)</div><div class="kpi-value">₹2,07,489</div></div>
+  <div><div class="kpi-label">Orders*</div><div class="kpi-value">423</div></div>
+  <div><div class="kpi-label">Spent per order</div><div class="kpi-value">₹491</div></div>
+  <div><div class="kpi-label">Sales %</div><div class="kpi-value">14.1%</div></div>
+</div>
+<section class="section"><div class="section-head"><h2>Promo performance</h2></div>
+<div class="table-wrap"><table class="t"><thead><tr id="promoHead"></tr></thead><tbody id="promoBody"></tbody></table></div>
+<p class="muted mt-1" style="font-size:var(--fs-sm)"><span class="flag">*</span> Order count not available in Blinkit export — proxied by units sold (assumption). <span class="flag">†</span> Aug 2026 is a partial month (01–07 Aug).</p></section>
+<section class="section"><div class="section-head"><h2>Ad performance</h2><p>No ad data entered yet</p></div>
+<div class="table-wrap"><table class="t"><thead><tr id="adHead"></tr></thead><tbody id="adBody"></tbody></table></div></section>
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     EDIT YOUR DATA HERE
+     ------------------------------------------------------------
+     Column order (keep it the same as the headers):
+       Month, Period, Promo/Add name, Plateform, Budget used,
+       No of orders, No of pieces, Spent per Order, Sales %
+
+     Each row is one array. Add, remove, or change rows freely.
+     Leave a value as "" for a blank cell.
+     Add "TOTAL" as a 10th item in a row to style it as a total row.
+     ============================================================ */
+
+  const PROMO_COLS = ["Month","Period","Promo name","Plateform","Budget used","No of orders","No of pieces","Spent per Order","Sales %"];
+  const AD_COLS    = ["Month","Period","Add name","Plateform","Budget used","No of orders","No of pieces","Spent per Order","Sales %"];
+
+  const PROMO_DATA = [
+    ["Jul 2026", "01–31 Jul 2026", "Oli Ohh Pasta – Product Listing Ads|4 campaigns · Delhi NCR", "Blinkit", "₹1,51,143", "333*", "333", "₹454", "15.2%"],
+    ["Aug 2026", "01–07 Aug 2026†", "Oli Ohh Pasta – Product Listing Ads|4 campaigns · Delhi NCR", "Blinkit", "₹56,346", "90*", "90", "₹626", "11.0%"],
+    ["Total", "01 Jul – 07 Aug 2026", "All Blinkit PLA campaigns", "Blinkit", "₹2,07,489", "423*", "423", "₹491", "14.1%", "TOTAL"],
+  ];
+
+  const AD_DATA = [
+    // ["Jul-26", "1 july-7 july", "Banner", "", "20000", "200", "210", "100", "1%"],
+    ["", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+    ["", "", "", "", "", "", "", "", ""],
+  ];
+
+  /* ===================== end of data ========================= */
+
+  function renderHead(rowEl, cols){
+    rowEl.innerHTML = cols.map(c => "<th>"+esc(c)+"</th>").join("");
+  }
+  function cell(v){
+    v = esc(v!=null ? v : "");
+    var parts = v.split("|");
+    if(parts.length > 1){
+      return parts[0] + "<span class='sub'>" + parts.slice(1).join(" ") + "</span>";
+    }
+    return v.replace(/\*/g,"<span class='flag'>*</span>").replace(/†/g,"<span class='flag'>†</span>");
+  }
+  function renderBody(bodyEl, rows, cols){
+    bodyEl.innerHTML = rows.map(r => {
+      var isTotal = r[cols.length] === "TOTAL";
+      return "<tr"+(isTotal?" class='total'":"")+">" +
+        cols.map((_,i)=>"<td>"+cell(r[i])+"</td>").join("") + "</tr>";
+    }).join("");
+  }
+  function esc(v){
+    return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  renderHead(document.getElementById("promoHead"), PROMO_COLS);
+  renderBody(document.getElementById("promoBody"), PROMO_DATA, PROMO_COLS);
+  renderHead(document.getElementById("adHead"), AD_COLS);
+  renderBody(document.getElementById("adBody"), AD_DATA, AD_COLS);
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

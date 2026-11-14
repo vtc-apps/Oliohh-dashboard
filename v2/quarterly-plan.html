@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quarterly plan · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+</head>
+<body>
+<main class="page">
+<header class="page-head">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Overview</span></nav>
+  <h1>Operational performance plan</h1>
+  <p class="lede">Month-by-month activation plan by city, with coverage, visits and billing.</p>
+</header>
+<div class="stat-strip">
+  <div><div class="kpi-label">Plan items</div><div class="kpi-value" id="sumN">—</div></div>
+  <div><div class="kpi-label">Coverage</div><div class="kpi-value" id="sumCov">—</div></div>
+  <div><div class="kpi-label">Visits</div><div class="kpi-value" id="sumVis">—</div></div>
+  <div><div class="kpi-label">Billed</div><div class="kpi-value" id="sumBil">—</div></div>
+</div>
+<section class="section">
+  <div class="chips" id="monthChips" style="margin-bottom:14px"></div>
+  <div class="table-wrap"><table class="t">
+    <thead><tr><th>Month</th><th>City</th><th>Details</th><th>Target date</th><th class="num">Coverage</th><th class="num">Visits</th><th class="num">Billed</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table></div>
+</section>
+<script>const dataset = [
+        { month: "APRIL", city: "NOI/GZB", details: "Top 50 stores Activation.(NOI/GZB)", date: "15-Apr", coverage: 61, visits: 61, billed: 42 },
+        { month: "MAY", city: "NCR", details: "Delhi NCR DRCP Activated with 3 seller's and total stores", date: "01-May", coverage: 676, visits: 292, billed: 66 },
+        { month: "MAY", city: "NCR", details: "Delhi NCR DRCP Activated with 4 seller's and total stores", date: "15-May", coverage: 375, visits: "", billed: "" },
+        { month: "MAY", city: "CHD", details: "DRCP Activated with 1 seller's and total stores", date: "01-May", coverage: 111, visits: 28, billed: 5 },
+        { month: "MAY", city: "NCR", details: "MTR Stores", date: "—", coverage: 143, visits: 73, billed: 5 },
+        { month: "JUNE", city: "CHD", details: "Activation of DRCP for 2 Sellers (1 ASM For TOP+1 seller)", date: "25-May", coverage: "", visits: "", billed: "" },
+        { month: "JUNE", city: "ROP", details: "Activation of DRCP for 1 Seller", date: "25-May", coverage: "", visits: "", billed: "" },
+        { month: "JUNE", city: "NCR", details: "Activation of DRCP for 6 sellers (1 ASM+6 sellers)", date: "30-May", coverage: 650, visits: "", billed: "" },
+        { month: "JUNE", city: "BGLR", details: "Activation of DRCP for 1 seller", date: "25-May", coverage: "", visits: "", billed: "" },
+        { month: "JUNE", city: "GUJ", details: "Activation of DRCP for 1 seller(SUBD)", date: "25-May", coverage: "", visits: "", billed: "" },
+        { month: "JUNE", city: "NCR", details: "Start Sampling Activities(3 sets) (Move 6 VC + 1 SV from P&G)", date: "03-Jun", coverage: "", visits: "", billed: "" },
+        { month: "JUNE", city: "NCR", details: "Activation of DRCP for 8 MM (moving merchandizer)", date: "03-Jun", coverage: "", visits: "", billed: "" },
+        { month: "JUNE", city: "NCR", details: "Activation of separate VC team (Move 3 VC from P&G)", date: "10-Jun", coverage: "", visits: "", billed: "" },
+        { month: "JULY", city: "W UP", details: "5 SELLERS (AGR/MTH/FZD/ALI/BSR/MBD/MRT/MZN/SRP)", date: "06-Jul", coverage: 600, visits: "", billed: "" },
+        { month: "JULY", city: "W UP", details: "Moving 5 (DB + VC) For delivery and visibility", date: "06-Jul", coverage: "", visits: "", billed: "" },
+        { month: "JULY", city: "LKO", details: "Activation of DRCP for 1 seller(SUBD)", date: "10-Jul", coverage: "", visits: "", billed: "" },
+        { month: "JULY", city: "DDN", details: "Activation of DRCP for 1 seller(SUBD)", date: "10-Jul", coverage: "", visits: "", billed: "" },
+        { month: "JULY", city: "RAJ", details: "Activation of DRCP for 1 seller(SUBD)", date: "10-Jul", coverage: "", visits: "", billed: "" },
+        { month: "JULY", city: "MUM", details: "Team selection + store selection", date: "15-Jul", coverage: "", visits: "", billed: "" },
+        { month: "JULY", city: "KOL", details: "Team selection + store selection", date: "15-Jul", coverage: "", visits: "", billed: "" },
+        { month: "AUGUST", city: "MUM", details: "Activation of DRCP", date: "03-Aug", coverage: "", visits: "", billed: "" },
+        { month: "AUGUST", city: "KOL", details: "Activation of DRCP", date: "03-Aug", coverage: "", visits: "", billed: "" },
+        { month: "SEP", city: "ROUP", details: "selection and appointment of Subd(No seller Model)", date: "01-Sep", coverage: "", visits: "", billed: "" },
+        { month: "OCT", city: "ROUP", details: "Billing start", date: "01-Oct", coverage: "", visits: "", billed: "" }
+    ];
+(function () {
+  const months = [['ALL','All months'],['APRIL','April'],['MAY','May'],['JUNE','June'],['JULY','July'],['AUGUST','August'],['SEP','September'],['OCT','October']];
+  const box = document.getElementById('monthChips');
+  const n = m => m === 'ALL' ? dataset.length : dataset.filter(r => r.month.toUpperCase().includes(m)).length;
+  box.innerHTML = months.map(([k, l], i) => `<button type="button" class="chip" data-m="${k}" aria-pressed="${i === 0}">${l} (${n(k)})</button>`).join('');
+  const cell = v => (v || v === 0) && v !== '' ? `<b>${v}</b>` : '<span class="muted">—</span>';
+  const title = s => s.charAt(0) + s.slice(1).toLowerCase();
+  function render(m) {
+    const rows = m === 'ALL' ? dataset : dataset.filter(r => r.month.toUpperCase().includes(m));
+    document.getElementById('tableBody').innerHTML = rows.length ? rows.map(r => `<tr>
+      <td><b>${title(r.month)}</b></td><td><span class="badge is-plain">${r.city}</span></td><td>${r.details}</td>
+      <td style="white-space:nowrap">${r.date || '—'}</td><td class="num">${cell(r.coverage)}</td><td class="num">${cell(r.visits)}</td><td class="num">${cell(r.billed)}</td></tr>`).join('')
+      : '<tr><td colspan="7" class="muted">No plans for this month.</td></tr>';
+    const sum = k => rows.reduce((s, r) => s + (+r[k] || 0), 0);
+    document.getElementById('sumCov').textContent = sum('coverage').toLocaleString('en-IN');
+    document.getElementById('sumVis').textContent = sum('visits').toLocaleString('en-IN');
+    document.getElementById('sumBil').textContent = sum('billed').toLocaleString('en-IN');
+    document.getElementById('sumN').textContent = rows.length;
+  }
+  box.addEventListener('click', e => {
+    const b = e.target.closest('.chip'); if (!b) return;
+    box.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
+    render(b.dataset.m);
+  });
+  render('ALL');
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

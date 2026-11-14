@@ -3,11 +3,13 @@
  * Assets:  stale-while-revalidate (instant repeat loads, refreshed in background)
  * Bump VERSION whenever you want every device to drop its old cache.
  */
-const VERSION = 'oliohh-v2';
+const VERSION = 'oliohh-v3';
 const SHELL = [
   './', 'index.html', 'home.html', 'manifest.json',
   'assets/app.css', 'assets/app.js',
-  'assets/icon-192.png', 'assets/favicon.png', 'assets/login-poster.jpg'
+  'assets/icon-192.png', 'assets/favicon.png', 'assets/login-poster.jpg',
+  'v2/index.html', 'v2/home.html', 'v2/assets/v2.css', 'v2/assets/v2.js',
+  'v2/assets/fonts/bricolage.woff2', 'v2/assets/fonts/instrument-sans.woff2'
 ];
 const CDN_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com'];
 

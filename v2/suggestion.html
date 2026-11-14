@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suggestions · Oli-Ohh</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7f1d1d">
+<link rel="manifest" href="../manifest.json">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/v2.css">
+<script src="assets/v2.js"></script>
+</head>
+<body>
+<main class="page">
+<header class="page-head"><nav class="crumb" aria-label="Breadcrumb"><a href="home.html">Command Center</a><span>/</span><span>Tools</span></nav>
+  <h1>Submit your suggestion</h1>
+  <p class="lede">Ideas for the Oli-Ohh launch go straight to the team.</p>
+</header>
+<form class="card" id="sForm" style="max-width:560px;display:grid;gap:14px" novalidate>
+  <label class="field">Your name<input type="text" id="name" autocomplete="name" required></label>
+  <label class="field">Your suggestion<textarea id="suggestion" rows="6" placeholder="Write your suggestion for the Oli-Ohh launch…" required></textarea></label>
+  <div class="hstack"><button class="btn" type="submit" id="sBtn">Send suggestion</button><span id="msg" role="status" aria-live="polite" style="font-size:var(--fs-sm);font-weight:600"></span></div>
+</form>
+<script>
+// Google Apps Script WEB APP url (Deploy → New deployment → Web app → copy the URL ending in /exec)
+const SUGGESTION_ENDPOINT = "https://script.google.com/macros/library/d/1EP4e0k6YVseXh1wEBq6qmsn8WBKvoGnu7JkGKbLKxfGOQEn4qtvatmOf/2";
+(function () {
+  const msg = document.getElementById('msg'), btn = document.getElementById('sBtn');
+  const say = (t, ok) => { msg.textContent = t; msg.style.color = ok ? 'var(--basil)' : 'var(--pomodoro)'; };
+  document.getElementById('sForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim(), suggestion = document.getElementById('suggestion').value.trim();
+    if (!name || !suggestion) return say('Add your name and a suggestion.');
+    if (!/\/exec(\?|$)/.test(SUGGESTION_ENDPOINT)) return say('The suggestion box isn’t connected yet. It needs the Apps Script web-app (/exec) link.');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(SUGGESTION_ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ name, suggestion, page: 'Oli-Ohh Command Center', at: new Date().toISOString() }) })
+      .then(() => { say('Suggestion sent. Thank you!', true); e.target.reset(); })
+      .catch(() => say('Couldn’t send. Check your connection and try again.'))
+      .finally(() => { btn.disabled = false; btn.textContent = 'Send suggestion'; });
+  });
+})();
+</script>
+<footer class="foot">Rounak Singh, VTC Tradewings © 2026</footer>
+</main>
+</body>
+</html>

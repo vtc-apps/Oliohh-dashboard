@@ -2,7 +2,22 @@
 
 Static dashboard site for the Oli-Ohh launch (VTC Tradewings). Plain HTML pages, no build step. Hosted on GitHub Pages.
 
-## Structure
+## Two versions
+
+- **v2 (new design)** is in `v2/`. Open `v2/index.html`. It uses the brand maroon, has one shared sidebar, Ctrl/⌘+K page search and a mobile menu, and carries over all the content.
+- **v1 (original)** is the root-level pages. Both versions use the same PIN and session, so moving between them doesn't ask you to sign in again.
+
+### v2 structure
+
+| Path | What it is |
+|---|---|
+| `v2/assets/v2.css` | Design system: colours, type, cards, tables, badges, progress bars |
+| `v2/assets/v2.js` | App shell: page list (`PAGES`), sidebar, search, mobile menu, sign-in check |
+| `v2/assets/fonts/` | Self-hosted Bricolage Grotesque and Instrument Sans (SIL Open Font License) |
+
+To add a v2 page, copy any v2 page, keep its `<head>`, put the content in `<main class="page">`, and add one line to `PAGES` in `v2/assets/v2.js`. The sidebar and search update automatically.
+
+## Structure (v1)
 
 | Path | What it is |
 |---|---|
