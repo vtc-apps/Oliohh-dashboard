@@ -1,0 +1,33 @@
+/* Oli-Ohh Command Center — shared shell styles (kept tiny on purpose) */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+img, video, canvas, svg { max-width: 100%; }
+
+/* Visible keyboard focus everywhere */
+:focus-visible { outline: 2px solid #00ffd5; outline-offset: 2px; }
+
+/* Wide tables scroll inside themselves instead of breaking the page on phones */
+@media (max-width: 760px) {
+  table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* Floating home button (added by app.js only on pages without a way back) */
+.oo-home-fab {
+  position: fixed; left: 18px; bottom: 18px; z-index: 99999;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 999px;
+  background: rgba(10, 14, 18, 0.88); color: #00ffd5;
+  border: 1px solid rgba(0, 255, 213, 0.45);
+  font: 700 13px/1 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  letter-spacing: .4px; text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  transition: transform .2s ease, background .2s ease;
+}
+.oo-home-fab span:first-child { font-size: 16px; }
+.oo-home-fab:hover { transform: translateY(-2px); background: #00ffd5; color: #000; }
+@media print { .oo-home-fab { display: none; } }
+
+/* Respect users who turn animations off */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NCR Activation Dashboard</title>
+    <title>GUJARAT Activation Dashboard</title>
     <style>
         :root {
             --bg: #030406;
@@ -140,15 +140,9 @@
             position: absolute; 
             left: 0; 
             height: 100%; 
-            width: 100%; 
+            width: 0%; 
             background: linear-gradient(90deg, var(--accent), var(--success)); 
             border-radius: 3px; 
-        }
-
-        /* Custom smaller tracking filled markers for lower progress bars */
-        .track-progress-partial {
-            width: 15% !important;
-            background: linear-gradient(90deg, var(--accent), var(--warning)) !important;
         }
 
         .checkpoint { position: relative; display: flex; flex-direction: column; align-items: center; z-index: 5; }
@@ -226,16 +220,28 @@
             .mtd-grid div:nth-child(n+5) { border-top: 1px solid var(--border); }
         }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body>
 
     <a href="home.html" class="home-btn">HOME</a>
 
     <div class="mtd-container">
-        <div style="text-align:center; padding:10px; font-weight:800; color:var(--success); font-size:0.8rem; border-bottom:1px solid var(--border)">OLI OHH NCR SUMMARY · APR–OCT 2026</div>
+        <div style="text-align:center; padding:10px; font-weight:800; color:var(--success); font-size:0.8rem; border-bottom:1px solid var(--border)">GUJARAT SUMMARY · APR–OCT 2026</div>
         <div class="mtd-grid">
             <div class="mtd-head-cell">Call Plan</div><div class="mtd-head-cell">Visited</div><div class="mtd-head-cell">Visit %</div><div class="mtd-head-cell">Billed</div><div class="mtd-head-cell">Billed %</div><div class="mtd-head-cell">Cases</div><div class="mtd-head-cell">Value</div>
-            <div class="mtd-body-cell">1039</div><div class="mtd-body-cell" style="color:var(--accent)">278</div><div class="mtd-body-cell">26.8%</div><div class="mtd-body-cell" style="color:var(--success)">278</div><div class="mtd-body-cell">26.8%</div><div class="mtd-body-cell">858.61</div><div class="mtd-body-cell">20.15 L</div>
+            <div class="mtd-body-cell">182</div><div class="mtd-body-cell" style="color:var(--accent)">28</div><div class="mtd-body-cell">15.4%</div><div class="mtd-body-cell" style="color:var(--success)">28</div><div class="mtd-body-cell">15.4%</div><div class="mtd-body-cell">11.17</div><div class="mtd-body-cell">₹27,328</div>
         </div>
     </div>
 
@@ -243,22 +249,22 @@
         
         <div class="dashboard-row roadmap-row">
             <div class="row-header">
-                <div class="row-title title-activation">1. NCR Activation Roadmap</div>
-                <div class="row-status" style="color: var(--success);">100%</div>
+                <div class="row-title title-activation">1. GUJARAT Activation Roadmap</div>
+                <div class="row-status" style="color: var(--warning);">40%</div>
             </div>
             
             <div class="track-container">
-                <div class="track-progress"></div>
+                <div class="track-progress" style="width: 40%;"></div>
                 <div class="checkpoint status-done"><div class="task-card">Initiate</div><div class="node-pulse">✓</div></div>
                 <div class="checkpoint status-done"><div class="task-card">Soft Launch First 50 Stores</div><div class="node-pulse">✓</div></div>
                 <div class="checkpoint status-done"><div class="task-card">Store Identification</div><div class="node-pulse">✓</div></div>
                 <div class="checkpoint status-done"><div class="task-card">DRCP Finalization (CCR, Right Store)</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">MR / Regional Listing</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">MR / Regional Selling</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">MR / National Listing</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">MR / National Selling</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">Q-Com Listing</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">Q-Com Selling</div><div class="node-pulse">✓</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">MR / Regional Listing</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">MR / Regional Selling</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">MR / National Listing</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">MR / National Selling</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">Q-Com Listing</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">Q-Com Selling</div><div class="node-pulse">!</div></div>
             </div>
         </div>
 
@@ -269,7 +275,7 @@
             </div>
 
             <div class="track-container">
-                <div class="track-progress"></div>
+                <div class="track-progress" style="width: 100%;"></div>
                 <div class="checkpoint status-done"><div class="task-card">Manpower</div><div class="node-pulse">✓</div></div>
                 <div class="checkpoint status-done"><div class="task-card">Warehouse</div><div class="node-pulse">✓</div></div>
                 <div class="checkpoint status-done"><div class="task-card">Logistics</div><div class="node-pulse">✓</div></div>
@@ -279,16 +285,16 @@
         <div class="dashboard-row roadmap-row">
             <div class="row-header">
                 <div class="row-title title-offtake">3. Offtake Overview</div>
-                <div class="row-status" style="color: var(--success);">100%</div>
+                <div class="row-status" style="color: var(--pending);">0%</div>
             </div>
 
             <div class="track-container">
                 <div class="track-progress"></div>
-                <div class="checkpoint status-done"><div class="task-card">Social Media</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">Merchandising</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">Wet Sampling</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">POSM | Deployment</div><div class="node-pulse">✓</div></div>
-                <div class="checkpoint status-done"><div class="task-card">Standee Out</div><div class="node-pulse">✓</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">Social Media</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">Merchandising</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">Wet Sampling</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">POSM | Deployment</div><div class="node-pulse">!</div></div>
+                <div class="checkpoint status-pending"><div class="task-card">Standee Out</div><div class="node-pulse">!</div></div>
             </div>
         </div>
 

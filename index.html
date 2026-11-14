@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oli-Ohh | Secure Access</title>
-        <link rel="manifest" href="/ohlio-dashboard/manifest.json">
-<meta name="theme-color" content="#0f172a">
-    <link rel="icon" href="https://img.icons8.com/fluency/48/lock.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -118,17 +117,38 @@
             letter-spacing: 1px; cursor: pointer; transition: 0.3s;
         }
         .reset-link:hover { color: var(--ios-cyan); }
+        button.reset-link { background: none; border: 0; display: block; margin-left: auto; margin-right: auto; font-family: inherit; font-weight: 600; }
+        .form-msg { min-height: 1.2em; margin-top: 14px; font-size: 0.78rem; font-weight: 600; color: var(--ios-red); letter-spacing: .3px; }
+        .form-msg.ok { color: var(--ios-cyan); }
+        @media (max-width: 420px) {
+            .login-card { padding: 40px 22px; border-radius: 30px; }
+            .hi-akshay { font-size: 2.4rem; }
+            .pin-box { width: 52px; height: 66px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .video-bg { display: none; } body { background: #000 url(assets/login-poster.jpg) center/cover; } }
 
         .shake { animation: hapticShake 0.3s ease-in-out; }
         @keyframes hapticShake { 0%, 100% { transform: translateX(0); } 33% { transform: translateX(-8px); } 66% { transform: translateX(8px); } }
 
         .success-exit { opacity: 0; transform: scale(0.95) translateY(-20px); transition: 0.5s ease-in forwards; }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body>
 
-    <video autoplay muted loop playsinline class="video-bg">
-        <source src="oli ohh draft 1.mp4" type="video/mp4">
+    <video autoplay muted loop playsinline preload="auto" poster="assets/login-poster.jpg" class="video-bg" aria-hidden="true">
+        <source src="assets/login-bg.mp4" type="video/mp4">
     </video>
     <div class="theme-overlay"></div>
 
@@ -139,59 +159,111 @@
         <!-- LOGIN VIEW -->
         <div id="loginView">
             <div class="pin-wrapper">
-                <input type="password" inputmode="numeric" maxlength="1" class="pin-box" autofocus>
+                <input type="password" inputmode="numeric" maxlength="1" class="pin-box" aria-label="PIN digit 1" autocomplete="one-time-code" autofocus>
                 <input type="password" inputmode="numeric" maxlength="1" class="pin-box">
                 <input type="password" inputmode="numeric" maxlength="1" class="pin-box">
                 <input type="password" inputmode="numeric" maxlength="1" class="pin-box">
             </div>
             <button class="unlock-btn" onclick="validateAccess()">Unlock Dashboard</button>
-            <p class="reset-link" onclick="toggleView('reset')">SETTINGS / RESET PIN</p>
+            <p class="form-msg" id="loginMsg" role="status" aria-live="polite"></p>
+            <button type="button" class="reset-link" onclick="toggleView('reset')">SETTINGS / RESET PIN</button>
         </div>
 
         <!-- RESET VIEW -->
         <div id="resetView" class="reset-container">
-            <input type="password" id="oldPin" class="input-field" placeholder="Verify Current User PIN">
-            <input type="password" id="newPin" class="input-field" placeholder="New 4-Digit PIN">
-            <input type="password" id="confirmPin" class="input-field" placeholder="Confirm New PIN">
+            <input type="password" inputmode="numeric" maxlength="4" autocomplete="off" id="oldPin" class="input-field" placeholder="Verify Current User PIN">
+            <input type="password" inputmode="numeric" maxlength="4" autocomplete="off" id="newPin" class="input-field" placeholder="New 4-Digit PIN">
+            <input type="password" inputmode="numeric" maxlength="4" autocomplete="off" id="confirmPin" class="input-field" placeholder="Confirm New PIN">
             <button class="unlock-btn" style="margin-top: 10px;" onclick="handlePinUpdate()">Update PIN</button>
-            <p class="reset-link" onclick="toggleView('login')">BACK TO LOGIN</p>
+            <p class="form-msg" id="resetMsg" role="status" aria-live="polite"></p>
+            <button type="button" class="reset-link" onclick="toggleView('login')">BACK TO LOGIN</button>
         </div>
     </div>
 
     <script>
         const boxes = document.querySelectorAll('.pin-box');
         const card = document.getElementById('loginCard');
-        
-        // --- PIN CONFIGURATION ---
-        const MASTER_PIN = "1090"; // Your Static Backend PIN
-        let akshayPin = localStorage.getItem('akshay_pin') || "1234"; // Akshay's Changeable PIN
+        const loginMsg = document.getElementById('loginMsg');
+        const resetMsg = document.getElementById('resetMsg');
 
-        // Auto-focus and Auto-Login
+        // Opening the login screen always ends any existing session (= logout)
+        try { sessionStorage.removeItem('oliohh_auth'); } catch (e) {}
+
+        // --- PIN CONFIGURATION ---------------------------------------------
+        // PINs are stored as salted SHA-256 hashes, never in plain text.
+        // Master PIN hash (static). Akshay's PIN defaults to the second hash
+        // and can be changed from Settings (kept on this device only).
+        const MASTER_HASH = '53f422d01b20f821e3b8e2373363f49c2d83ef2bec96d65c6e08fa9115eb7fd4';
+        const DEFAULT_USER_HASH = 'd4a99c82b3ee2cab27096516c84b2c85b93805464d9b646d55a5e792af4ffa3b';
+
+        function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+
+        // Migrate an old plain-text PIN saved by the previous version
+        (async () => {
+            const legacy = store('akshay_pin');
+            if (legacy && !store('akshay_pin_hash')) {
+                store('akshay_pin_hash', await hashPin(legacy));
+                try { localStorage.removeItem('akshay_pin'); } catch (e) {}
+            }
+        })();
+
+        async function hashPin(pin) {
+            const data = new TextEncoder().encode('oliohh:' + pin);
+            const buf = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        const userHash = () => store('akshay_pin_hash') || DEFAULT_USER_HASH;
+        async function isValid(pin) { const h = await hashPin(pin); return h === MASTER_HASH || h === userHash(); }
+
+        function nextPage() {
+            const n = new URLSearchParams(location.search).get('next') || '';
+            // only allow local dashboard pages
+            return /^[a-z0-9._-]+\.html([?#].*)?$/i.test(n) && !/^(index|login)\.html/i.test(n) ? n : 'home.html';
+        }
+
+        // Auto-advance, paste support and auto-submit
         boxes.forEach((box, i) => {
             box.addEventListener('input', (e) => {
-                if (e.target.value.length === 1 && i < boxes.length - 1) boxes[i + 1].focus();
-                
-                const typed = Array.from(boxes).map(b => b.value).join('');
-                if (typed.length === 4) setTimeout(validateAccess, 250);
+                e.target.value = e.target.value.replace(/\D/g, '').slice(-1);
+                if (e.target.value && i < boxes.length - 1) boxes[i + 1].focus();
+                loginMsg.textContent = '';
+                if (Array.from(boxes).every(b => b.value)) setTimeout(validateAccess, 150);
             });
             box.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i - 1].focus();
+                if (e.key === 'Enter') validateAccess();
             });
+            box.addEventListener('paste', (e) => {
+                const digits = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 4);
+                if (!digits) return;
+                e.preventDefault();
+                boxes.forEach((b, j) => b.value = digits[j] || '');
+                boxes[Math.min(digits.length, 3)].focus();
+                if (digits.length === 4) validateAccess();
+            });
+            if (i) box.setAttribute('aria-label', 'PIN digit ' + (i + 1));
         });
 
-        function validateAccess() {
+        let busy = false;
+        async function validateAccess() {
+            if (busy) return;
             const enteredPin = Array.from(boxes).map(b => b.value).join('');
-            
-            if (enteredPin === MASTER_PIN || enteredPin === akshayPin) {
+            if (enteredPin.length < 4) { loginMsg.textContent = 'Enter all 4 digits'; return; }
+            busy = true;
+            if (await isValid(enteredPin)) {
+                try { sessionStorage.setItem('oliohh_auth', '1'); } catch (e) {}
                 card.classList.add('success-exit');
-                setTimeout(() => { window.location.href = 'home.html'; }, 500);
+                setTimeout(() => { window.location.replace(nextPage()); }, 450);
             } else {
+                loginMsg.textContent = 'Incorrect PIN — try again';
                 card.classList.add('shake');
+                if (navigator.vibrate) navigator.vibrate(80);
                 boxes.forEach(b => { b.value = ''; b.style.borderColor = 'var(--ios-red)'; });
-                setTimeout(() => { 
-                    card.classList.remove('shake'); 
-                    boxes.forEach(b => b.style.borderColor = ''); 
-                    boxes[0].focus(); 
+                setTimeout(() => {
+                    card.classList.remove('shake');
+                    boxes.forEach(b => b.style.borderColor = '');
+                    boxes[0].focus();
+                    busy = false;
                 }, 300);
             }
         }
@@ -200,51 +272,37 @@
             const loginView = document.getElementById('loginView');
             const resetView = document.getElementById('resetView');
             const title = document.getElementById('titleText');
-
+            loginMsg.textContent = ''; resetMsg.textContent = ''; resetMsg.className = 'form-msg';
             if (view === 'reset') {
                 loginView.style.display = 'none';
                 resetView.style.display = 'flex';
-                title.innerText = "Settings";
+                title.innerText = 'Settings';
+                document.getElementById('oldPin').focus();
             } else {
                 loginView.style.display = 'block';
                 resetView.style.display = 'none';
-                title.innerText = "Hi Akshay";
+                title.innerText = 'Hi Akshay';
                 boxes[0].focus();
             }
         }
 
-        function handlePinUpdate() {
+        async function handlePinUpdate() {
             const oldVal = document.getElementById('oldPin').value;
             const newVal = document.getElementById('newPin').value;
             const confVal = document.getElementById('confirmPin').value;
+            resetMsg.className = 'form-msg';
 
-            // Must know current Akshay PIN or Master PIN to change Akshay's PIN
-            if (oldVal !== akshayPin && oldVal !== MASTER_PIN) {
-                alert("Incorrect Authorization.");
-                return;
-            }
-            if (newVal.length !== 4 || isNaN(newVal)) {
-                alert("Enter 4 digits.");
-                return;
-            }
-            if (newVal !== confVal) {
-                alert("Mismatch.");
-                return;
-            }
+            if (!(await isValid(oldVal))) { resetMsg.textContent = 'Current PIN is incorrect'; return; }
+            if (!/^\d{4}$/.test(newVal)) { resetMsg.textContent = 'New PIN must be exactly 4 digits'; return; }
+            if (newVal !== confVal) { resetMsg.textContent = "New PINs don't match"; return; }
 
-            localStorage.setItem('akshay_pin', newVal);
-            akshayPin = newVal;
-            alert("PIN Updated!");
-            location.reload(); 
+            store('akshay_pin_hash', await hashPin(newVal));
+            ['oldPin', 'newPin', 'confirmPin'].forEach(id => document.getElementById(id).value = '');
+            resetMsg.className = 'form-msg ok';
+            resetMsg.textContent = 'PIN updated on this device ✓';
+            setTimeout(() => toggleView('login'), 1200);
         }
-        
+        document.getElementById('resetView').addEventListener('keydown', e => { if (e.key === 'Enter') handlePinUpdate(); });
     </script>
-    <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/ohlio-dashboard/service-worker.js")
-    .then(() => console.log("Service Worker Registered"))
-    .catch(err => console.log(err));
-}
-</script>
-</body>
+    </body>
 </html>

@@ -153,7 +153,27 @@
         .pending { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
 
         footer { text-align: center; padding: 60px; opacity: 0.3; font-size: 11px; letter-spacing: 2px; }
+    
+        /* --- Phone --- */
+        @media (max-width: 640px) {
+            header { padding: 36px 16px 24px; }
+            .controls-row { flex-wrap: wrap; gap: 10px; }
+            .controls-row .search-box { flex: 1 1 100%; }
+            .controls-row button { padding: 10px 20px !important; }
+        }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body onload="initializeKPIs()">
 
@@ -195,7 +215,7 @@
                 <tr>
                     <td>Launching</td>
                     <td>
-                        <a href="oli-ohh lauch.html" class="task-link-wrapper">
+                        <a href="launch-ceremony.html" class="task-link-wrapper">
                             <span class="pulse-dot dot-green"></span>
                             Oli-Ohh Launch Ceremony
                         </a>
@@ -217,7 +237,7 @@
                 <tr>
                     <td>Coverage</td>
                     <td>
-                        <a href="ecommerce-listing.html" class="task-link-wrapper">
+                        <a href="meesho-listing.html" class="task-link-wrapper">
                             <span class="pulse-dot dot-green"></span>
                             E-Commerce Listing
                         </a>

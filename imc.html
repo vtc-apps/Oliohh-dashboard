@@ -539,7 +539,30 @@
             text-align: center;
             padding: 1rem;
         }
+    
+        /* --- Phone: stack the network into readable columns --- */
+        @media (max-width: 760px) {
+            .dashboard-container { flex-wrap: wrap; gap: .6rem; margin-top: 6vh; padding: 0 12px; }
+            .card { flex: 1 1 calc(50% - .6rem); max-width: none; }
+            .network-lines { display: none; }
+            .hierarchy-branches { flex-wrap: wrap; gap: .6rem; padding: 0 12px; }
+            .hierarchy-branches::before { display: none; }
+            .branch-card-node { flex: 1 1 calc(50% - .6rem); }
+            .modal-body, .follow-grid-container { grid-template-columns: repeat(2, 1fr); overflow-y: auto; }
+        }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body>
 

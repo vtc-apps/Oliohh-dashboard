@@ -1,22 +1,22 @@
 {
-  "name": "Ohlio Dashboard",
-  "short_name": "Ohlio",
-  "start_url": "/ohlio-dashboard/index.html",
-  "scope": "/ohlio-dashboard/",
+  "name": "Oli-Ohh Command Center",
+  "short_name": "Oli-Ohh",
+  "description": "Oli-Ohh launch, channel and activation dashboards — VTC Tradewings",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0f172a",
-  "orientation": "portrait",
+  "background_color": "#05080a",
+  "theme_color": "#05080a",
+  "orientation": "any",
   "icons": [
-    {
-      "src": "/ohlio-dashboard/logo.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/ohlio-dashboard/logo.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Command Center", "url": "./home.html" },
+    { "name": "MT Regional", "url": "./mt-regional.html" },
+    { "name": "Quick Commerce", "url": "./quick-commerce.html" }
   ]
 }

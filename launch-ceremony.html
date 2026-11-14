@@ -149,6 +149,18 @@
             .back-btn { top: 15px; left: 15px; }
         }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body onload="fireConfetti()">
 
@@ -210,6 +222,7 @@
                 }
 
                 var particleCount = 50 * (timeLeft / duration);
+                if (typeof confetti !== "function") return;
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);

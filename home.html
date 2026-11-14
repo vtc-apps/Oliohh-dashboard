@@ -303,25 +303,81 @@
         .road-details { display: flex; flex-direction: column; min-width: 0; }
         .road-name { font-size: 0.8rem; font-weight: 800; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .road-zone { font-size: 0.6rem; color: #555555; }
+        /* --- MODAL BACKDROP --- */
+        .oo-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 2500; }
+        .oo-backdrop.show { display: block; }
+        .glass-card-link.is-disabled { opacity: .45; cursor: not-allowed; }
+        .soon-tag { font-size: .55rem; font-weight: 900; letter-spacing: .5px; text-transform: uppercase; color: #777; border: 1px solid #333; padding: 2px 6px; border-radius: 4px; }
+        .link-item { transition: border-color .15s ease, transform .15s ease; }
+        .link-item:hover, .road-card:hover, .glass-card-link:hover { transform: translateY(-1px); }
+
+        /* --- RESPONSIVE: TABLET --- */
+        @media (max-width: 1100px) {
+            body { height: auto; min-height: 100vh; overflow: auto; }
+            .workspace { flex-direction: column; height: auto; overflow: visible; }
+            main, .right-panel { flex: none; overflow: visible; }
+            .right-panel { border-left: 0; border-top: 1px solid var(--border-crisp); }
+            nav { position: sticky; top: 0; height: 100vh; }
+            #notesPop { position: fixed; left: 50%; }
+            #deadlinePop { position: fixed; top: 80px; right: 20px; }
+        }
+
+        /* --- RESPONSIVE: PHONE (nav becomes a bottom bar) --- */
+        @media (max-width: 760px) {
+            body { display: block; padding-bottom: 76px; }
+            nav {
+                position: fixed; top: auto; bottom: 0; left: 0; right: 0;
+                width: 100% !important; height: 64px; padding: 6px 10px;
+                flex-direction: row; justify-content: space-around; align-items: center;
+                border-right: 0; border-top: 1px solid var(--border-crisp);
+                background: rgba(0,0,0,.92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+            }
+            nav:hover { width: 100%; }
+            nav:hover .nav-text { display: none; }
+            .nav-item { width: auto; margin: 0; }
+            .nav-separator { display: none; }
+            .logout { margin-top: 0; border-top: 0; padding-top: 0; }
+            main { padding: 22px 16px; }
+            .right-panel { padding: 22px 16px 30px; }
+            header { margin-bottom: 20px; }
+            .h-text h1 { font-size: 1.5rem; }
+            .acc-content { grid-template-columns: 1fr; }
+            .activation-stack { grid-template-columns: repeat(2, 1fr); }
+            #notesPop { width: 94%; height: 80vh; padding: 20px; }
+            #deadlinePop { left: 16px; right: 16px; width: auto; }
+        }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body>
 
-    <nav>
-        <a href="about oli-ohh.html" class="nav-item"><span class="nav-icon">📦</span><span class="nav-text">Product Info</span></a>
+    <nav aria-label="Main">
+        <a href="about.html" class="nav-item"><span class="nav-icon">📦</span><span class="nav-text">Product Info</span></a>
         <!-- HIDDEN: <a href="meeting-highlights.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-text">Meetings</span></a> -->
         <a href="suggestion.html" class="nav-item"><span class="nav-icon">💡</span><span class="nav-text">Suggestions</span></a>
         <div class="nav-separator"></div>
-        <!-- HIDDEN: <a href="CHANNEL CLASSIFICATION.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Channel Desc</span></a> -->
+        <!-- HIDDEN: <a href="channel-classification.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Channel Desc</span></a> -->
         <a href="margin-structure.html" class="nav-item"><span class="nav-icon">💵</span><span class="nav-text">Margins</span></a>
         <!-- Quick Commerce & E-Commerce moved into the Channel wise Data accordion -->
         <a href="index.html" class="nav-item logout"><span class="nav-icon">🚪</span><span class="nav-text">Logout System</span></a>
     </nav>
 
+    <div class="oo-backdrop" id="ooBackdrop" onclick="closeAll()"></div>
     <div class="workspace">
         <main>
             <div id="deadlinePop">
-                <span class="pop-close" onclick="toggleDeadlines()">&times;</span>
+                <span class="pop-close" role="button" tabindex="0" aria-label="Close" onclick="toggleDeadlines()">&times;</span>
                 <h3 style="font-size: 0.7rem; color: var(--neon-red); margin-bottom: 10px;">⚠️ PENDING MISSION TASKS</h3>
                 <div class="pop-item">Hire Sampling Staff - 30 Apr</div>
                 <div class="pop-item">E-Rickshaw Sampling - 15 May</div>
@@ -336,7 +392,7 @@
                     <div>
                         <h2 style="font-size: 1.3rem; color: #fff; font-weight: 900;">Meeting Minutes (MoM)</h2>
                     </div>
-                    <span class="notes-pop-close" onclick="toggleNotes()">Close Terminal ×</span>
+                    <span class="notes-pop-close" role="button" tabindex="0" onclick="toggleNotes()">Close Terminal ×</span>
                 </div>
                 
                 <div class="notes-scroll-container notes-body">
@@ -366,7 +422,7 @@
                         <p>System Active / v2.14</p>
                         <h1>Command Center</h1>
                     </div>
-                    <a href="imac.html" class="imac-link">iMC →</a>
+                    <a href="imc.html" class="imac-link">iMC →</a>
                 </div>
             </header>
 
@@ -379,9 +435,9 @@
                         <span>▾</span>
                     </label>
                     <div class="acc-content">
-                        <a href="MTregional.html" class="link-item"><div><b>MT Regional</b><i>D2R North India</i></div></a>
-                        <a href="mtstandlone.html" class="link-item"><div><b>MT Standalone</b><i>Standalone stores</i></div></a>
-                        <a href="subdnorm.html" class="link-item"><div><b>Sub-D Norms</b><i>Distribution guidelines</i></div></a>
+                        <a href="mt-regional.html" class="link-item"><div><b>MT Regional</b><i>D2R North India</i></div></a>
+                        <a href="mt-standalone.html" class="link-item"><div><b>MT Standalone</b><i>Standalone stores</i></div></a>
+                        <a href="subd-norms.html" class="link-item"><div><b>Sub-D Norms</b><i>Distribution guidelines</i></div></a>
                         <a href="quick-commerce.html" class="link-item"><div><b>Quick Commerce</b><i>Blinkit &amp; Zepto</i></div></a>
                         <a href="ecommerce.html" class="link-item"><div><b>E-Commerce</b><i>Online channel</i></div></a>
                     </div>
@@ -400,24 +456,43 @@
                         <a href="performance.html" class="link-item"><div><b>Q-Com Performance</b><i>Quick commerce metrics</i></div></a>
                     </div>
                 </div>
+                <div class="acc-card">
+                    <input type="checkbox" id="acc3" class="acc-trigger" />
+                    <label for="acc3" class="acc-header">
+                        <span style="font-size: 1.5rem;">🚀</span>
+                        <h2>Strategy &amp; Operations</h2>
+                        <span>▾</span>
+                    </label>
+                    <div class="acc-content">
+                        <a href="3-tier-launch.html" class="link-item"><div><b>3-Tier Launch</b><i>Awareness → scale-up plan</i></div></a>
+                        <a href="prelaunch-tasks.html" class="link-item"><div><b>Pre-Launch Tasks</b><i>Launch readiness tracker</i></div></a>
+                        <a href="launch-ceremony.html" class="link-item"><div><b>Launch Ceremony</b><i>Grand launch</i></div></a>
+                        <a href="strategic-core.html" class="link-item"><div><b>Strategic Core</b><i>Core strategy view</i></div></a>
+                        <a href="inhouse.html" class="link-item"><div><b>In-house Center</b><i>Internal command view</i></div></a>
+                        <a href="lindt-operations.html" class="link-item"><div><b>Lindt Operations</b><i>Oli-Ohh × Lindt</i></div></a>
+                        <a href="meesho-listing.html" class="link-item"><div><b>Meesho Listing</b><i>E-com listing status</i></div></a>
+                        <a href="review.html" class="link-item"><div><b>Review Intelligence</b><i>Customer reviews</i></div></a>
+                        <a href="transcription.html" class="link-item"><div><b>AI Transcription</b><i>Meeting notes tool</i></div></a>
+                    </div>
+                </div>
             </div>
 
             <div class="roadmap-section">
                 <span class="roadmap-heading">Activation Road Map</span>
                 <div class="activation-stack">
-                    <a href="NCR.html" class="road-card">
+                    <a href="ncr.html" class="road-card">
                         <div class="road-card-header"><span class="road-icon">🏛️</span><span class="status-badge active-sector">Active</span></div>
                         <div class="road-details"><span class="road-name">DELHI NCR</span><span class="road-zone">Core Hub</span></div>
                     </a>
-                    <a href="CHD.html" class="road-card">
+                    <a href="chandigarh.html" class="road-card">
                         <div class="road-card-header"><span class="road-icon">🏙️</span><span class="status-badge upcoming-deployment">Upcoming</span></div>
                         <div class="road-details"><span class="road-name">CHANDIGARH</span><span class="road-zone">Pipeline</span></div>
                     </a>
-                    <a href="GUJURAT.html" class="road-card">
+                    <a href="gujarat.html" class="road-card">
                         <div class="road-card-header"><span class="road-icon">🏯</span><span class="status-badge strategy-phase">Strategy</span></div>
                         <div class="road-details"><span class="road-name">GUJARAT</span><span class="road-zone">Assessment</span></div>
                     </a>
-                    <a href="westup.html" class="road-card">
+                    <a href="west-up.html" class="road-card">
                         <div class="road-card-header"><span class="road-icon">🏰</span><span class="status-badge upcoming-deployment">Upcoming</span></div>
                         <div class="road-details"><span class="road-name">W-UP</span><span class="road-zone">Pipeline</span></div>
                     </a>
@@ -494,7 +569,7 @@
             <div class="notification-section">
                 <span class="notification-heading">Notifications & Controls</span>
                 <div class="notification-grid">
-                    <a href="3monthsdata.html" class="glass-card-link full-width-card plan-primary-highlight">
+                    <a href="quarterly-plan.html" class="glass-card-link full-width-card plan-primary-highlight">
                         <div class="glass-card-text">
                             <h4>Upcoming Quarterly Plans</h4>
                             <p>View strategy targets for next 3 months</p>
@@ -503,16 +578,16 @@
                     </a>
 
                     <!-- BUSINESS UPDATE CARD -->
-                    <a href="bussiness.html" class="glass-card-link full-width-card business-cyan-highlight">
+                    <div class="glass-card-link full-width-card business-cyan-highlight is-disabled" aria-disabled="true" title="Business Update page not published yet">
                         <div class="glass-card-text">
                             <h4>Business Update</h4>
-                            <p>Latest business performance & status</p>
+                            <p>Latest business performance &amp; status</p>
                         </div>
-                        <span class="glass-card-arrow">→</span>
-                    </a>
+                        <span class="soon-tag">Soon</span>
+                    </div>
                     
                     <!-- MEETING NOTES INTERACTIVE TRIGGER -->
-                    <div class="glass-card-link full-width-card notes-purple-highlight" onclick="toggleNotes()">
+                    <div class="glass-card-link full-width-card notes-purple-highlight" role="button" tabindex="0" onclick="toggleNotes()">
                         <div class="glass-card-text">
                             <h4>Last Meeting Notes</h4>
                             <p>MoM Status Log</p>
@@ -520,14 +595,14 @@
                         <span class="glass-card-arrow">📝</span>
                     </div>
 
-                    <a href="TASKS.html" class="glass-card-link milestone-accent">
+                    <a href="milestone-100cr.html" class="glass-card-link milestone-accent">
                         <div class="glass-card-text">
                             <h4>Milestone 100cr</h4>
                             <p>Target overview</p>
                         </div>
                         <span class="glass-card-arrow">→</span>
                     </a>
-                    <div class="glass-card-link deadline-accent" onclick="toggleDeadlines()">
+                    <div class="glass-card-link deadline-accent" role="button" tabindex="0" onclick="toggleDeadlines()">
                         <div class="glass-card-text">
                             <h4>Deadlines Panel</h4>
                             <p>Toggle targets</p>
@@ -540,15 +615,38 @@
     </div>
 
     <script>
-        function toggleDeadlines() {
-            var pop = document.getElementById('deadlinePop');
-            pop.style.display = (pop.style.display === 'block') ? 'none' : 'block';
-        }
+        const deadlinePop = document.getElementById('deadlinePop');
+        const notesPop = document.getElementById('notesPop');
+        const backdrop = document.getElementById('ooBackdrop');
 
-        function toggleNotes() {
-            var notesPop = document.getElementById('notesPop');
-            notesPop.style.display = (notesPop.style.display === 'flex') ? 'none' : 'flex';
+        function syncBackdrop() {
+            backdrop.classList.toggle('show', notesPop.style.display === 'flex');
         }
+        function toggleDeadlines() {
+            deadlinePop.style.display = (deadlinePop.style.display === 'block') ? 'none' : 'block';
+        }
+        function toggleNotes() {
+            notesPop.style.display = (notesPop.style.display === 'flex') ? 'none' : 'flex';
+            syncBackdrop();
+        }
+        function closeAll() {
+            deadlinePop.style.display = 'none';
+            notesPop.style.display = 'none';
+            syncBackdrop();
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAll();
+            if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"]')) { e.preventDefault(); e.target.click(); }
+        });
+
+        // Remember which accordions are open between visits
+        document.querySelectorAll('.acc-trigger').forEach((cb) => {
+            try {
+                const saved = localStorage.getItem('oo_' + cb.id);
+                if (saved !== null) cb.checked = saved === '1';
+            } catch (e) {}
+            cb.addEventListener('change', () => { try { localStorage.setItem('oo_' + cb.id, cb.checked ? '1' : '0'); } catch (e) {} });
+        });
     </script>
 </body>
 </html>

@@ -206,7 +206,34 @@
 
         .asset-info h4 { font-size: 1.1rem; color: var(--muted); font-weight: 500; margin-bottom: 2px;}
         .asset-info p { font-size: 1.5rem; font-weight: bold; color: var(--pink); }
+    
+        /* --- Phone / small tablet: unlock TV-height layout --- */
+        @media (max-width: 900px) {
+            body { height: auto !important; overflow: auto !important; }
+            header { height: auto; flex-wrap: wrap; gap: 10px; }
+            .header-left { flex-wrap: wrap; gap: 10px; }
+            .hero-grid { grid-template-columns: repeat(2, 1fr); height: auto; gap: 10px; }
+            .main-layout { grid-template-columns: 1fr; height: auto; gap: 12px; }
+            .panel { min-height: 0; padding: 16px; }
+            body { padding: 14px 12px 80px; }
+            .stat-card { min-width: 0; }
+            .stat-card .number { font-size: 2rem; }
+            .main-layout > *, .hero-grid > * { min-width: 0; }
+            .panel { overflow-x: auto; }
+        }
     </style>
+    <!-- oo-shell -->
+    <meta name="theme-color" content="#05080a">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="assets/app.css">
+    <script src="assets/app.js" defer></script>
+    <!-- /oo-shell -->
 </head>
 <body>
 
